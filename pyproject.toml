@@ -1,0 +1,8 @@
+[tool.black]
+target-version = ['py310']
+
+[tool.isort]
+profile = "black"
+
+[tool.curlylint.rules]
+image_alt = true
