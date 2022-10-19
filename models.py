@@ -3,6 +3,7 @@ from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from djgeojson.fields import PointField
+from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
 
 User = get_user_model()
@@ -61,9 +62,25 @@ class Drawing(models.Model):
     __original_geom = None
     __original_rotation = None
 
+    class Meta:
+        verbose_name = _("Drawing")
+        verbose_name_plural = _("Drawings")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__original_dxf = self.dxf
+        self.__original_geom = self.geom
+        self.__original_rotation = self.rotation
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        # save and upload image
+        super(Drawing, self).save(*args, **kwargs)
+        if self.image:
+            # image is saved on the front end, passed to fb_image and deleted
+            self.fb_image = FileObject(str(self.image))
+            self.image = None
+            super(Drawing, self).save(*args, **kwargs)
+            # check_wide_image(self.fb_image)
