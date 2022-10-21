@@ -6,6 +6,8 @@ from djgeojson.fields import PointField
 from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
 
+from .utils import check_wide_image
+
 User = get_user_model()
 
 
@@ -83,4 +85,4 @@ class Drawing(models.Model):
             self.fb_image = FileObject(str(self.image))
             self.image = None
             super(Drawing, self).save(*args, **kwargs)
-            # check_wide_image(self.fb_image)
+            check_wide_image(self.fb_image)
