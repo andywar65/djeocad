@@ -1,8 +1,9 @@
+from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from djgeojson.fields import PointField
+from djgeojson.fields import GeometryCollectionField, PointField
 from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
 
@@ -86,3 +87,26 @@ class Drawing(models.Model):
             self.image = None
             super(Drawing, self).save(*args, **kwargs)
             check_wide_image(self.fb_image)
+
+
+class Layer(models.Model):
+
+    drawing = models.ForeignKey(
+        Drawing,
+        on_delete=models.CASCADE,
+        related_name="drawing_layer",
+        verbose_name=_("Drawing"),
+    )
+    name = models.CharField(
+        _("Layer name"),
+        max_length=50,
+    )
+    color_field = ColorField(default="#FF0000")
+    geom = GeometryCollectionField(_("Elements"))
+
+    class Meta:
+        verbose_name = _("Layer")
+        verbose_name_plural = _("Layers")
+
+    def __str__(self):
+        return self.name

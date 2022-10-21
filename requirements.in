@@ -8,3 +8,4 @@ django-geojson
 jsonfield
 django-leaflet
 ezdxf
+django-colorfield
