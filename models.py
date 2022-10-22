@@ -107,7 +107,7 @@ class Drawing(models.Model):
             # use temp variables
             x = v[0]
             y = v[1]
-            rot = -radians(self.rotation)
+            rot = radians(self.rotation)
             # get true north
             xr = x * cos(rot) - y * sin(rot)
             yr = x * sin(rot) + y * cos(rot)
