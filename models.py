@@ -1,3 +1,4 @@
+from math import cos, degrees, fabs, radians, sin
 from pathlib import Path
 
 import ezdxf
@@ -98,6 +99,25 @@ class Drawing(models.Model):
         ):
             self.extract_dxf()
 
+    def transform_vertices(self, vert):
+        trans = []
+        gy = 1 / (6371 * 1000)
+        gx = 1 / (6371 * 1000 * fabs(cos(radians(self.geom["coordinates"][1]))))
+        for v in vert:
+            # use temp variables
+            x = v[0]
+            y = v[1]
+            rot = -radians(self.rotation)
+            # get true north
+            xr = x * cos(rot) - y * sin(rot)
+            yr = x * sin(rot) + y * cos(rot)
+            # objects are very small with respect to earth, so our transformation
+            # from CAD x,y coords to latlong is approximate
+            long = self.geom["coordinates"][0] - degrees(xr * gx)
+            lat = self.geom["coordinates"][1] - degrees(yr * gy)
+            trans.append((long, lat))
+        return trans
+
     def extract_dxf(self):
         self.drawing_layer.all().delete()
         doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
@@ -110,6 +130,15 @@ class Drawing(models.Model):
                 "linetype": layer.dxf.linetype,
                 "geometries": [],
             }
+        for e in msp.query("LINE"):
+            points = [e.dxf.start, e.dxf.end]
+            vert = self.transform_vertices(points)
+            layer_table[e.dxf.layer]["geometries"].append(
+                {
+                    "type": "LineString",
+                    "coords": [[vert]],
+                }
+            )
         return
 
 
