@@ -11,7 +11,7 @@ from djgeojson.fields import GeometryCollectionField, PointField
 from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
 
-from .utils import check_wide_image
+from .utils import cad2hex, check_wide_image
 
 User = get_user_model()
 
@@ -102,6 +102,14 @@ class Drawing(models.Model):
         self.drawing_layer.all().delete()
         doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
         msp = doc.modelspace()  # noqa
+        # prepare layer table
+        layer_table = {}
+        for layer in doc.layers:
+            layer_table[layer.dxf.name] = {
+                "color": cad2hex(layer.color),
+                "linetype": layer.dxf.linetype,
+                "geometries": [],
+            }
         return
 
 
