@@ -79,7 +79,7 @@ class Drawing(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        # save and upload image
+        # save and eventually upload image
         super(Drawing, self).save(*args, **kwargs)
         if self.image:
             # image is saved on the front end, passed to fb_image and deleted
@@ -87,6 +87,15 @@ class Drawing(models.Model):
             self.image = None
             super(Drawing, self).save(*args, **kwargs)
             check_wide_image(self.fb_image)
+        if (
+            self.__original_dxf != self.dxf
+            or self.__original_geom != self.geom
+            or self.__original_rotation != self.rotation
+        ):
+            self.extract_dxf()
+
+    def extract_dxf(self):
+        return
 
 
 class Layer(models.Model):
