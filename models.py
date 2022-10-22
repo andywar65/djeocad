@@ -1,4 +1,8 @@
+from pathlib import Path
+
+import ezdxf
 from colorfield.fields import ColorField
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -79,7 +83,7 @@ class Drawing(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        # save and eventually upload image
+        # save and eventually upload image file
         super(Drawing, self).save(*args, **kwargs)
         if self.image:
             # image is saved on the front end, passed to fb_image and deleted
@@ -95,6 +99,9 @@ class Drawing(models.Model):
             self.extract_dxf()
 
     def extract_dxf(self):
+        self.drawing_layer.all().delete()
+        doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
+        msp = doc.modelspace()  # noqa
         return
 
 
