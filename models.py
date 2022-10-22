@@ -115,7 +115,7 @@ class Drawing(models.Model):
             # from CAD x,y coords to latlong is approximate
             long = self.geom["coordinates"][0] - degrees(xr * gx)
             lat = self.geom["coordinates"][1] - degrees(yr * gy)
-            trans.append((long, lat))
+            trans.append([long, lat])
         return trans
 
     def extract_dxf(self):
@@ -136,9 +136,20 @@ class Drawing(models.Model):
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "LineString",
-                    "coords": [[vert]],
+                    "coordinates": vert,
                 }
             )
+        for name, layer in layer_table.items():
+            if not layer["geometries"] == []:
+                Layer.objects.create(
+                    drawing_id=self.id,
+                    name=name,
+                    color_field=layer["color"],
+                    geom={
+                        "geometries": layer["geometries"],
+                        "type": "GeometryCollection",
+                    },
+                )
         return
 
 
