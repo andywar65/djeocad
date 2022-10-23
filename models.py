@@ -97,6 +97,8 @@ class Drawing(models.Model):
             or self.__original_geom != self.geom
             or self.__original_rotation != self.rotation
         ):
+            layers = self.drawing_layer.all()
+            layers.delete()
             self.extract_dxf()
 
     def transform_vertices(self, vert):
@@ -113,13 +115,12 @@ class Drawing(models.Model):
             yr = x * sin(rot) + y * cos(rot)
             # objects are very small with respect to earth, so our transformation
             # from CAD x,y coords to latlong is approximate
-            long = self.geom["coordinates"][0] - degrees(xr * gx)
-            lat = self.geom["coordinates"][1] - degrees(yr * gy)
+            long = self.geom["coordinates"][0] + degrees(xr * gx)
+            lat = self.geom["coordinates"][1] + degrees(yr * gy)
             trans.append([long, lat])
         return trans
 
     def extract_dxf(self):
-        self.drawing_layer.all().delete()
         doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
         msp = doc.modelspace()  # noqa
         # prepare layer table
