@@ -141,6 +141,23 @@ class Drawing(models.Model):
                     "coordinates": vert,
                 }
             )
+        for e in msp.query("LWPOLYLINE"):
+            vert = self.transform_vertices(e.vertices_in_wcs())
+            if e.is_closed:
+                vert.append(vert[0])
+                layer_table[e.dxf.layer]["geometries"].append(
+                    {
+                        "type": "Polygon",
+                        "coordinates": [vert],
+                    }
+                )
+            else:
+                layer_table[e.dxf.layer]["geometries"].append(
+                    {
+                        "type": "LineString",
+                        "coordinates": vert,
+                    }
+                )
         for name, layer in layer_table.items():
             if not layer["geometries"] == []:
                 Layer.objects.create(
