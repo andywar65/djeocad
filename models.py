@@ -98,7 +98,8 @@ class Drawing(models.Model):
             or self.__original_rotation != self.rotation
         ):
             layers = self.drawing_layer.all()
-            layers.delete()
+            for layer in layers:
+                layer.delete()
             self.extract_dxf()
 
     def transform_vertices(self, vert):
