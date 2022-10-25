@@ -97,9 +97,7 @@ class Drawing(models.Model):
             or self.__original_geom != self.geom
             or self.__original_rotation != self.rotation
         ):
-            layers = self.drawing_layer.all()
-            for layer in layers:
-                layer.delete()
+            self.drawing_layer.all().delete()
             self.extract_dxf()
 
     def transform_vertices(self, vert):
@@ -123,7 +121,7 @@ class Drawing(models.Model):
 
     def extract_dxf(self):
         doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
-        msp = doc.modelspace()  # noqa
+        msp = doc.modelspace()
         # prepare layer table
         layer_table = {}
         for layer in doc.layers:
@@ -132,6 +130,7 @@ class Drawing(models.Model):
                 "linetype": layer.dxf.linetype,
                 "geometries": [],
             }
+        # extract lines
         for e in msp.query("LINE"):
             points = [e.dxf.start, e.dxf.end]
             vert = self.transform_vertices(points)
@@ -141,6 +140,7 @@ class Drawing(models.Model):
                     "coordinates": vert,
                 }
             )
+        # extract polylines
         for e in msp.query("LWPOLYLINE"):
             vert = self.transform_vertices(e.vertices_in_wcs())
             if e.is_closed:
@@ -158,6 +158,7 @@ class Drawing(models.Model):
                         "coordinates": vert,
                     }
                 )
+        # create Layers
         for name, layer in layer_table.items():
             if not layer["geometries"] == []:
                 Layer.objects.create(
@@ -169,7 +170,6 @@ class Drawing(models.Model):
                         "type": "GeometryCollection",
                     },
                 )
-        return
 
 
 class Layer(models.Model):
@@ -192,4 +192,4 @@ class Layer(models.Model):
         verbose_name_plural = _("Layers")
 
     def __str__(self):
-        return self.name
+        return self.name + "-" + str(self.id)

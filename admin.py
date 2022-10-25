@@ -22,7 +22,7 @@ admin.site.register(Drawing, DrawingAdmin)
 
 
 class LayerAdmin(LeafletGeoAdmin):
-    list_display = ("name", "drawing")
+    list_display = ("__str__", "drawing")
 
 
 admin.site.register(Layer, LayerAdmin)
