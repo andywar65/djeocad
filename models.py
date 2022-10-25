@@ -83,6 +83,29 @@ class Drawing(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def popupContent(self):
+        # url = reverse(
+        # "djeocad:drawing_detail",
+        # kwargs={"username": self.user.username, "pk": self.id},
+        # )
+        title_str = '<h5><a href="%(url)s">%(title)s</a></h5>' % {
+            "title": self.name,
+            "url": "#",
+        }
+        intro_str = "<small>%(intro)s</small>" % {"intro": self.intro}
+        image = self.get_thumbnail_path()
+        if not image:
+            return {"content": title_str + intro_str}
+        image_str = '<img src="%(image)s">' % {"image": image}
+        return {"content": title_str + image_str + intro_str}
+
+    def get_thumbnail_path(self):
+        if not self.fb_image:
+            return
+        path = self.fb_image.version_generate("popup").path
+        return settings.MEDIA_URL + path
+
     def save(self, *args, **kwargs):
         # save and eventually upload image file
         super(Drawing, self).save(*args, **kwargs)
