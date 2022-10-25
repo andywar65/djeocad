@@ -90,7 +90,7 @@ class Drawing(models.Model):
         # kwargs={"username": self.user.username, "pk": self.id},
         # )
         title_str = '<h5><a href="%(url)s">%(title)s</a></h5>' % {
-            "title": self.name,
+            "title": self.title,
             "url": "#",
         }
         intro_str = "<small>%(intro)s</small>" % {"intro": self.intro}
