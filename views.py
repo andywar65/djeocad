@@ -1,7 +1,14 @@
+import json
+
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from django.utils.crypto import get_random_string
 from django.views.generic import ListView
 
 from .models import Drawing
+
+User = get_user_model()
 
 
 class HxPageTemplateMixin:
@@ -32,3 +39,38 @@ class BaseListView(ListView):
         context["authors"] = list(dict.fromkeys(authors))
         context["mapbox_token"] = settings.MAPBOX_TOKEN
         return context
+
+
+class AuthorDetailView(HxPageTemplateMixin, ListView):
+    model = Drawing
+    context_object_name = "drawings"
+    template_name = "djeocad/htmx/author_detail.html"
+
+    def setup(self, request, *args, **kwargs):
+        super(AuthorDetailView, self).setup(request, *args, **kwargs)
+        self.author = get_object_or_404(User, username=self.kwargs["username"])
+
+    def get_queryset(self):
+        self.qs = Drawing.objects.filter(user_id=self.author.uuid, private=False)
+        if self.request.user.is_authenticated:
+            qs2 = Drawing.objects.filter(user_id=self.request.user.uuid, private=True)
+            self.qs = self.qs | qs2
+        return self.qs.order_by(
+            "id",
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["author"] = self.author
+        context["mapbox_token"] = settings.MAPBOX_TOKEN
+        if self.request.htmx:
+            self.crypto = get_random_string(7)
+            context["crypto"] = self.crypto
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super(AuthorDetailView, self).dispatch(request, *args, **kwargs)
+        if request.htmx:
+            dict = {"getMarkerCollection": self.crypto}
+            response["HX-Trigger-After-Swap"] = json.dumps(dict)
+        return response

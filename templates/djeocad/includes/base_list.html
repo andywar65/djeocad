@@ -11,7 +11,7 @@
         {% for author in authors %}
           <li>
             <a class="link-primary"
-              hx-get="#"
+              hx-get="{% url 'djeocad:author_detail' username=author %}"
               hx-target="#nav-card"
               hx-swap="outerHTML"
               hx-push-url="true">
