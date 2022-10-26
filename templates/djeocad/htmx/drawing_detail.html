@@ -1,9 +1,12 @@
 {% load i18n %}
+{% load fb_versions %}
 
 <div class="card-header">
   <h4 class="card-title">{% trans "Drawing"%}: {{ object.title }}</h4>
 </div>
+<img src="{% version object.fb_image 'medium' %}" class="card-img-top" alt="{{ object.intro }}">
 <div class="card-body">
+  <p class="card-text">{{ object.intro }}</p>
   <a class="link-primary"
     hx-get="{% url 'djeocad:author_list' username=object.user.username %}"
     hx-target="#nav-card"
