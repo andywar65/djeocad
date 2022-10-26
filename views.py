@@ -57,7 +57,7 @@ class BaseListView(HxPageTemplateMixin, ListView):
 class AuthorListView(HxPageTemplateMixin, ListView):
     model = Drawing
     context_object_name = "drawings"
-    template_name = "djeocad/htmx/author_detail.html"
+    template_name = "djeocad/htmx/author_list.html"
 
     def setup(self, request, *args, **kwargs):
         super(AuthorListView, self).setup(request, *args, **kwargs)
