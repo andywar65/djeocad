@@ -89,10 +89,10 @@ class AuthorListView(HxPageTemplateMixin, ListView):
         return response
 
 
-class DrawingDetailView(DetailView):
+class DrawingDetailView(HxPageTemplateMixin, DetailView):
     model = Drawing
     context_object_name = "drawing"
-    template_name = "djeocad/drawing_detail.html"
+    template_name = "djeocad/htmx/drawing_detail.html"
 
     def get_object(self, queryset=None):
         self.object = super(DrawingDetailView, self).get_object(queryset=None)
@@ -108,4 +108,19 @@ class DrawingDetailView(DetailView):
         context["author"] = self.object.user
         context["mapbox_token"] = settings.MAPBOX_TOKEN
         context["lines"] = self.object.drawing_layer.all()
+        if self.request.htmx:
+            self.m_crypto = get_random_string(7)
+            context["m_crypto"] = self.m_crypto
+            self.l_crypto = get_random_string(7)
+            context["l_crypto"] = self.l_crypto
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super(DrawingDetailView, self).dispatch(request, *args, **kwargs)
+        if request.htmx:
+            dict = {
+                "getMarkerCollection": self.m_crypto,
+                "getLineCollection": self.l_crypto,
+            }
+            response["HX-Trigger-After-Swap"] = json.dumps(dict)
+        return response
