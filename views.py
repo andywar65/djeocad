@@ -24,10 +24,10 @@ class HxPageTemplateMixin:
             return [self.template_name]
 
 
-class BaseListView(ListView):
+class BaseListView(HxPageTemplateMixin, ListView):
     model = Drawing
     context_object_name = "drawings"
-    template_name = "djeocad/base_list.html"
+    template_name = "djeocad/htmx/base_list.html"
 
     def get_queryset(self):
         qs = Drawing.objects.filter(private=False)
@@ -41,7 +41,17 @@ class BaseListView(ListView):
         authors = Drawing.objects.values_list("user__username", flat=True)
         context["authors"] = list(dict.fromkeys(authors))
         context["mapbox_token"] = settings.MAPBOX_TOKEN
+        if self.request.htmx:
+            self.crypto = get_random_string(7)
+            context["crypto"] = self.crypto
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super(BaseListView, self).dispatch(request, *args, **kwargs)
+        if request.htmx:
+            dict = {"getMarkerCollection": self.crypto}
+            response["HX-Trigger-After-Swap"] = json.dumps(dict)
+        return response
 
 
 class AuthorDetailView(HxPageTemplateMixin, ListView):

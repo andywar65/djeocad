@@ -6,6 +6,10 @@ function map_init(map, options) {
     }
   }
 
+  function setLineStyle(feature) {
+    return {"color": feature.properties.popupContent.color, "weight": 5 };
+  }
+
   const base_map = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       attribution: '',
@@ -25,6 +29,7 @@ function map_init(map, options) {
     });
 
   let mk_layer = L.layerGroup().addTo(map);
+  let ln_layer = L.layerGroup().addTo(map);
 
   const baseMaps = {
     "Base": base_map,
@@ -32,7 +37,8 @@ function map_init(map, options) {
   };
 
   const overlayMaps = {
-    "Markers": mk_layer
+    "Markers": mk_layer,
+    "Lines": ln_layer
   };
 
   L.control.layers(baseMaps, overlayMaps).addTo(map);
@@ -41,13 +47,22 @@ function map_init(map, options) {
   let markers = L.geoJson(collection, {onEachFeature: onEachFeature});
   markers.addTo(mk_layer);
   map.fitBounds(markers.getBounds(), {padding: [30,30]});
+  collection = JSON.parse(document.getElementById("line_data").textContent);
+  let lines = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
+  lines.addTo(ln_layer);
 
   addEventListener("getMarkerCollection", function(evt){
     mk_layer.clearLayers();
+    ln_layer.clearLayers();
     let collection = JSON.parse(document.getElementById(evt.detail.value).textContent);
     let markers = L.geoJson(collection, {onEachFeature: onEachFeature});
     markers.addTo(mk_layer);
     map.fitBounds(markers.getBounds(), {padding: [30,30]});
   })
 
+  addEventListener("getLineCollection", function(evt){
+    let collection = JSON.parse(document.getElementById(evt.detail.value).textContent);
+    let lines = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
+    lines.addTo(ln_layer);
+  })
 }

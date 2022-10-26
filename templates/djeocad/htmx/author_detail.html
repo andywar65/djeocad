@@ -1,39 +1,40 @@
 {% load i18n %}
 
-<div class="card" id="nav-card">
-  <div class="card-header">
-    <h4 class="card-title">{% trans "Author"%}: {{ author.username }}</h4>
-  </div>
-  <div class="card-body">
-    {% if drawings %}
-      <h5>{% trans "Drawings"%}:</h5>
-      <ul>
-        {% for drawing in drawings %}
-          <li>
-            <a href="{% url 'djeocad:drawing_detail' username=drawing.user.username pk=drawing.id %}">
-              {{ drawing }}
-            </a>
-            <small>
-              {{ drawing.intro }}
-            </small>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>{% trans "No drawings yet" %}</p>
-    {% endif %}
-    <a class="link-primary" href="{% url 'djeocad:base_list' %}">
-      {% trans "All authors"%}
+<div class="card-header">
+  <h4 class="card-title">{% trans "Author"%}: {{ author.username }}</h4>
+</div>
+<div class="card-body">
+  {% if drawings %}
+    <h5>{% trans "Drawings"%}:</h5>
+    <ul>
+      {% for drawing in drawings %}
+        <li>
+          <a href="{% url 'djeocad:drawing_detail' username=drawing.user.username pk=drawing.id %}">
+            {{ drawing }}
+          </a>
+          <small>
+            {{ drawing.intro }}
+          </small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{% trans "No drawings yet" %}</p>
+  {% endif %}
+  <a class="link-primary"
+    hx-get="{% url 'djeocad:base_list' %}"
+    hx-target="#nav-card"
+    hx-push-url="true">
+    {% trans "All authors"%}
+  </a>
+</div>
+{% if user.is_staff %}
+  <div class="card-footer">
+    <a class="btn btn-primary" href="/admin/djeocad/drawing/add/">
+      {% trans "Add drawing" %}
     </a>
   </div>
-  {% if user.is_staff %}
-    <div class="card-footer">
-      <a class="btn btn-primary" href="/admin/djeocad/drawing/add/">
-        {% trans "Add drawing" %}
-      </a>
-    </div>
-  {% endif %}
-</div>
+{% endif %}
 {% if crypto %}
   {% load geojson_tags %}
   <script id="{{ crypto }}" type="application/json">{{ drawings|geojsonfeature:"popupContent"|safe }}</script>
