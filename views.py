@@ -2,9 +2,12 @@ import json
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
-from django.views.generic import ListView
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import DetailView, ListView
 
 from .models import Drawing
 
@@ -74,3 +77,25 @@ class AuthorDetailView(HxPageTemplateMixin, ListView):
             dict = {"getMarkerCollection": self.crypto}
             response["HX-Trigger-After-Swap"] = json.dumps(dict)
         return response
+
+
+class DrawingDetailView(DetailView):
+    model = Drawing
+    context_object_name = "drawing"
+    template_name = "djeocad/drawing_detail.html"
+
+    def get_object(self, queryset=None):
+        self.object = super(DrawingDetailView, self).get_object(queryset=None)
+        user = get_object_or_404(User, username=self.kwargs["username"])
+        if user != self.object.user:
+            raise Http404(_("Drawing does not belong to User"))
+        if self.object.private and self.object.user != self.request.user:
+            raise PermissionDenied
+        return self.object
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["author"] = self.object.user
+        context["mapbox_token"] = settings.MAPBOX_TOKEN
+        context["lines"] = self.object.drawing_layer.all()
+        return context

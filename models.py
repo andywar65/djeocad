@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from djgeojson.fields import GeometryCollectionField, PointField
 from filebrowser.base import FileObject
@@ -85,13 +86,13 @@ class Drawing(models.Model):
 
     @property
     def popupContent(self):
-        # url = reverse(
-        # "djeocad:drawing_detail",
-        # kwargs={"username": self.user.username, "pk": self.id},
-        # )
+        url = reverse(
+            "djeocad:drawing_detail",
+            kwargs={"username": self.user.username, "pk": self.id},
+        )
         title_str = '<h5><a href="%(url)s">%(title)s</a></h5>' % {
             "title": self.title,
-            "url": "#",
+            "url": url,
         }
         intro_str = "<small>%(intro)s</small>" % {"intro": self.intro}
         image = self.get_thumbnail_path()

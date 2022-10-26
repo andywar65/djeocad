@@ -10,7 +10,7 @@
       <ul>
         {% for drawing in drawings %}
           <li>
-            <a href="#">
+            <a href="{% url 'djeocad:drawing_detail' username=drawing.user.username pk=drawing.id %}">
               {{ drawing }}
             </a>
             <small>
