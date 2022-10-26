@@ -217,3 +217,10 @@ class Layer(models.Model):
 
     def __str__(self):
         return self.name + "-" + str(self.id)
+
+    @property
+    def popupContent(self):
+        title_str = "<h5>%(title)s</h5>" % {
+            "title": self.name,
+        }
+        return {"content": title_str, "color": self.color_field}

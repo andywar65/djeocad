@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<div class="card-header">
+  <h4 class="card-title">{% trans "Drawing"%}: {{ object.title }}</h4>
+</div>
+<div class="card-body">
+  <a class="link-primary"
+    hx-get="{% url 'djeocad:author_list' username=object.user.username %}"
+    hx-target="#nav-card"
+    hx-push-url="true">
+    {% trans "Back to author"%}
+  </a>
+</div>
+{% if user.is_staff %}
+  <div class="card-footer">
+    <a class="btn btn-primary" href="/admin/djeocad/drawing/{{ object.id }}/change/">
+      {% trans "Modify drawing" %}
+    </a>
+  </div>
+{% endif %}
+{% if m_crypto %}
+  {% load geojson_tags %}
+  <script id="{{ m_crypto }}" type="application/json">{{ object|geojsonfeature:"popupContent"|safe }}</script>
+  <script id="{{ l_crypto }}" type="application/json">{{ lines|geojsonfeature:"popupContent"|safe }}</script>
+{% endif %}

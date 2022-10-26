@@ -91,7 +91,6 @@ class AuthorListView(HxPageTemplateMixin, ListView):
 
 class DrawingDetailView(HxPageTemplateMixin, DetailView):
     model = Drawing
-    context_object_name = "drawing"
     template_name = "djeocad/htmx/drawing_detail.html"
 
     def get_object(self, queryset=None):
@@ -105,8 +104,8 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["author"] = self.object.user
         context["mapbox_token"] = settings.MAPBOX_TOKEN
+        context["drawings"] = self.object
         context["lines"] = self.object.drawing_layer.all()
         if self.request.htmx:
             self.m_crypto = get_random_string(7)
