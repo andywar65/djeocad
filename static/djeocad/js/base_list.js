@@ -38,7 +38,7 @@ function map_init(map, options) {
 
   const overlayMaps = {
     "Markers": mk_layer,
-    "Lines": ln_layer
+    "Drawings": ln_layer
   };
 
   L.control.layers(baseMaps, overlayMaps).addTo(map);
