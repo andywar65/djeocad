@@ -220,7 +220,8 @@ class Layer(models.Model):
 
     @property
     def popupContent(self):
-        title_str = "<h5>%(title)s</h5>" % {
+        title_str = "<h6>%(layer)s: %(title)s</h6>" % {
+            "layer": _("Layer"),
             "title": self.name,
         }
         return {"content": title_str, "color": self.color_field}
