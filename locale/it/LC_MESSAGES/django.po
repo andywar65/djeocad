@@ -1,0 +1,125 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-10-26 20:42+0200\n"
+"PO-Revision-Date: 2022-10-27 09:23+0200\n"
+"Last-Translator: andywar65 <andy.war1965@gmail.com>\n"
+"Language-Team: \n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#: .\djeocad\models.py:27 .\djeocad\templates\djeocad\htmx\author_list.html:4
+msgid "Author"
+msgstr "Autore"
+
+#: .\djeocad\models.py:30
+msgid "Name"
+msgstr "Nome"
+
+#: .\djeocad\models.py:31
+msgid "Name of the building plan"
+msgstr ""
+
+#: .\djeocad\models.py:34
+msgid "Description"
+msgstr "Descrizione"
+
+#: .\djeocad\models.py:36 .\djeocad\models.py:43
+msgid "Image"
+msgstr "Immagine"
+
+#: .\djeocad\models.py:49
+msgid "DXF file"
+msgstr "File DXF"
+
+#: .\djeocad\models.py:60
+msgid "Location"
+msgstr "Posizione"
+
+#: .\djeocad\models.py:62
+msgid "Rotation"
+msgstr "Rotazione"
+
+#: .\djeocad\models.py:66
+msgid "Private drawing"
+msgstr "Disegno privato"
+
+#: .\djeocad\models.py:75 .\djeocad\models.py:205
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:5
+msgid "Drawing"
+msgstr "Disegno"
+
+#: .\djeocad\models.py:76 .\djeocad\templates\djeocad\htmx\author_list.html:8
+msgid "Drawings"
+msgstr "Disegni"
+
+#: .\djeocad\models.py:208
+msgid "Layer name"
+msgstr "Nome del livello"
+
+#: .\djeocad\models.py:212
+msgid "Elements"
+msgstr "Elementi"
+
+#: .\djeocad\models.py:215
+msgid "Layer"
+msgstr "Livello"
+
+#: .\djeocad\models.py:216
+msgid "Layers"
+msgstr "Livelli"
+
+#: .\djeocad\templates\djeocad\htmx\author_list.html:22
+msgid "No drawings yet"
+msgstr "Ancora nessun disegno"
+
+#: .\djeocad\templates\djeocad\htmx\author_list.html:28
+msgid "All authors"
+msgstr "Tutti gli autori"
+
+#: .\djeocad\templates\djeocad\htmx\author_list.html:34
+#: .\djeocad\templates\djeocad\htmx\base_list.html:28
+msgid "Add drawing"
+msgstr "Aggiungi disegno"
+
+#: .\djeocad\templates\djeocad\htmx\base_list.html:4
+msgid "GeoCAD"
+msgstr ""
+
+#: .\djeocad\templates\djeocad\htmx\base_list.html:7
+msgid "Authors"
+msgstr "Autori"
+
+#: .\djeocad\templates\djeocad\htmx\base_list.html:22
+msgid "No authors yet"
+msgstr "Ancora nessun autore"
+
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:14
+msgid "Back to author"
+msgstr "Torna agli autori"
+
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:20
+msgid "Modify drawing"
+msgstr "Modifica disegno"
+
+#: .\djeocad\urls.py:9
+msgid "author/<username>/"
+msgstr "autore/<username>/"
+
+#: .\djeocad\urls.py:11
+msgid "author/<username>/drawing/<pk>/"
+msgstr "autore/<username>/disegno/<pk>/"
+
+#: .\djeocad\views.py:100
+msgid "Drawing does not belong to User"
+msgstr "Il disegno non appartiene all'autore"
