@@ -77,3 +77,10 @@ class DjeocadModelTest(TestCase):
         y = Layer.objects.get(name="Layer")
         self.assertEquals(y.__str__(), "Layer-" + str(y.id))
         print("\n-Tested layer __str__")
+
+    def test_get_thumbnail_path(self):
+        d = Drawing.objects.get(title="Foo")
+        self.assertEquals(
+            d.get_thumbnail_path(), "/media/_versions/images/drawing/image_popup.jpg"
+        )
+        print("\n-Tested drawing get_thumbnail_path")
