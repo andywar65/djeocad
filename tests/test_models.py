@@ -1,9 +1,8 @@
-#  from pathlib import Path
+from pathlib import Path
 
-#  from django.conf import settings
+from django.conf import settings
 from django.contrib.auth import get_user_model
-
-#  from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 
 from djeocad.models import Drawing, Layer
@@ -11,7 +10,9 @@ from djeocad.models import Drawing, Layer
 User = get_user_model()
 
 
-@override_settings(USE_I18N=False)
+@override_settings(
+    USE_I18N=False, MEDIA_ROOT=Path(settings.MEDIA_ROOT).joinpath("temp")
+)
 class DjeocadModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -23,12 +24,21 @@ class DjeocadModelTest(TestCase):
             email="andy@war.com",
         )
         point = '{"type": "Point","coordinates": [12.493652,41.866288]}'
-        d = Drawing.objects.create(
+        d = Drawing(
             user_id=u.uuid,
             title="Foo",
             geom=point,
             dxf="dummy/file.dxf",
         )
+        img_path = Path(settings.STATIC_ROOT).joinpath("djeocad/tests/image.jpg")
+        with open(img_path, "rb") as file:
+            content = file.read()
+        d.image = SimpleUploadedFile("image.jpg", content, "image/jpg")
+        dxf_path = Path(settings.STATIC_ROOT).joinpath("djeocad/tests/test.dxf")
+        with open(dxf_path, "rb") as file:
+            content2 = file.read()
+        d.dxf = SimpleUploadedFile("test.dxf", content2, "file/dxf")
+        d.save()
         geometry = """{
                         "type": "GeometryCollection",
                         "geometries": [
@@ -48,6 +58,17 @@ class DjeocadModelTest(TestCase):
                         ]
                     }"""
         Layer.objects.create(drawing_id=d.id, name="Layer", geom=geometry)
+
+    def tearDown(self):
+        """Checks existing files, then removes them"""
+        path = Path(settings.MEDIA_ROOT).joinpath("uploads/images/drawing/")
+        list = [e for e in path.iterdir() if e.is_file()]
+        for file in list:
+            Path(file).unlink()
+        path = Path(settings.MEDIA_ROOT).joinpath("uploads/djeocad/dxf/")
+        list = [e for e in path.iterdir() if e.is_file()]
+        for file in list:
+            Path(file).unlink()
 
     def test_model__str__(self):
         d = Drawing.objects.get(title="Foo")

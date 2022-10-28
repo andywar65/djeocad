@@ -1,3 +1,4 @@
+import json
 from math import cos, degrees, fabs, radians, sin
 from pathlib import Path
 
@@ -125,6 +126,9 @@ class Drawing(models.Model):
             self.extract_dxf()
 
     def transform_vertices(self, vert):
+        #  following conditional for test to work
+        if isinstance(self.geom, str):
+            self.geom = json.loads(self.geom)
         trans = []
         gy = 1 / (6371 * 1000)
         gx = 1 / (6371 * 1000 * fabs(cos(radians(self.geom["coordinates"][1]))))
