@@ -13,3 +13,18 @@ In your project root type `git clone https://github.com/andywar65/djeocad`, add 
 }`
 If you want a satellite map layer you need a [Mapbox](https://www.mapbox.com/) token adding this to `settings.py` (I use `environs` for secrets):
 `MAPBOX_TOKEN = env.str("MAPBOX_TOKEN")`
+## Usage
+Django-geocad has two models, `Drawing` and `Layer`. Creation, update and deletion of models happen
+in admin, so you will need staff permission to perform these tasks. A `GeoCAD Manager` permission
+group is created at migration, but at the moment the feature is not implemented.
+To create a `Drawing` you will need a `DXF file` in ASCII format. `DXF` is a drawing exchange
+format widely used in `CAD` applications.
+If `geodata` is embedded in the file, it will be ignored: this app is suitable for small drawings,
+representing a building, a group of buildings or a small neighborhood. To geolocate the drawing you just need to know where your `World Coordinate System` origin (0,0,0) is located. A good position for the `WCS` origin could be the cornerstone of a building, or another geographic landmark close to
+the items of the drawing.
+Check also the rotation of the `Y axis` with respect to the `True North`: it is typical to orient
+the drawings most conveniently for drafting purposes, unrespectful of True North. Please note that positive angles (from Y axis to True North) are counter clockwise.
+So back to our admin panel, let's add a Drawing. You will have to select the `Author` of the drawing,
+a `Title`, a short description, an image and the `DXF file`. In the map select the location of your
+`WCS origin`, then enter the `Rotation` (angle with respect to True North). Eventually check `Private` to prevent other users from viewing your drawing.
+Press the `Save and continue` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `LINE` and `LWPOLYLINE` entities are visible on the map panel.

@@ -28,7 +28,6 @@ class DjeocadModelTest(TestCase):
             user_id=u.uuid,
             title="Foo",
             geom=point,
-            dxf="dummy/file.dxf",
         )
         img_path = Path(settings.STATIC_ROOT).joinpath("djeocad/tests/image.jpg")
         with open(img_path, "rb") as file:

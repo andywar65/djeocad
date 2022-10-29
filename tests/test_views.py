@@ -6,7 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from djeocad.models import Drawing, Layer
+from djeocad.models import Drawing
 
 User = get_user_model()
 
@@ -34,7 +34,6 @@ class DjeocadViewTest(TestCase):
             user_id=u.uuid,
             title="Foo",
             geom=point,
-            dxf="dummy/file.dxf",
         )
         img_path = Path(settings.STATIC_ROOT).joinpath("djeocad/tests/image.jpg")
         with open(img_path, "rb") as file:
@@ -45,25 +44,6 @@ class DjeocadViewTest(TestCase):
             content2 = file.read()
         d.dxf = SimpleUploadedFile("test.dxf", content2, "file/dxf")
         d.save()
-        geometry = """{
-                        "type": "GeometryCollection",
-                        "geometries": [
-                            {
-                                "type": "LineString",
-                                "coordinates": [
-                                    [
-                                        12.476042247774025,
-                                        41.9061408746708
-                                    ],
-                                    [
-                                        12.476845338429273,
-                                        41.90596205712406
-                                    ]
-                                ]
-                            }
-                        ]
-                    }"""
-        Layer.objects.create(drawing_id=d.id, name="Layer", geom=geometry)
 
     def tearDown(self):
         """Checks existing files, then removes them"""
