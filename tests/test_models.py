@@ -104,3 +104,4 @@ class DjeocadModelTest(TestCase):
             y.popupContent,
             {"color": "#FF0000", "content": "<h6>Livello: Layer</h6>"},
         )
+        print("\n-Tested layer popupContent")

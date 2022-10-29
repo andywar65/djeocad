@@ -109,3 +109,22 @@ class DjeocadViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 404)
         print("\n-Tested drawing detail wrong author 404")
+
+    def test_list_detail_template_used(self):
+        u = User.objects.get(username="andy.war65")
+        d = Drawing.objects.get(title="Foo")
+        response = self.client.get(reverse("djeocad:base_list"))
+        self.assertTemplateUsed(response, "djeocad/base_list.html")
+        print("\n-Test base list template")
+        response = self.client.get(
+            reverse("djeocad:author_list", kwargs={"username": u.username})
+        )
+        self.assertTemplateUsed(response, "djeocad/author_list.html")
+        print("\n-Tested author list template")
+        response = self.client.get(
+            reverse(
+                "djeocad:drawing_detail", kwargs={"username": u.username, "pk": d.id}
+            )
+        )
+        self.assertTemplateUsed(response, "djeocad/drawing_detail.html")
+        print("\n-Tested drawing detail template")
