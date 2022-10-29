@@ -99,3 +99,8 @@ class DjeocadModelTest(TestCase):
             },
         )
         print("\n-Tested drawing popupContent")
+        y = Layer.objects.get(name="Layer")
+        self.assertEquals(
+            y.popupContent,
+            {"color": "#FF0000", "content": "<h6>Livello: Layer</h6>"},
+        )
