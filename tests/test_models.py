@@ -65,6 +65,10 @@ class DjeocadModelTest(TestCase):
         list = [e for e in path.iterdir() if e.is_file()]
         for file in list:
             Path(file).unlink()
+        path = Path(settings.MEDIA_ROOT).joinpath("_versions/images/drawing/")
+        list = [e for e in path.iterdir() if e.is_file()]
+        for file in list:
+            Path(file).unlink()
         path = Path(settings.MEDIA_ROOT).joinpath("uploads/djeocad/dxf/")
         list = [e for e in path.iterdir() if e.is_file()]
         for file in list:
@@ -84,3 +88,14 @@ class DjeocadModelTest(TestCase):
             d.get_thumbnail_path(), "/media/_versions/images/drawing/image_popup.jpg"
         )
         print("\n-Tested drawing get_thumbnail_path")
+
+    def test_popupContent(self):
+        d = Drawing.objects.get(title="Foo")
+        self.assertEquals(
+            d.popupContent,
+            {
+                "content": '<h5><a href="/it/geocad/autore/andy.war65/disegno/1/">'
+                + 'Foo</a></h5><img src="/media/"><small>None</small>'
+            },
+        )
+        print("\n-Tested drawing popupContent")
