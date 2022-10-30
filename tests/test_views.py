@@ -44,6 +44,15 @@ class DjeocadViewTest(TestCase):
             content2 = file.read()
         d.dxf = SimpleUploadedFile("test.dxf", content2, "file/dxf")
         d.save()
+        dp = Drawing(
+            user_id=u.uuid,
+            title="Bar",
+            geom=point,
+            image=SimpleUploadedFile("image.jpg", content, "image/jpg"),
+            dxf=SimpleUploadedFile("test.dxf", content2, "file/dxf"),
+            private=True,
+        )
+        dp.save()
 
     def tearDown(self):
         """Checks existing files, then removes them"""
@@ -89,6 +98,28 @@ class DjeocadViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 404)
         print("\n-Tested drawing detail wrong author 404")
+
+    def test_private_drawing_by_author_ok(self):
+        self.client.login(username="andy.war65", password="P4s5W0r6")
+        d = Drawing.objects.get(title="Bar")
+        response = self.client.get(
+            reverse(
+                "djeocad:drawing_detail", kwargs={"username": "andy.war65", "pk": d.id}
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        print("\n-Tested private drawing by author ok")
+
+    def test_private_drawing_by_not_author_fail(self):
+        self.client.login(username="not_author", password="P4s5W0r6")
+        d = Drawing.objects.get(title="Bar")
+        response = self.client.get(
+            reverse(
+                "djeocad:drawing_detail", kwargs={"username": "andy.war65", "pk": d.id}
+            )
+        )
+        self.assertEqual(response.status_code, 403)
+        print("\n-Tested private drawing by not author fail")
 
     def test_list_detail_template_used(self):
         u = User.objects.get(username="andy.war65")
