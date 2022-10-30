@@ -31,4 +31,9 @@ Press the `Save and continue` button. If all goes well the `DXF file` will be ex
 ## Outside of Admin
 At this stage only three frontend views are implemented: `List of all drawings`, `List by author` and `Drawing Detail`. First two views show drawings as markers on the map, last one shows a drawing in detail, with layers displayed on the map. To access the `List of all drawings` search on the navigation bar for `Projects/GeoCAD`. Note that `private` drawings will be hidden from non authors in all views. Note also that all entities on a layer inherit layer color.
 ## Improvements
-In next versions I will try to add these improvements: * Download drawings as DXF * Full CRUD on frontend * Ability to switch single layers on/off in drawing detail view * Extract other entity types (CIRCLE) * Extract blocks
+In next versions I will try to add these improvements:
+* Download drawings as DXF
+* Full CRUD on frontend
+* Ability to switch single layers on/off in drawing detail view
+* Extract other entity types (CIRCLE etc.)
+* Extract blocks
