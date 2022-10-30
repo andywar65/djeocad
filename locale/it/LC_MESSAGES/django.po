@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-26 20:42+0200\n"
-"PO-Revision-Date: 2022-10-27 09:23+0200\n"
+"POT-Creation-Date: 2022-10-30 18:33+0100\n"
+"PO-Revision-Date: 2022-10-30 18:35+0100\n"
 "Last-Translator: andywar65 <andy.war1965@gmail.com>\n"
 "Language-Team: \n"
 "Language: it\n"
@@ -18,64 +18,68 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: .\djeocad\models.py:27 .\djeocad\templates\djeocad\htmx\author_list.html:4
+#: .\djeocad\apps.py:10
+msgid "GeoCAD Manager"
+msgstr ""
+
+#: .\djeocad\models.py:28 .\djeocad\templates\djeocad\htmx\author_list.html:4
 msgid "Author"
 msgstr "Autore"
 
-#: .\djeocad\models.py:30
+#: .\djeocad\models.py:31
 msgid "Name"
 msgstr "Nome"
 
-#: .\djeocad\models.py:31
-msgid "Name of the building plan"
-msgstr ""
+#: .\djeocad\models.py:32
+msgid "Name of the drawing"
+msgstr "Nome del disegno"
 
-#: .\djeocad\models.py:34
+#: .\djeocad\models.py:35
 msgid "Description"
 msgstr "Descrizione"
 
-#: .\djeocad\models.py:36 .\djeocad\models.py:43
+#: .\djeocad\models.py:37 .\djeocad\models.py:44
 msgid "Image"
 msgstr "Immagine"
 
-#: .\djeocad\models.py:49
+#: .\djeocad\models.py:50
 msgid "DXF file"
 msgstr "File DXF"
 
-#: .\djeocad\models.py:60
+#: .\djeocad\models.py:61
 msgid "Location"
 msgstr "Posizione"
 
-#: .\djeocad\models.py:62
+#: .\djeocad\models.py:63
 msgid "Rotation"
 msgstr "Rotazione"
 
-#: .\djeocad\models.py:66
+#: .\djeocad\models.py:67
 msgid "Private drawing"
 msgstr "Disegno privato"
 
-#: .\djeocad\models.py:75 .\djeocad\models.py:205
+#: .\djeocad\models.py:76 .\djeocad\models.py:209
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:5
 msgid "Drawing"
 msgstr "Disegno"
 
-#: .\djeocad\models.py:76 .\djeocad\templates\djeocad\htmx\author_list.html:8
+#: .\djeocad\models.py:77 .\djeocad\templates\djeocad\htmx\author_list.html:8
 msgid "Drawings"
 msgstr "Disegni"
 
-#: .\djeocad\models.py:208
+#: .\djeocad\models.py:212
 msgid "Layer name"
 msgstr "Nome del livello"
 
-#: .\djeocad\models.py:212
+#: .\djeocad\models.py:216
 msgid "Elements"
 msgstr "Elementi"
 
-#: .\djeocad\models.py:215
+#: .\djeocad\models.py:219 .\djeocad\models.py:228
 msgid "Layer"
 msgstr "Livello"
 
-#: .\djeocad\models.py:216
+#: .\djeocad\models.py:220
 msgid "Layers"
 msgstr "Livelli"
 
@@ -106,7 +110,7 @@ msgstr "Ancora nessun autore"
 
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:14
 msgid "Back to author"
-msgstr "Torna agli autori"
+msgstr "Torna all'autore"
 
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:20
 msgid "Modify drawing"
@@ -122,4 +126,4 @@ msgstr "autore/<username>/disegno/<pk>/"
 
 #: .\djeocad\views.py:100
 msgid "Drawing does not belong to User"
-msgstr "Il disegno non appartiene all'autore"
+msgstr "Il disegno non appartiene all'utente"

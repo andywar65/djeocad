@@ -1,4 +1,4 @@
-# django-geocad
+# django-geocad 1.1.0
 Django app that imports CAD drawings in Leaflet maps
 ## Overview
 Show CAD drawings with no geo location in interactive web maps. Change / add layers to drawings, change / add elements to layers.
@@ -27,4 +27,8 @@ the drawings most conveniently for drafting purposes, unrespectful of True North
 So back to our admin panel, let's add a Drawing. You will have to select the `Author` of the drawing,
 a `Title`, a short description, an image and the `DXF file`. In the map select the location of your
 `WCS origin`, then enter the `Rotation` (angle with respect to True North). Eventually check `Private` to prevent other users from viewing your drawing.
-Press the `Save and continue` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `LINE` and `LWPOLYLINE` entities are visible on the map panel.
+Press the `Save and continue` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `LINE` and `LWPOLYLINE` entities are visible on the map panel. It is possible to change layer name and layer entities.
+## Outside of Admin
+At this stage only three frontend views are implemented: `List of all drawings`, `List by author` and `Drawing Detail`. First two views show drawings as markers on the map, last one shows a drawing in detail, with layers displayed on the map. To access the `List of all drawings` search on the navigation bar for `Projects/GeoCAD`. Note that `private` drawings will be hidden from non authors in all views. Note also that all entities on a layer inherit layer color.
+## Improvements
+In next versions I will try to add these improvements: * Download drawings as DXF * Full CRUD on frontend * Ability to switch single layers on/off in drawing detail view * Extract other entity types (CIRCLE) * Extract blocks

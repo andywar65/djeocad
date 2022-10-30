@@ -29,7 +29,7 @@ class Drawing(models.Model):
     )
     title = models.CharField(
         _("Name"),
-        help_text=_("Name of the building plan"),
+        help_text=_("Name of the drawing"),
         max_length=50,
     )
     intro = models.CharField(_("Description"), null=True, max_length=200)
