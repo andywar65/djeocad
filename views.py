@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
@@ -124,3 +124,17 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
             }
             response["HX-Trigger-After-Swap"] = json.dumps(dict)
         return response
+
+
+def drawing_download(request, pk):
+    drawing = get_object_or_404(Drawing, id=pk)
+    if drawing.private:
+        if request.user != drawing.user:
+            raise PermissionDenied
+    # Create the HttpResponse object with the appropriate header.
+    response = HttpResponse(content_type="text/dxf")
+    response["Content-Disposition"] = 'attachment; filename="%(name)s.dxf"' % {
+        "name": drawing.title,
+    }
+
+    return response
