@@ -186,6 +186,15 @@ class Drawing(models.Model):
                         "coordinates": vert,
                     }
                 )
+        # extract circles
+        for e in msp.query("CIRCLE"):
+            vert = self.transform_vertices(e.flattening(0.1))
+            layer_table[e.dxf.layer]["geometries"].append(
+                {
+                    "type": "Polygon",
+                    "coordinates": [vert],
+                }
+            )
         # create Layers
         for name, layer in layer_table.items():
             if not layer["geometries"] == []:
