@@ -1,5 +1,6 @@
 import json
 
+import ezdxf
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
@@ -127,14 +128,19 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
 
 
 def drawing_download(request, pk):
-    drawing = get_object_or_404(Drawing, id=pk)
-    if drawing.private:
-        if request.user != drawing.user:
+    drw = get_object_or_404(Drawing, id=pk)
+    if drw.private:
+        if request.user != drw.user:
             raise PermissionDenied
+    doc = ezdxf.new()
+    layers = drw.drawing_layer.all()
+    for layer in layers:
+        doc.layers.add(name=layer.name, color=7)
+        # entity.dxf.true_color = 0xFF0000
     # Create the HttpResponse object with the appropriate header.
     response = HttpResponse(content_type="text/dxf")
     response["Content-Disposition"] = 'attachment; filename="%(name)s.dxf"' % {
-        "name": drawing.title,
+        "name": drw.title,
     }
 
     return response
