@@ -228,6 +228,8 @@ class Drawing(models.Model):
                 doc_layer = doc.layers.get("0")
             color = ImageColor.getcolor(drw_layer.color_field, "RGB")
             doc_layer.rgb = color
+        path = Path(settings.MEDIA_ROOT).joinpath("uploads/djeocad/download.dxf")
+        doc.saveas(filename=path, encoding="utf-8", fmt="asc")
 
 
 class Layer(models.Model):
