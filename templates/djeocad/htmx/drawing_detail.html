@@ -7,12 +7,21 @@
 <img src="{% version object.fb_image 'medium' %}" class="card-img-top" alt="{{ object.intro }}">
 <div class="card-body">
   <p class="card-text">{{ object.intro }}</p>
-  <a class="link-primary"
-    hx-get="{% url 'djeocad:author_list' username=object.user.username %}"
-    hx-target="#nav-card"
-    hx-push-url="true">
-    {% trans "Back to author"%}
-  </a>
+  <ul>
+    <li>
+      <a class="link-primary"
+        hx-get="{% url 'djeocad:author_list' username=object.user.username %}"
+        hx-target="#nav-card"
+        hx-push-url="true">
+        {% trans "Back to author"%}
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'djeocad:drawing_download' pk=object.id %}">
+        {% trans "Download drawing"%}
+      </a>
+    </li>
+  </ul>
 </div>
 {% if user.is_staff %}
   <div class="card-footer">
