@@ -126,7 +126,7 @@ class Drawing(models.Model):
             self.drawing_layer.all().delete()
             self.extract_dxf()
 
-    def transform_vertices(self, vert):
+    def xy2latlong(self, vert):
         #  following conditional for test to work
         if isinstance(self.geom, str):
             self.geom = json.loads(self.geom)
@@ -162,7 +162,7 @@ class Drawing(models.Model):
         # extract lines
         for e in msp.query("LINE"):
             points = [e.dxf.start, e.dxf.end]
-            vert = self.transform_vertices(points)
+            vert = self.xy2latlong(points)
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "LineString",
@@ -171,7 +171,7 @@ class Drawing(models.Model):
             )
         # extract polylines
         for e in msp.query("LWPOLYLINE"):
-            vert = self.transform_vertices(e.vertices_in_wcs())
+            vert = self.xy2latlong(e.vertices_in_wcs())
             if e.is_closed:
                 vert.append(vert[0])
                 layer_table[e.dxf.layer]["geometries"].append(
@@ -189,7 +189,7 @@ class Drawing(models.Model):
                 )
         # extract circles
         for e in msp.query("CIRCLE"):
-            vert = self.transform_vertices(e.flattening(0.1))
+            vert = self.xy2latlong(e.flattening(0.1))
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "Polygon",
@@ -198,7 +198,7 @@ class Drawing(models.Model):
             )
         # extract arcs
         for e in msp.query("ARC"):
-            vert = self.transform_vertices(e.flattening(0.1))
+            vert = self.xy2latlong(e.flattening(0.1))
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "LineString",
@@ -218,8 +218,21 @@ class Drawing(models.Model):
                     },
                 )
 
+    def latlong2xy(self, vert):
+        trans = []
+        for v in vert:
+            x = (
+                -6371000
+                * (radians(self.geom["coordinates"][0] - v[0]))
+                * cos(radians(self.geom["coordinates"][1]))
+            )
+            y = -6371000 * (radians(self.geom["coordinates"][1] - v[1]))  # verify
+            trans.append((x, y))
+        return trans
+
     def get_file_to_download(self):
         doc = ezdxf.new()
+        msp = doc.modelspace()
         drw_layers = self.drawing_layer.all()
         for drw_layer in drw_layers:
             if drw_layer.name != "0":
@@ -228,6 +241,16 @@ class Drawing(models.Model):
                 doc_layer = doc.layers.get("0")
             color = ImageColor.getcolor(drw_layer.color_field, "RGB")
             doc_layer.rgb = color
+            geometries = drw_layer.geom["geometries"]
+            for geom in geometries:
+                if geom["type"] == "Polygon":
+                    vert = self.latlong2xy(geom["coordinates"][0])
+                    msp.add_lwpolyline(
+                        vert, dxfattribs={"layer": drw_layer.name}
+                    ).close()
+                else:
+                    vert = self.latlong2xy(geom["coordinates"])
+                    msp.add_lwpolyline(vert, dxfattribs={"layer": drw_layer.name})
         path = Path(settings.MEDIA_ROOT).joinpath("uploads/djeocad/download.dxf")
         doc.saveas(filename=path, encoding="utf-8", fmt="asc")
 
