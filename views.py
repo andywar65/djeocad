@@ -1,6 +1,5 @@
 import json
 
-import ezdxf
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
@@ -9,7 +8,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
-from PIL import ImageColor
 
 from .models import Drawing
 
@@ -133,15 +131,7 @@ def drawing_download(request, pk):
     if drw.private:
         if request.user != drw.user:
             raise PermissionDenied
-    doc = ezdxf.new()
-    drw_layers = drw.drawing_layer.all()
-    for drw_layer in drw_layers:
-        if drw_layer.name != "0":
-            doc_layer = doc.layers.add(drw_layer.name)
-        else:
-            doc_layer = doc.layers.get("0")
-        color = ImageColor.getcolor(drw_layer.color_field, "RGB")
-        doc_layer.rgb = color
+    drw.get_file_to_download()
     # Create the HttpResponse object with the appropriate header.
     response = HttpResponse(content_type="text/dxf")
     response["Content-Disposition"] = 'attachment; filename="%(name)s.dxf"' % {

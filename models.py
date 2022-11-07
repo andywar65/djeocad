@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from djgeojson.fields import GeometryCollectionField, PointField
 from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
+from PIL import ImageColor
 
 from .utils import cad2hex, check_wide_image
 
@@ -216,6 +217,17 @@ class Drawing(models.Model):
                         "type": "GeometryCollection",
                     },
                 )
+
+    def get_file_to_download(self):
+        doc = ezdxf.new()
+        drw_layers = self.drawing_layer.all()
+        for drw_layer in drw_layers:
+            if drw_layer.name != "0":
+                doc_layer = doc.layers.add(drw_layer.name)
+            else:
+                doc_layer = doc.layers.get("0")
+            color = ImageColor.getcolor(drw_layer.color_field, "RGB")
+            doc_layer.rgb = color
 
 
 class Layer(models.Model):
