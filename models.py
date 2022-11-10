@@ -256,8 +256,10 @@ class Drawing(models.Model):
                 else:
                     vert = self.latlong2xy(geom["coordinates"])
                     msp.add_lwpolyline(vert, dxfattribs={"layer": drw_layer.name})
-        path = Path(settings.MEDIA_ROOT).joinpath("uploads/djeocad/download.dxf")
-        doc.saveas(filename=path, encoding="utf-8", fmt="asc")
+        doc.saveas(filename=self.dxf.path, encoding="utf-8", fmt="asc")
+        self.needs_refresh = False
+        self.rotation = 0
+        super(Drawing, self).save()
 
 
 class Layer(models.Model):
