@@ -1,10 +1,9 @@
 import json
-from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
-from django.http import FileResponse, Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
@@ -132,15 +131,9 @@ def drawing_download(request, pk):
     if drw.private:
         if request.user != drw.user:
             raise PermissionDenied
-    drw.get_file_to_download()
-    file = Path(settings.MEDIA_ROOT).joinpath("uploads/djeocad/download.dxf")
-    response = FileResponse(
-        open(file, "rb"),
-        as_attachment=True,
-        filename="%(name)s.dxf"
-        % {
-            "name": drw.title,
-        },
-    )
+    if drw.needs_refresh:
+        drw.get_file_to_download()
+    response = HttpResponse(drw.dxf, content_type="text/plain")
+    response["Content-Disposition"] = "attachment; filename=%s.dxf" % drw.title
 
     return response
