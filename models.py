@@ -68,6 +68,11 @@ class Drawing(models.Model):
         _("Private drawing"),
         default=False,
     )
+    needs_refresh = models.BooleanField(
+        _("Refresh DXF file from layers"),
+        default=True,
+        editable=False,
+    )
 
     __original_dxf = None
     __original_geom = None
