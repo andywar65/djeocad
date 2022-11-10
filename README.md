@@ -31,6 +31,7 @@ Press the `Save and continue` button. If all goes well the `DXF file` will be ex
 ## Outside of Admin
 At this stage only three frontend views are implemented: `List of all drawings`, `List by author` and `Drawing Detail`. First two views show drawings as markers on the map, last one shows a drawing in detail, with layers displayed on the map. To access the `List of all drawings` search on the navigation bar for `Projects/GeoCAD`. Note that `private` drawings will be hidden from non authors in all views. Note also that all entities on a layer inherit layer color.
 In `Drawing Detail` view it is possible to download back the (eventually modified) `DXF file`. Please note that `True North` will be respected, `ARC` and `CIRCLE` entities will be approximated to `LWPOLYLINES`, and `Layers` will have `True Colors` instead of `ACI Colors`.
+Beware that if layers have been modified and a download is performed, the stored file will be replaced too, and rotation will be set to zero.
 ## Changelog v1.2.0
 * Extract ARC and CIRCLE entities
 * Download drawings as DXF
