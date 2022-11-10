@@ -291,3 +291,9 @@ class Layer(models.Model):
             "title": self.name,
         }
         return {"content": title_str, "color": self.color_field}
+
+    def save(self, *args, **kwargs):
+        super(Layer, self).save(*args, **kwargs)
+        if not self.drawing.needs_refresh:
+            self.drawing.needs_refresh = True
+            super(Drawing, self.drawing).save()
