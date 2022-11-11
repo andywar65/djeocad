@@ -128,7 +128,7 @@ class Drawing(models.Model):
             or self.__original_geom != self.geom
             or self.__original_rotation != self.rotation
         ):
-            self.drawing_layer.all().delete()
+            self.related_layers.all().delete()
             self.extract_dxf()
 
     def xy2latlong(self, vert):
@@ -238,7 +238,7 @@ class Drawing(models.Model):
     def get_file_to_download(self):
         doc = ezdxf.new()
         msp = doc.modelspace()
-        drw_layers = self.drawing_layer.all()
+        drw_layers = self.related_layers.all()
         for drw_layer in drw_layers:
             if drw_layer.name != "0":
                 doc_layer = doc.layers.add(drw_layer.name)
@@ -267,7 +267,7 @@ class Layer(models.Model):
     drawing = models.ForeignKey(
         Drawing,
         on_delete=models.CASCADE,
-        related_name="drawing_layer",
+        related_name="related_layers",
         verbose_name=_("Drawing"),
     )
     name = models.CharField(
@@ -276,12 +276,19 @@ class Layer(models.Model):
     )
     color_field = ColorField(default="#FF0000")
     geom = GeometryCollectionField(_("Elements"))
+    is_block = models.BooleanField(
+        _("Block definition"),
+        default=False,
+        editable=False,
+    )
 
     class Meta:
         verbose_name = _("Layer")
         verbose_name_plural = _("Layers")
 
     def __str__(self):
+        if self.is_block:
+            return "block-" + self.name + "-" + str(self.id)
         return self.name + "-" + str(self.id)
 
     @property
@@ -297,3 +304,32 @@ class Layer(models.Model):
         if not self.drawing.needs_refresh:
             self.drawing.needs_refresh = True
             super(Drawing, self.drawing).save()
+
+
+class Insertion(models.Model):
+
+    block = models.ForeignKey(
+        Layer,
+        on_delete=models.CASCADE,
+        related_name="instances",
+        verbose_name=_("Block"),
+    )
+    layer = models.ForeignKey(
+        Layer,
+        on_delete=models.CASCADE,
+        related_name="insertions",
+        verbose_name=_("Layer"),
+    )
+    geom = PointField(_("Location"))
+    rotation = models.FloatField(
+        _("Rotation"),
+        default=0,
+    )
+    x_scale = models.FloatField(
+        _("X scale"),
+        default=1,
+    )
+    y_scale = models.FloatField(
+        _("Y scale"),
+        default=1,
+    )

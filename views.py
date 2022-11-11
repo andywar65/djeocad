@@ -105,7 +105,7 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["mapbox_token"] = settings.MAPBOX_TOKEN
-        context["lines"] = self.object.drawing_layer.all()
+        context["lines"] = self.object.related_layers.all()
         if self.request.htmx:
             self.m_crypto = get_random_string(7)
             context["m_crypto"] = self.m_crypto
