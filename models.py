@@ -271,11 +271,11 @@ class Layer(models.Model):
         verbose_name=_("Drawing"),
     )
     name = models.CharField(
-        _("Layer name"),
+        _("Layer / block name"),
         max_length=50,
     )
     color_field = ColorField(default="#FF0000")
-    geom = GeometryCollectionField(_("Elements"))
+    geom = GeometryCollectionField(_("Entities"))
     is_block = models.BooleanField(
         _("Block definition"),
         default=False,
