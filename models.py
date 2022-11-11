@@ -159,8 +159,12 @@ class Drawing(models.Model):
         # prepare layer table
         layer_table = {}
         for layer in doc.layers:
+            if layer.rgb:
+                color = cad2hex(layer.rgb)
+            else:
+                color = cad2hex(layer.color)
             layer_table[layer.dxf.name] = {
-                "color": cad2hex(layer.color),
+                "color": color,
                 "linetype": layer.dxf.linetype,
                 "geometries": [],
             }
