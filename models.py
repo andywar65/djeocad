@@ -77,6 +77,7 @@ class Drawing(models.Model):
     __original_dxf = None
     __original_geom = None
     __original_rotation = None
+    gy = 1 / (6371 * 1000)
 
     class Meta:
         verbose_name = _("Drawing")
@@ -132,12 +133,8 @@ class Drawing(models.Model):
             self.extract_dxf()
 
     def xy2latlong(self, vert):
-        #  following conditional for test to work
-        if isinstance(self.geom, str):
-            self.geom = json.loads(self.geom)
         trans = []
-        gy = 1 / (6371 * 1000)
-        gx = 1 / (6371 * 1000 * fabs(cos(radians(self.geom["coordinates"][1]))))
+        gx = self.gy * 1 / (fabs(cos(radians(self.geom["coordinates"][1]))))
         for v in vert:
             # use temp variables
             x = v[0]
@@ -149,11 +146,14 @@ class Drawing(models.Model):
             # objects are very small with respect to earth, so our transformation
             # from CAD x,y coords to latlong is approximate
             long = self.geom["coordinates"][0] + degrees(xr * gx)
-            lat = self.geom["coordinates"][1] + degrees(yr * gy)
+            lat = self.geom["coordinates"][1] + degrees(yr * self.gy)
             trans.append([long, lat])
         return trans
 
     def extract_dxf(self):
+        #  following conditional for test to work
+        if isinstance(self.geom, str):
+            self.geom = json.loads(self.geom)
         doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
         msp = doc.modelspace()
         # prepare layer table
@@ -222,6 +222,10 @@ class Drawing(models.Model):
                         "type": "GeometryCollection",
                     },
                 )
+        # create blocks
+        for block in doc.blocks:
+            # geometries = []
+            pass
 
     def latlong2xy(self, vert):
         trans = []
