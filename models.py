@@ -78,6 +78,7 @@ class Drawing(models.Model):
     __original_geom = None
     __original_rotation = None
     gy = 1 / (6371 * 1000)
+    name_blacklist = ["*Model_Space", "DynamicInputDot"]
 
     class Meta:
         verbose_name = _("Drawing")
@@ -242,7 +243,7 @@ class Drawing(models.Model):
                 )
         # handle blocks
         for block in doc.blocks:
-            if block.name in ["*Model_Space", "DynamicInputDot"]:
+            if block.name in self.name_blacklist:
                 continue
             geometries = []
             # extract lines
@@ -305,7 +306,22 @@ class Drawing(models.Model):
                 )
         # extract insertions
         for e in msp.query("INSERT"):
-            pass
+            if e.dxf.name in self.name_blacklist:
+                continue
+            try:
+                layer = Layer.objects.get(drawing_id=self.id, name=e.dxf.layer)
+                block = Layer.objects.get(drawing_id=self.id, name=e.dxf.name)
+            except Layer.DoesNotExist:
+                continue
+            point = self.xy2latlong([e.dxf.insert])
+            Insertion.objects.create(
+                block=block,
+                layer=layer,
+                geom=point,
+                rotation=e.dxf.rotation,
+                x_scale=e.dxf.xscale,
+                y_scale=e.dxf.yscale,
+            )
 
     def latlong2xy(self, vert):
         trans = []
