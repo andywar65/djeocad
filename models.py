@@ -240,7 +240,7 @@ class Drawing(models.Model):
                         "type": "GeometryCollection",
                     },
                 )
-        # create blocks
+        # handle blocks
         for block in doc.blocks:
             if block.name in ["*Model_Space", "DynamicInputDot"]:
                 continue
@@ -255,7 +255,44 @@ class Drawing(models.Model):
                         "coordinates": vert,
                     }
                 )
-            # create Layer as block
+            # extract polylines
+            for e in block.query("LWPOLYLINE"):
+                vert = self.b_xy2latlong(e.vertices_in_wcs())
+                if e.is_closed:
+                    vert.append(vert[0])
+                    geometries.append(
+                        {
+                            "type": "Polygon",
+                            "coordinates": [vert],
+                        }
+                    )
+                else:
+                    geometries.append(
+                        {
+                            "type": "LineString",
+                            "coordinates": vert,
+                        }
+                    )
+            # extract circles
+            for e in block.query("CIRCLE"):
+                vert = self.b_xy2latlong(e.flattening(0.1))
+                vert.append(vert[0])  # sometimes polygons don't close
+                geometries.append(
+                    {
+                        "type": "Polygon",
+                        "coordinates": [vert],
+                    }
+                )
+            # extract arcs
+            for e in block.query("ARC"):
+                vert = self.b_xy2latlong(e.flattening(0.1))
+                geometries.append(
+                    {
+                        "type": "LineString",
+                        "coordinates": vert,
+                    }
+                )
+            # create block as Layer
             if not geometries == []:
                 Layer.objects.create(
                     drawing_id=self.id,
@@ -266,6 +303,9 @@ class Drawing(models.Model):
                     },
                     is_block=True,
                 )
+        # extract insertions
+        for e in msp.query("INSERT"):
+            pass
 
     def latlong2xy(self, vert):
         trans = []
