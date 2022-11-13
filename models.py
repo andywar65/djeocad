@@ -433,3 +433,4 @@ class Insertion(models.Model):
         _("Y scale"),
         default=1,
     )
+    geom = GeometryCollectionField(_("Entities"), default={})
