@@ -317,7 +317,7 @@ class Drawing(models.Model):
             Insertion.objects.create(
                 block=block,
                 layer=layer,
-                geom=point,
+                point=point,
                 rotation=e.dxf.rotation,
                 x_scale=e.dxf.xscale,
                 y_scale=e.dxf.yscale,
@@ -420,7 +420,7 @@ class Insertion(models.Model):
         related_name="insertions",
         verbose_name=_("Layer"),
     )
-    geom = PointField(_("Location"))
+    point = PointField(_("Location"))
     rotation = models.FloatField(
         _("Rotation"),
         default=0,
