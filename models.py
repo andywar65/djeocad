@@ -150,6 +150,20 @@ class Drawing(models.Model):
             trans.append([long, lat])
         return trans
 
+    def b_xy2latlong(self, vert):
+        trans = []
+        gx = self.gy
+        for v in vert:
+            # use temp variables
+            xr = v[0]
+            yr = v[1]
+            # objects are very small with respect to earth, so our transformation
+            # from CAD x,y coords to latlong is approximate
+            long = degrees(xr * gx)
+            lat = degrees(yr * self.gy)
+            trans.append([long, lat])
+        return trans
+
     def extract_dxf(self):
         #  following conditional for test to work
         if isinstance(self.geom, str):
@@ -228,8 +242,30 @@ class Drawing(models.Model):
                 )
         # create blocks
         for block in doc.blocks:
-            # geometries = []
-            pass
+            if block.name in ["*Model_Space", "DynamicInputDot"]:
+                continue
+            geometries = []
+            # extract lines
+            for e in block.query("LINE"):
+                points = [e.dxf.start, e.dxf.end]
+                vert = self.b_xy2latlong(points)
+                geometries.append(
+                    {
+                        "type": "LineString",
+                        "coordinates": vert,
+                    }
+                )
+            # create Layer as block
+            if not geometries == []:
+                Layer.objects.create(
+                    drawing_id=self.id,
+                    name=block.name,
+                    geom={
+                        "geometries": geometries,
+                        "type": "GeometryCollection",
+                    },
+                    is_block=True,
+                )
 
     def latlong2xy(self, vert):
         trans = []
@@ -282,7 +318,7 @@ class Layer(models.Model):
         _("Layer / block name"),
         max_length=50,
     )
-    color_field = ColorField(default="#FF0000")
+    color_field = ColorField(default="#FFFFFF")
     geom = GeometryCollectionField(_("Entities"))
     is_block = models.BooleanField(
         _("Block definition"),
