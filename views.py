@@ -105,7 +105,7 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["mapbox_token"] = settings.MAPBOX_TOKEN
-        context["lines"] = self.object.related_layers.all()
+        context["lines"] = self.object.related_layers.filter(is_block=False)
         if self.request.htmx:
             self.m_crypto = get_random_string(7)
             context["m_crypto"] = self.m_crypto
@@ -127,13 +127,13 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
 
 
 def drawing_download(request, pk):
-    drw = get_object_or_404(Drawing, id=pk)
-    if drw.private:
-        if request.user != drw.user:
+    drawing = get_object_or_404(Drawing, id=pk)
+    if drawing.private:
+        if request.user != drawing.user:
             raise PermissionDenied
-    if drw.needs_refresh:
-        drw.get_file_to_download()
-    response = HttpResponse(drw.dxf, content_type="text/plain")
-    response["Content-Disposition"] = "attachment; filename=%s.dxf" % drw.title
+    if drawing.needs_refresh:
+        drawing.get_file_to_download()
+    response = HttpResponse(drawing.dxf, content_type="text/plain")
+    response["Content-Disposition"] = "attachment; filename=%s.dxf" % drawing.title
 
     return response
