@@ -308,8 +308,8 @@ class Drawing(models.Model):
                     vert = self.latlong2xy(geom["coordinates"][0], 0, 0)
                 else:
                     vert = self.latlong2xy(geom["coordinates"], 0, 0)
-                long_b = longp + point[0][0]
-                lat_b = latp + point[0][1]
+                long_b = point[0][0]
+                lat_b = point[0][1]
                 rot_b = rot + radians(e.dxf.rotation)
                 vert = self.xy2latlong(
                     vert, long_b, lat_b, rot_b, e.dxf.xscale, e.dxf.yscale
