@@ -302,6 +302,33 @@ class Drawing(models.Model):
             except Layer.DoesNotExist:
                 continue
             point = self.xy2latlong([e.dxf.insert], longp, latp, rot, 1, 1)
+            geometries_b = []
+            for geom in block.geom["geometries"]:
+                if geom["type"] == "Polygon":
+                    vert = self.latlong2xy(geom["coordinates"][0], 0, 0)
+                else:
+                    vert = self.latlong2xy(geom["coordinates"], 0, 0)
+                long_b = longp + point[0][0]
+                lat_b = latp + point[0][1]
+                rot_b = rot + radians(e.dxf.rotation)
+                vert = self.xy2latlong(
+                    vert, long_b, lat_b, rot_b, e.dxf.xscale, e.dxf.yscale
+                )
+                if geom["type"] == "Polygon":
+                    geometries_b.append(
+                        {
+                            "type": "Polygon",
+                            "coordinates": [vert],
+                        }
+                    )
+                else:
+                    geometries_b.append(
+                        {
+                            "type": "LineString",
+                            "coordinates": vert,
+                        }
+                    )
+
             Insertion.objects.create(
                 block=block,
                 layer=layer,
@@ -309,7 +336,10 @@ class Drawing(models.Model):
                 rotation=e.dxf.rotation,
                 x_scale=e.dxf.xscale,
                 y_scale=e.dxf.yscale,
-                geom=block.geom,
+                geom={
+                    "geometries": geometries_b,
+                    "type": "GeometryCollection",
+                },
             )
 
     def latlong2xy(self, vert, longp, latp):
