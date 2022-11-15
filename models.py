@@ -399,6 +399,8 @@ class Drawing(models.Model):
                         "layer": insert.layer.name,
                     },
                 )
+                insert.rotation = insert.rotation + self.rotation
+                insert.save()
         doc.saveas(filename=self.dxf.path, encoding="utf-8", fmt="asc")
         self.needs_refresh = False
         self.rotation = 0
