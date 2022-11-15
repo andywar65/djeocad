@@ -355,6 +355,7 @@ class Drawing(models.Model):
         latp = self.geom["coordinates"][1]
         doc = ezdxf.new()
         msp = doc.modelspace()
+        # create layers and add entities
         drw_layers = self.related_layers.filter(is_block=False)
         for drw_layer in drw_layers:
             if drw_layer.name != "0":
@@ -373,6 +374,31 @@ class Drawing(models.Model):
                 else:
                     vert = self.latlong2xy(geom["coordinates"], longp, latp)
                     msp.add_lwpolyline(vert, dxfattribs={"layer": drw_layer.name})
+        # create blocks and add entities
+        drw_blocks = self.related_layers.filter(is_block=True)
+        for drw_block in drw_blocks:
+            block = doc.blocks.new(name=drw_block.name)
+            geometries = drw_block.geom["geometries"]
+            for geom in geometries:
+                if geom["type"] == "Polygon":
+                    vert = self.latlong2xy(geom["coordinates"][0], 0, 0)
+                    block.add_lwpolyline(vert).close()
+                else:
+                    vert = self.latlong2xy(geom["coordinates"], 0, 0)
+                    block.add_lwpolyline(vert)
+        for drw_layer in drw_layers:
+            for insert in drw_layer.insertions.all():
+                point = self.latlong2xy(insert.point, longp, latp)
+                msp.add_blockref(
+                    insert.block.name,
+                    point[0],
+                    dxfattribs={
+                        "xscale": insert.x_scale,
+                        "yscale": insert.y_scale,
+                        "rotation": insert.rotation + self.rotation,
+                        "layer": insert.layer.name,
+                    },
+                )
         doc.saveas(filename=self.dxf.path, encoding="utf-8", fmt="asc")
         self.needs_refresh = False
         self.rotation = 0
