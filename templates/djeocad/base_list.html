@@ -29,6 +29,7 @@
         {{ mapbox_token|json_script:"mapbox_token"}}
         <script id="marker_data" type="application/json">{{ drawings|geojsonfeature:"popupContent"|safe }}</script>
         <script id="line_data" type="application/json">{{ lines|geojsonfeature:"popupContent"|safe }}</script>
+        <script id="block_data" type="application/json">{{ blocks|geojsonfeature:"popupContent"|safe }}</script>
         <script src="{% static 'djeocad/js/base_list.js'%}"></script>
         <div class="col col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
           {% leaflet_map "mymap" callback="window.map_init" %}

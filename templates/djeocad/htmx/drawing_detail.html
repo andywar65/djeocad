@@ -34,4 +34,5 @@
   {% load geojson_tags %}
   <script id="{{ m_crypto }}" type="application/json">{{ object|geojsonfeature:"popupContent"|safe }}</script>
   <script id="{{ l_crypto }}" type="application/json">{{ lines|geojsonfeature:"popupContent"|safe }}</script>
+  <script id="{{ b_crypto }}" type="application/json">{{ blocks|geojsonfeature:"popupContent"|safe }}</script>
 {% endif %}

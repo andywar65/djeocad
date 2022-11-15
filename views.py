@@ -9,7 +9,7 @@ from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
 
-from .models import Drawing
+from .models import Drawing, Insertion
 
 User = get_user_model()
 
@@ -106,11 +106,17 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["mapbox_token"] = settings.MAPBOX_TOKEN
         context["lines"] = self.object.related_layers.filter(is_block=False)
+        context["blocks"] = Insertion.objects.none()
+        for layer in context["lines"]:
+            context["blocks"] = context["blocks"] | layer.insertions.all()
+        print(context["blocks"])
         if self.request.htmx:
             self.m_crypto = get_random_string(7)
             context["m_crypto"] = self.m_crypto
             self.l_crypto = get_random_string(7)
             context["l_crypto"] = self.l_crypto
+            self.b_crypto = get_random_string(7)
+            context["b_crypto"] = self.b_crypto
         else:
             context["drawings"] = self.object
         return context
@@ -121,6 +127,7 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
             dict = {
                 "getMarkerCollection": self.m_crypto,
                 "getLineCollection": self.l_crypto,
+                "getBlockCollection": self.b_crypto,
             }
             response["HX-Trigger-After-Swap"] = json.dumps(dict)
         return response

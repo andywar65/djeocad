@@ -50,6 +50,9 @@ function map_init(map, options) {
   collection = JSON.parse(document.getElementById("line_data").textContent);
   let lines = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
   lines.addTo(ln_layer);
+  collection = JSON.parse(document.getElementById("block_data").textContent);
+  let blocks = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
+  blocks.addTo(ln_layer);
 
   addEventListener("getMarkerCollection", function(evt){
     mk_layer.clearLayers();
@@ -64,5 +67,11 @@ function map_init(map, options) {
     let collection = JSON.parse(document.getElementById(evt.detail.value).textContent);
     let lines = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
     lines.addTo(ln_layer);
+  })
+
+  addEventListener("getBlockCollection", function(evt){
+    let collection = JSON.parse(document.getElementById(evt.detail.value).textContent);
+    let blocks = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
+    blocks.addTo(ln_layer);
   })
 }

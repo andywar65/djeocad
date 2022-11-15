@@ -451,3 +451,16 @@ class Insertion(models.Model):
         default=1,
     )
     geom = GeometryCollectionField(_("Entities"), default={})
+
+    @property
+    def popupContent(self):
+        title_str = (
+            "<ul><li>%(layer)s: %(lname)s</li><li>%(block)s: %(bname)s</li></ul>"
+            % {
+                "layer": _("Layer"),
+                "lname": self.layer.name,
+                "block": _("Block"),
+                "bname": self.block.name,
+            }
+        )
+        return {"content": title_str, "color": self.layer.color_field}
