@@ -1,5 +1,5 @@
 import json
-from math import cos, degrees, fabs, radians, sin
+from math import radians
 from pathlib import Path
 
 import ezdxf
@@ -15,7 +15,7 @@ from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
 from PIL import ImageColor
 
-from .utils import cad2hex, check_wide_image
+from .utils import cad2hex, check_wide_image, latlong2xy, xy2latlong
 
 User = get_user_model()
 
@@ -133,23 +133,6 @@ class Drawing(models.Model):
             self.related_layers.all().delete()
             self.extract_dxf()
 
-    def xy2latlong(self, vert, longp, latp, rot, xsc, ysc):
-        trans = []
-        gx = self.gy * 1 / (fabs(cos(radians(latp))))
-        for v in vert:
-            # use temp variables
-            x = v[0] * xsc
-            y = v[1] * ysc
-            # get true north
-            xr = x * cos(rot) - y * sin(rot)
-            yr = x * sin(rot) + y * cos(rot)
-            # objects are very small with respect to earth, so our transformation
-            # from CAD x,y coords to latlong is approximate
-            long = longp + degrees(xr * gx)
-            lat = latp + degrees(yr * self.gy)
-            trans.append([long, lat])
-        return trans
-
     def extract_dxf(self):
         #  following conditional for test to work
         if isinstance(self.geom, str):
@@ -174,7 +157,7 @@ class Drawing(models.Model):
         # extract lines
         for e in msp.query("LINE"):
             points = [e.dxf.start, e.dxf.end]
-            vert = self.xy2latlong(points, longp, latp, rot, 1, 1)
+            vert = xy2latlong(points, longp, latp, rot, 1, 1)
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "LineString",
@@ -183,7 +166,7 @@ class Drawing(models.Model):
             )
         # extract polylines
         for e in msp.query("LWPOLYLINE"):
-            vert = self.xy2latlong(e.vertices_in_wcs(), longp, latp, rot, 1, 1)
+            vert = xy2latlong(e.vertices_in_wcs(), longp, latp, rot, 1, 1)
             if e.is_closed:
                 vert.append(vert[0])
                 layer_table[e.dxf.layer]["geometries"].append(
@@ -201,7 +184,7 @@ class Drawing(models.Model):
                 )
         # extract circles
         for e in msp.query("CIRCLE"):
-            vert = self.xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
+            vert = xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "Polygon",
@@ -210,7 +193,7 @@ class Drawing(models.Model):
             )
         # extract arcs
         for e in msp.query("ARC"):
-            vert = self.xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
+            vert = xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "LineString",
@@ -237,7 +220,7 @@ class Drawing(models.Model):
             # extract lines
             for e in block.query("LINE"):
                 points = [e.dxf.start, e.dxf.end]
-                vert = self.xy2latlong(points, 0, 0, 0, 1, 1)
+                vert = xy2latlong(points, 0, 0, 0, 1, 1)
                 geometries.append(
                     {
                         "type": "LineString",
@@ -246,7 +229,7 @@ class Drawing(models.Model):
                 )
             # extract polylines
             for e in block.query("LWPOLYLINE"):
-                vert = self.xy2latlong(e.vertices_in_wcs(), 0, 0, 0, 1, 1)
+                vert = xy2latlong(e.vertices_in_wcs(), 0, 0, 0, 1, 1)
                 if e.is_closed:
                     vert.append(vert[0])
                     geometries.append(
@@ -264,7 +247,7 @@ class Drawing(models.Model):
                     )
             # extract circles
             for e in block.query("CIRCLE"):
-                vert = self.xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
+                vert = xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
                 vert.append(vert[0])  # sometimes polygons don't close
                 geometries.append(
                     {
@@ -274,7 +257,7 @@ class Drawing(models.Model):
                 )
             # extract arcs
             for e in block.query("ARC"):
-                vert = self.xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
+                vert = xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
                 geometries.append(
                     {
                         "type": "LineString",
@@ -301,17 +284,17 @@ class Drawing(models.Model):
                 block = Layer.objects.get(drawing_id=self.id, name=e.dxf.name)
             except Layer.DoesNotExist:
                 continue
-            point = self.xy2latlong([e.dxf.insert], longp, latp, rot, 1, 1)
+            point = xy2latlong([e.dxf.insert], longp, latp, rot, 1, 1)
             geometries_b = []
             for geom in block.geom["geometries"]:
                 if geom["type"] == "Polygon":
-                    vert = self.latlong2xy(geom["coordinates"][0], 0, 0)
+                    vert = latlong2xy(geom["coordinates"][0], 0, 0)
                 else:
-                    vert = self.latlong2xy(geom["coordinates"], 0, 0)
+                    vert = latlong2xy(geom["coordinates"], 0, 0)
                 long_b = point[0][0]
                 lat_b = point[0][1]
                 rot_b = rot + radians(e.dxf.rotation)
-                vert = self.xy2latlong(
+                vert = xy2latlong(
                     vert, long_b, lat_b, rot_b, e.dxf.xscale, e.dxf.yscale
                 )
                 if geom["type"] == "Polygon":
@@ -342,14 +325,6 @@ class Drawing(models.Model):
                 },
             )
 
-    def latlong2xy(self, vert, longp, latp):
-        trans = []
-        for v in vert:
-            x = -6371000 * (radians(longp - v[0])) * cos(radians(latp))
-            y = -6371000 * (radians(latp - v[1]))  # verify
-            trans.append((x, y))
-        return trans
-
     def get_file_to_download(self):
         longp = self.geom["coordinates"][0]
         latp = self.geom["coordinates"][1]
@@ -367,12 +342,12 @@ class Drawing(models.Model):
             geometries = drw_layer.geom["geometries"]
             for geom in geometries:
                 if geom["type"] == "Polygon":
-                    vert = self.latlong2xy(geom["coordinates"][0], longp, latp)
+                    vert = latlong2xy(geom["coordinates"][0], longp, latp)
                     msp.add_lwpolyline(
                         vert, dxfattribs={"layer": drw_layer.name}
                     ).close()
                 else:
-                    vert = self.latlong2xy(geom["coordinates"], longp, latp)
+                    vert = latlong2xy(geom["coordinates"], longp, latp)
                     msp.add_lwpolyline(vert, dxfattribs={"layer": drw_layer.name})
         # create blocks and add entities
         drw_blocks = self.related_layers.filter(is_block=True)
@@ -381,14 +356,15 @@ class Drawing(models.Model):
             geometries = drw_block.geom["geometries"]
             for geom in geometries:
                 if geom["type"] == "Polygon":
-                    vert = self.latlong2xy(geom["coordinates"][0], 0, 0)
+                    vert = latlong2xy(geom["coordinates"][0], 0, 0)
                     block.add_lwpolyline(vert).close()
                 else:
-                    vert = self.latlong2xy(geom["coordinates"], 0, 0)
+                    vert = latlong2xy(geom["coordinates"], 0, 0)
                     block.add_lwpolyline(vert)
+        # add insertions
         for drw_layer in drw_layers:
             for insert in drw_layer.insertions.all():
-                point = self.latlong2xy(insert.point, longp, latp)
+                point = latlong2xy(insert.point, longp, latp)
                 msp.add_blockref(
                     insert.block.name,
                     point[0],
