@@ -403,9 +403,15 @@ class Layer(models.Model):
         editable=False,
     )
 
+    __original_geom = None
+
     class Meta:
         verbose_name = _("Layer")
         verbose_name_plural = _("Layers")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_geom = self.geom
 
     def __str__(self):
         if self.is_block:
@@ -425,6 +431,39 @@ class Layer(models.Model):
         if not self.drawing.needs_refresh:
             self.drawing.needs_refresh = True
             super(Drawing, self.drawing).save()
+        if self.is_block and self.__original_geom != self.geom:
+            for insert in self.instances.all():
+                geometries_b = []
+                for geom in self.geom["geometries"]:
+                    if geom["type"] == "Polygon":
+                        vert = latlong2xy(geom["coordinates"][0], 0, 0)
+                    else:
+                        vert = latlong2xy(geom["coordinates"], 0, 0)
+                    long_b = insert.point[0][0]
+                    lat_b = insert.point[0][1]
+                    rot_b = radians(insert.rotation)
+                    vert = xy2latlong(
+                        vert, long_b, lat_b, rot_b, insert.x_scale, insert.y_scale
+                    )
+                    if geom["type"] == "Polygon":
+                        geometries_b.append(
+                            {
+                                "type": "Polygon",
+                                "coordinates": [vert],
+                            }
+                        )
+                    else:
+                        geometries_b.append(
+                            {
+                                "type": "LineString",
+                                "coordinates": vert,
+                            }
+                        )
+                insert.geom = {
+                    "geometries": geometries_b,
+                    "type": "GeometryCollection",
+                }
+                insert.save()
 
 
 class Insertion(models.Model):
