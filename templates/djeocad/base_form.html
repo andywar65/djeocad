@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load leaflet_tags %}
+
+{% block extra-head %}
+  {% leaflet_js plugins="forms" %}
+  {% leaflet_css plugins="forms" %}
+  {{ form.media }}
+  <style>
+    .leaflet-container {  /* all maps */
+      height: 400px;
+      margin-bottom: 20px;
+    }
+  </style>
+{% endblock extra-head %}
+
+{% block menucont %}
+  {% include 'navbar.html' %}
+  <main class="flex-shrink-0">
+    <div id="content" class="container">
+      {% block content %}
+      {% endblock content %}
+    </div>
+  </main>
+  {% include 'footer.html' %}
+{% endblock menucont %}

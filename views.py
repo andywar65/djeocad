@@ -9,8 +9,9 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView, ListView, RedirectView
+from django.views.generic import CreateView, DetailView, ListView, RedirectView
 
+from .forms import DrawingCreateForm
 from .models import Drawing, Insertion
 
 User = get_user_model()
@@ -111,7 +112,6 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
         context["blocks"] = Insertion.objects.none()
         for layer in context["lines"]:
             context["blocks"] = context["blocks"] | layer.insertions.all()
-        print(context["blocks"])
         if self.request.htmx:
             self.m_crypto = get_random_string(7)
             context["m_crypto"] = self.m_crypto
@@ -133,6 +133,22 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
             }
             response["HX-Trigger-After-Swap"] = json.dumps(dict)
         return response
+
+
+class DrawingCreateView(LoginRequiredMixin, CreateView):
+    model = Drawing
+    form_class = DrawingCreateForm
+    template_name = "djeocad/includes/drawing_create.html"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(DrawingCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={"username": self.request.user.username, "pk": self.object.id},
+        )
 
 
 class DrawingDeleteView(LoginRequiredMixin, RedirectView):

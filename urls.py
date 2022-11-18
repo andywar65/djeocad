@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from .views import (
     AuthorListView,
     BaseListView,
+    DrawingCreateView,
     DrawingDeleteView,
     DrawingDetailView,
     drawing_download,
@@ -17,6 +18,11 @@ urlpatterns = [
         _("author/<username>/drawing/<pk>/"),
         DrawingDetailView.as_view(),
         name="drawing_detail",
+    ),
+    path(
+        _("author/<username>/drawing/add/"),
+        DrawingCreateView.as_view(),
+        name="drawing_create",
     ),
     path(
         _("author/<username>/drawing/<pk>/delete/"),
