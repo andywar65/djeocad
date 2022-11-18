@@ -2,12 +2,14 @@ import json
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, RedirectView
 
 from .models import Drawing, Insertion
 
@@ -130,6 +132,28 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
                 "getBlockCollection": self.b_crypto,
             }
             response["HX-Trigger-After-Swap"] = json.dumps(dict)
+        return response
+
+
+class DrawingDeleteView(LoginRequiredMixin, RedirectView):
+    def setup(self, request, *args, **kwargs):
+        super(DrawingDeleteView, self).setup(request, *args, **kwargs)
+        if not self.request.htmx:
+            raise Http404(_("Request without HTMX headers"))
+        get_object_or_404(User, username=self.kwargs["username"])
+        drawing = get_object_or_404(Drawing, id=self.kwargs["pk"])
+        if request.user != drawing.user:
+            raise PermissionDenied
+        drawing.delete()
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse(
+            "djeocad:author_list", kwargs={"username": self.request.user.username}
+        )
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super(DrawingDeleteView, self).dispatch(request, *args, **kwargs)
+        response["HX-Request"] = True
         return response
 
 
