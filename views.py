@@ -1,6 +1,7 @@
 import json
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -14,11 +15,12 @@ from django.views.generic import (
     DetailView,
     ListView,
     RedirectView,
+    TemplateView,
     UpdateView,
 )
 
 from .forms import DrawingCreateForm
-from .models import Drawing, Insertion
+from .models import Drawing, Insertion, Layer
 
 User = get_user_model()
 
@@ -201,6 +203,20 @@ class DrawingDeleteView(LoginRequiredMixin, RedirectView):
         response = super(DrawingDeleteView, self).dispatch(request, *args, **kwargs)
         response["HX-Request"] = True
         return response
+
+
+class LayerDeleteView(LoginRequiredMixin, TemplateView):
+    template_name = "djeocad/htmx/item_delete.html"
+
+    def setup(self, request, *args, **kwargs):
+        super(LayerDeleteView, self).setup(request, *args, **kwargs)
+        if not self.request.htmx:
+            raise Http404(_("Request without HTMX headers"))
+        layer = get_object_or_404(Layer, id=self.kwargs["pk"])
+        if request.user != layer.drawing.user:
+            raise PermissionDenied
+        messages.error(request, _('Layer "%s" deleted') % layer.name)
+        layer.delete()
 
 
 def drawing_download(request, pk):

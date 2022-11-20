@@ -30,11 +30,9 @@
     </div>
   </div>
   <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
-    <h4>{% trans "Layers"%}:</h4>
-    <ul>
-      {% for layer in object.related_layers.all %}
-        <li>{{ layer }}</li>
-      {% endfor %}
-    </ul>
+    <h4>{% trans "Layers / Blocks" %}:</h4>
+    {% for layer in object.related_layers.all %}
+      {% include "djeocad/htmx/layer_detail.html" %}
+    {% endfor %}
   </div>
 {% endblock content %}

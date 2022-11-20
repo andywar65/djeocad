@@ -1,0 +1,16 @@
+{% load i18n %}
+
+<div id="layer-{{ layer.id }}" class="card mx-auto" style="margin-bottom: 20px">
+  <div class="card-body">
+    <p><strong>{{ layer }}</strong></p>
+    <button class="btn btn-danger"
+      hx-get="{% url 'djeocad:layer_delete' pk=layer.id %}"
+      hx-target="#layer-{{ layer.id }}"
+      hx-swap="outerHTML"
+      hx-confirm="{% trans 'Are you sure you want to delete this layer / block?' %}"
+      title="{% trans 'Delete' %}">
+      <i class="fa fa-trash-o"></i>
+      <span class="htmx-indicator spinner-border spinner-border-sm"></span>
+    </button>
+  </div>
+</div>

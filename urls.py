@@ -8,6 +8,7 @@ from .views import (
     DrawingDeleteView,
     DrawingDetailView,
     DrawingUpdateView,
+    LayerDeleteView,
     drawing_download,
 )
 
@@ -36,4 +37,6 @@ urlpatterns = [
         name="drawing_delete",
     ),
     path(_("drawing/<pk>/download/"), drawing_download, name="drawing_download"),
+    # Inlines
+    path("layer/<pk>/delete/", LayerDeleteView.as_view(), name="layer_delete"),
 ]
