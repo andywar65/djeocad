@@ -1,12 +1,13 @@
 {% extends "djeocad/base_form.html" %}
 {% load bootstrap5 %}
 {% load i18n %}
+{% load fb_versions %}
 
 {% block content %}
   <div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
     <div class="card-header">
       <h4 class="card-title">
-        {% trans "Add drawing"%}
+        {% trans "Update layer"%}: {{ object }}
       </h4>
     </div>
     <div class="card-body">
@@ -14,9 +15,13 @@
         {% csrf_token %}
         {% bootstrap_form form %}
         <input class="btn btn-primary"
-          style="margin-bottom: 15px;"
           type="submit"
-          value="{% trans 'Add' %}" />
+          value="{% trans 'Update' %}" />
+        <a class="btn btn-secondary"
+          href="{% url 'djeocad:drawing_update' username=object.drawing.user.username pk=object.drawing.id %}"
+        >
+          {% trans "Cancel" %}
+        </a>
       </form>
     </div>
   </div>

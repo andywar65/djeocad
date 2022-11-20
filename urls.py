@@ -9,6 +9,7 @@ from .views import (
     DrawingDetailView,
     DrawingUpdateView,
     LayerDeleteView,
+    LayerUpdateView,
     drawing_download,
 )
 
@@ -35,6 +36,11 @@ urlpatterns = [
         _("author/<username>/drawing/<pk>/delete/"),
         DrawingDeleteView.as_view(),
         name="drawing_delete",
+    ),
+    path(
+        _("author/<username>/layer/<pk>/update/"),
+        LayerUpdateView.as_view(),
+        name="layer_update",
     ),
     path(_("drawing/<pk>/download/"), drawing_download, name="drawing_download"),
     # Inlines

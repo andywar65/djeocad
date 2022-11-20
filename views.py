@@ -19,7 +19,7 @@ from django.views.generic import (
     UpdateView,
 )
 
-from .forms import DrawingCreateForm
+from .forms import DrawingCreateForm, LayerCreateForm
 from .models import Drawing, Insertion, Layer
 
 User = get_user_model()
@@ -203,6 +203,36 @@ class DrawingDeleteView(LoginRequiredMixin, RedirectView):
         response = super(DrawingDeleteView, self).dispatch(request, *args, **kwargs)
         response["HX-Request"] = True
         return response
+
+
+class LayerUpdateView(LoginRequiredMixin, UpdateView):
+    model = Layer
+    form_class = LayerCreateForm
+    template_name = "djeocad/includes/layer_update.html"
+
+    def get_object(self, queryset=None):
+        self.object = super(LayerUpdateView, self).get_object(queryset=None)
+        user = get_object_or_404(User, username=self.kwargs["username"])
+        if (
+            user != self.object.drawing.user
+            or self.request.user != self.object.drawing.user
+        ):
+            raise Http404(_("Layer does not belong to User"))
+        return self.object
+
+    def form_valid(self, form):
+        if form.instance.drawing.user != self.request.user:
+            raise PermissionDenied
+        return super(LayerUpdateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={
+                "username": self.request.user.username,
+                "pk": self.object.drawing.id,
+            },
+        )
 
 
 class LayerDeleteView(LoginRequiredMixin, TemplateView):

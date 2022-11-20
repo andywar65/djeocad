@@ -3,6 +3,11 @@
 <div id="layer-{{ layer.id }}" class="card mx-auto" style="margin-bottom: 20px">
   <div class="card-body">
     <p><strong>{{ layer }}</strong></p>
+    <a class="btn btn-primary"
+      href="{% url 'djeocad:layer_update' username=layer.drawing.user.username pk=layer.id %}"
+      title="{% trans 'Modify' %}">
+      <i class="fa fa-pencil"></i>
+    </a>
     <button class="btn btn-danger"
       hx-get="{% url 'djeocad:layer_delete' pk=layer.id %}"
       hx-target="#layer-{{ layer.id }}"
