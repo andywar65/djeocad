@@ -9,7 +9,13 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import CreateView, DetailView, ListView, RedirectView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    RedirectView,
+    UpdateView,
+)
 
 from .forms import DrawingCreateForm
 from .models import Drawing, Insertion
@@ -143,6 +149,30 @@ class DrawingCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super(DrawingCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={"username": self.request.user.username, "pk": self.object.id},
+        )
+
+
+class DrawingUpdateView(LoginRequiredMixin, UpdateView):
+    model = Drawing
+    form_class = DrawingCreateForm
+    template_name = "djeocad/includes/drawing_update.html"
+
+    def get_object(self, queryset=None):
+        self.object = super(DrawingUpdateView, self).get_object(queryset=None)
+        user = get_object_or_404(User, username=self.kwargs["username"])
+        if user != self.object.user or self.request.user != self.object.user:
+            raise Http404(_("Drawing does not belong to User"))
+        return self.object
+
+    def form_valid(self, form):
+        if form.instance.user != self.request.user:
+            raise PermissionDenied
+        return super(DrawingUpdateView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse(

@@ -25,17 +25,16 @@
 </div>
 {% if request.user == object.user %}
   <div class="card-footer">
-    {% if user.is_staff %}
-      <a class="btn btn-primary" href="/admin/djeocad/drawing/{{ object.id }}/change/">
-        {% trans "Modify drawing" %}
-      </a>
-    {% endif %}
+    <a class="btn btn-primary"
+      href="{% url 'djeocad:drawing_update' username=object.user.username pk=object.id %}">
+      {% trans "Modify" %}
+    </a>
     <a class="btn btn-danger"
       hx-get="{% url 'djeocad:drawing_delete' username=object.user.username pk=object.id %}"
       hx-target="#nav-card"
       hx-push-url="{% url 'djeocad:author_list' username=object.user.username %}"
       hx-confirm="{% trans 'Are you sure you want to delete this drawing?' %}">
-      {% trans "Delete drawing" %}
+      {% trans "Delete" %}
     </a>
   </div>
 {% endif %}

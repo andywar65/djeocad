@@ -45,6 +45,7 @@ class Drawing(models.Model):
         _("Image"),
         max_length=200,
         null=True,
+        blank=True,
         upload_to="uploads/images/drawing/",
     )
     dxf = models.FileField(

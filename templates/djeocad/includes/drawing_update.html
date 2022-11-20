@@ -1,0 +1,40 @@
+{% extends "djeotree/base_form.html" %}
+{% load bootstrap5 %}
+{% load i18n %}
+{% load fb_versions %}
+
+{% block content %}
+  <div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
+    <div class="card-header">
+      <h4 class="card-title">
+        {% trans "Update drawing"%}: {{ object }}
+      </h4>
+    </div>
+    <div class="card-body">
+      {% if object.fb_image %}
+        <img class="card-img-top"
+          src="{% version object.fb_image 'big' %}"
+          alt="{{ object.intro }}">
+      {% endif %}
+      <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input class="btn btn-primary"
+          type="submit"
+          value="{% trans 'Update' %}" />
+        <a class="btn btn-secondary"
+          href="{% url 'djeocad:drawing_detail' username=object.user.username pk=object.id %}">
+          {% trans "Cancel" %}
+        </a>
+      </form>
+    </div>
+  </div>
+  <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
+    <h4>{% trans "Layers"%}:</h4>
+    <ul>
+      {% for layer in object.related_layers.all %}
+        <li>{{ layer }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock content %}
