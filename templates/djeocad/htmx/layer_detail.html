@@ -1,8 +1,19 @@
 {% load i18n %}
 
 <div id="layer-{{ layer.id }}" class="card mx-auto" style="margin-bottom: 20px">
+  <div class="card-header" style="background-color: {{ layer.color_field }}">
+
+  </div>
   <div class="card-body">
-    <p><strong>{{ layer }}</strong></p>
+    <p>
+      {% if layer.is_block %}
+        {% trans 'Block' %}: <strong>{{ layer.name }}</strong> -
+      {% else %}
+        {% trans 'Layer' %}: <strong>{{ layer.name }}</strong> -
+      {% endif %}
+      {% trans 'ID' %}: <strong>{{ layer.id }}</strong> -
+      {% trans 'Color' %}: <strong>{{ layer.color_field }}</strong>
+    </p>
     <a class="btn btn-primary"
       href="{% url 'djeocad:layer_update' username=layer.drawing.user.username pk=layer.id %}"
       title="{% trans 'Modify' %}">
