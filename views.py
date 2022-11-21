@@ -168,13 +168,8 @@ class DrawingUpdateView(LoginRequiredMixin, UpdateView):
         self.object = super(DrawingUpdateView, self).get_object(queryset=None)
         user = get_object_or_404(User, username=self.kwargs["username"])
         if user != self.object.user or self.request.user != self.object.user:
-            raise Http404(_("Drawing does not belong to User"))
-        return self.object
-
-    def form_valid(self, form):
-        if form.instance.user != self.request.user:
             raise PermissionDenied
-        return super(DrawingUpdateView, self).form_valid(form)
+        return self.object
 
     def get_success_url(self):
         return reverse(
@@ -217,13 +212,17 @@ class LayerUpdateView(LoginRequiredMixin, UpdateView):
             user != self.object.drawing.user
             or self.request.user != self.object.drawing.user
         ):
-            raise Http404(_("Layer does not belong to User"))
+            raise PermissionDenied
         return self.object
 
-    def form_valid(self, form):
-        if form.instance.drawing.user != self.request.user:
-            raise PermissionDenied
-        return super(LayerUpdateView, self).form_valid(form)
+    def post(self, request, *args, **kwargs):
+        geometry = json.loads(request.POST["geom"])
+        if geometry["type"] != "GeometryCollection":
+            request.POST = request.POST.copy()
+            request.POST["geom"] = json.dumps(
+                {"type": "GeometryCollection", "geometries": [geometry]}
+            )
+        return super(LayerUpdateView, self).post(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse(
