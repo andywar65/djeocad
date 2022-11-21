@@ -6,7 +6,7 @@
   <div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
     <div class="card-header">
       <h4 class="card-title">
-        {% trans "Update layer"%}: {{ object }}
+        {% trans "Create layer"%}
       </h4>
     </div>
     <div class="card-body">
@@ -15,9 +15,9 @@
         {% bootstrap_form form %}
         <input class="btn btn-primary"
           type="submit"
-          value="{% trans 'Update' %}" />
+          value="{% trans 'Add' %}" />
         <a class="btn btn-secondary"
-          href="{% url 'djeocad:drawing_update' username=object.drawing.user.username pk=object.drawing.id %}"
+          href="{% url 'djeocad:drawing_update' username=drawing.user.username pk=drawing.id %}"
         >
           {% trans "Cancel" %}
         </a>

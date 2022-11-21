@@ -31,8 +31,16 @@
   </div>
   <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
     <h4>{% trans "Layers / Blocks" %}:</h4>
-    {% for layer in object.related_layers.all %}
-      {% include "djeocad/htmx/layer_detail.html" %}
-    {% endfor %}
+    {% if object.related_layers %}
+      {% for layer in object.related_layers.all %}
+        {% include "djeocad/htmx/layer_detail.html" %}
+      {% endfor %}
+    {% else %}
+      <p>{% trans "No layers yet" %}</p>
+    {% endif %}
+    <a class="btn btn-primary"
+      href="{% url 'djeocad:layer_create' username=object.user.username pk=object.id %}">
+      {% trans "Add layer" %}
+    </a>
   </div>
 {% endblock content %}

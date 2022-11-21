@@ -200,6 +200,43 @@ class DrawingDeleteView(LoginRequiredMixin, RedirectView):
         return response
 
 
+class LayerCreateView(LoginRequiredMixin, CreateView):
+    model = Layer
+    form_class = LayerCreateForm
+    template_name = "djeocad/includes/layer_create.html"
+
+    def setup(self, request, *args, **kwargs):
+        super(LayerCreateView, self).setup(request, *args, **kwargs)
+        get_object_or_404(User, username=self.kwargs["username"])
+        self.drawing = get_object_or_404(Drawing, id=self.kwargs["pk"])
+        if request.user != self.drawing.user:
+            raise PermissionDenied
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["drawing"] = self.drawing
+        return context
+
+    def post(self, request, *args, **kwargs):
+        geometry = json.loads(request.POST["geom"])
+        if geometry["type"] != "GeometryCollection":
+            request.POST = request.POST.copy()
+            request.POST["geom"] = json.dumps(
+                {"type": "GeometryCollection", "geometries": [geometry]}
+            )
+        return super(LayerCreateView, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.drawing = self.drawing
+        return super(LayerCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={"username": self.drawing.user.username, "pk": self.drawing.id},
+        )
+
+
 class LayerUpdateView(LoginRequiredMixin, UpdateView):
     model = Layer
     form_class = LayerCreateForm
@@ -228,7 +265,7 @@ class LayerUpdateView(LoginRequiredMixin, UpdateView):
         return reverse(
             "djeocad:drawing_detail",
             kwargs={
-                "username": self.request.user.username,
+                "username": self.object.drawing.user.username,
                 "pk": self.object.drawing.id,
             },
         )
