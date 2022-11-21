@@ -1,4 +1,4 @@
-# django-geocad 1.3.0
+# django-geocad 1.4.0
 Django app that imports CAD drawings in Leaflet maps
 ## Overview
 Show CAD drawings with no geo location in interactive web maps. Change / add layers to drawings, change / add elements to layers, download changed DXF files.
@@ -14,7 +14,7 @@ In your project root type `git clone https://github.com/andywar65/djeocad`, add 
 If you want a satellite map layer you need a [Mapbox](https://www.mapbox.com/) token adding this to `settings.py` (I use `environs` for secrets):
 `MAPBOX_TOKEN = env.str("MAPBOX_TOKEN")`
 ## Usage
-Django-geocad has three models: `Drawing`, `Layer` and `Insertion`. Creation, update and deletion of models happen in admin, so you will need staff permission to perform these tasks. A `GeoCAD Manager` permission group is created at migration, but at the moment the feature is not implemented.
+Django-geocad has three models: `Drawing`, `Layer` and `Insertion`. Creation, update and deletion of models may happen in admin, where you will need staff permission to perform these tasks. A `GeoCAD Manager` permission group is created at migration, but at the moment the feature is not implemented.
 To create a `Drawing` you will need a `DXF file` in ASCII format. `DXF` is a drawing exchange
 format widely used in `CAD` applications.
 If `geodata` is embedded in the file, it will be ignored: this app is suitable for small drawings,
@@ -28,15 +28,17 @@ a `Title`, a short description, an image and the `DXF file`. In the map select t
 Press the `Save and continue` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `ARC`, `CIRCLE`, `LINE` and `LWPOLYLINE` entities are visible on the map panel. It is possible to change layer name and layer entities.
 If unnested `BLOCKS` are present in the drawing, they will be extracted and inserted on respective layer. Please notice that all entities forming the `BLOCK` will be placed on layer `0`. `Blocks` share the same model as `Layers`, so they can be modified in admin. You will be dealing with the `Block` itself, not with it's instances. Insertion point is at (LAT=0, LONG=0).
 ## On the frontend
-At this stage only three frontend views are implemented: `List of all drawings`, `List by author` and `Drawing Detail`. First two views show drawings as markers on the map, last one shows a drawing in detail, with layers displayed on the map. To access the `List of all drawings` search on the navigation bar for `Projects/GeoCAD`. Note that `private` drawings will be hidden from non authors in all views. Note also that all entities on a layer inherit layer color.
+On the navigation bar look for `Projects/GeoCAD`. Two `List` frontend views are implemented: `List of all drawings`, `List by author`, where drawings are just markers on the map. Note that `private` drawings will be hidden from non authors in all views. Click on a marker and follow the link in the popup: you will land on the `Drawing Detail` page, with layers displayed on the map. If you are the author of this drawing, you can access all `CRUD` views for `Drawings` and `Layers`. Note that all entities on a layer inherit layer color.
 ## Downloading
 In `Drawing Detail` view it is possible to download back the (eventually modified) `DXF file`. Some limitations apply: the `True North` will be respected, `ARC` and `CIRCLE` entities will be approximated to `LWPOLYLINES`, and `Layers` will have `True Colors` instead of `ACI Colors`.
 Beware that if layers have been modified and a download is performed, the stored file will be replaced too, and rotation will be set to zero (True North).
+## Changelog v1.4.0
+* Extended CRUD on frontend
 ## Changelog v1.3.0
 * Extract BLOCKS
 ## Changelog v1.2.0
 * Extract ARC and CIRCLE entities
 * Download drawings as DXF
 ## Further improvements
-* Full CRUD on frontend
+* CRUD of block instances
 * Ability to switch single layers on/off in drawing detail view
