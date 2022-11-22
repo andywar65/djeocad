@@ -17,34 +17,34 @@ from .views import (
 app_name = "djeocad"
 urlpatterns = [
     path("", BaseListView.as_view(), name="base_list"),
-    path(_("author/<username>/"), AuthorListView.as_view(), name="author_list"),
+    path("<username>/", AuthorListView.as_view(), name="author_list"),
     path(
-        _("author/<username>/drawing/<pk>/"),
+        _("<username>/drawing/<pk>/"),
         DrawingDetailView.as_view(),
         name="drawing_detail",
     ),
     path(
-        _("author/<username>/drawing/add/"),
+        _("<username>/drawing/add/"),
         DrawingCreateView.as_view(),
         name="drawing_create",
     ),
     path(
-        _("author/<username>/drawing/<pk>/update/"),
+        _("<username>/drawing/<pk>/update/"),
         DrawingUpdateView.as_view(),
         name="drawing_update",
     ),
     path(
-        _("author/<username>/drawing/<pk>/delete/"),
+        _("<username>/drawing/<pk>/delete/"),
         DrawingDeleteView.as_view(),
         name="drawing_delete",
     ),
     path(
-        _("author/<username>/drawing/<pk>/layer-add/"),
+        _("<username>/drawing/<pk>/layer/add/"),
         LayerCreateView.as_view(),
         name="layer_create",
     ),
     path(
-        _("author/<username>/layer/<pk>/update/"),
+        _("<username>/layer/<pk>/update/"),
         LayerUpdateView.as_view(),
         name="layer_update",
     ),
