@@ -311,11 +311,11 @@ class LayerUpdateView(LoginRequiredMixin, UpdateView):
         )
 
 
-class LayerDeleteView(LoginRequiredMixin, TemplateView):
+class LayerDeleteInlineView(LoginRequiredMixin, TemplateView):
     template_name = "djeocad/htmx/item_delete.html"
 
     def setup(self, request, *args, **kwargs):
-        super(LayerDeleteView, self).setup(request, *args, **kwargs)
+        super(LayerDeleteInlineView, self).setup(request, *args, **kwargs)
         if not self.request.htmx:
             raise Http404(_("Request without HTMX headers"))
         layer = get_object_or_404(Layer, id=self.kwargs["pk"])

@@ -23,7 +23,7 @@
       {% trans "Modify" %}
     </a>
     <a class="btn btn-danger"
-      hx-get="{% url 'djeocad:layer_delete' pk=object.id %}"
+      hx-get="{% url 'djeocad:layer_delete_inline' pk=object.id %}"
       hx-target="#nav-card"
       hx-confirm="{% trans 'Are you sure you want to delete this layer?' %}">
       {% trans "Delete" %}

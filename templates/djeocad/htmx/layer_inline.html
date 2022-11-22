@@ -20,7 +20,7 @@
       <i class="fa fa-pencil"></i>
     </a>
     <button class="btn btn-danger"
-      hx-get="{% url 'djeocad:layer_delete' pk=layer.id %}"
+      hx-get="{% url 'djeocad:layer_delete_inline' pk=layer.id %}"
       hx-target="#layer-{{ layer.id }}"
       hx-swap="outerHTML"
       hx-confirm="{% trans 'Are you sure you want to delete this layer / block?' %}"
