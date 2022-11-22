@@ -33,7 +33,7 @@
     <h4>{% trans "Layers / Blocks" %}:</h4>
     {% if object.related_layers %}
       {% for layer in object.related_layers.all %}
-        {% include "djeocad/htmx/layer_detail.html" %}
+        {% include "djeocad/htmx/layer_inline.html" %}
       {% endfor %}
     {% else %}
       <p>{% trans "No layers yet" %}</p>

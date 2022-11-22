@@ -1,32 +1,37 @@
 {% load i18n %}
 
-<div id="layer-{{ layer.id }}" class="card mx-auto" style="margin-bottom: 20px">
-  <div class="card-header" style="background-color: {{ layer.color_field }}">
-
-  </div>
-  <div class="card-body">
-    <p>
-      {% if layer.is_block %}
-        {% trans 'Block' %}: <strong>{{ layer.name }}</strong> -
-      {% else %}
-        {% trans 'Layer' %}: <strong>{{ layer.name }}</strong> -
-      {% endif %}
-      {% trans 'ID' %}: <strong>{{ layer.id }}</strong> -
-      {% trans 'Color' %}: <strong>{{ layer.color_field }}</strong>
-    </p>
-    <a class="btn btn-primary"
-      href="{% url 'djeocad:layer_update' username=layer.drawing.user.username pk=layer.id %}"
-      title="{% trans 'Modify' %}">
-      <i class="fa fa-pencil"></i>
-    </a>
-    <button class="btn btn-danger"
-      hx-get="{% url 'djeocad:layer_delete' pk=layer.id %}"
-      hx-target="#layer-{{ layer.id }}"
-      hx-swap="outerHTML"
-      hx-confirm="{% trans 'Are you sure you want to delete this layer / block?' %}"
-      title="{% trans 'Delete' %}">
-      <i class="fa fa-trash-o"></i>
-      <span class="htmx-indicator spinner-border spinner-border-sm"></span>
-    </button>
-  </div>
+<div class="card-header">
+  <h4 class="card-title">{% trans "Layer"%}: {{ object }}</h4>
 </div>
+<div class="card-body">
+  <ul>
+    <li>
+      {% trans "Back to drawing"%}:
+      <a class="link-primary"
+        hx-get="{% url 'djeocad:drawing_detail' username=object.drawing.user.username pk=object.drawing.id %}"
+        hx-target="#nav-card"
+        hx-push-url="true">
+        {{ object.drawing.title }}
+      </a>
+    </li>
+  </ul>
+</div>
+{% if request.user == object.drawing.user %}
+  <div class="card-footer">
+    <a class="btn btn-primary"
+      href="{% url 'djeocad:layer_update' username=object.drawing.user.username pk=object.id %}">
+      {% trans "Modify" %}
+    </a>
+    <a class="btn btn-danger"
+      hx-get="{% url 'djeocad:layer_delete' pk=object.id %}"
+      hx-target="#nav-card"
+      hx-confirm="{% trans 'Are you sure you want to delete this layer?' %}">
+      {% trans "Delete" %}
+    </a>
+  </div>
+{% endif %}
+{% if crypto %}
+  {% load geojson_tags %}
+  <script id="{{ m_crypto }}" type="application/json">{{ drawings|geojsonfeature:"popupContent"|safe }}</script>
+  <script id="{{ l_crypto }}" type="application/json">{{ object|geojsonfeature:"popupContent"|safe }}</script>
+{% endif %}

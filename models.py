@@ -421,9 +421,14 @@ class Layer(models.Model):
 
     @property
     def popupContent(self):
-        title_str = "<h6>%(layer)s: %(title)s</h6>" % {
+        url = reverse(
+            "djeocad:layer_detail",
+            kwargs={"username": self.drawing.user.username, "pk": self.id},
+        )
+        title_str = '<h6>%(layer)s: <a href="%(url)s">%(title)s</a></h6>' % {
             "layer": _("Layer"),
             "title": self.name,
+            "url": url,
         }
         return {"content": title_str, "color": self.color_field}
 

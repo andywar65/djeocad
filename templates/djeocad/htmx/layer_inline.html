@@ -1,0 +1,32 @@
+{% load i18n %}
+
+<div id="layer-{{ layer.id }}" class="card mx-auto" style="margin-bottom: 20px">
+  <div class="card-header" style="background-color: {{ layer.color_field }}">
+
+  </div>
+  <div class="card-body">
+    <p>
+      {% if layer.is_block %}
+        {% trans 'Block' %}: <strong>{{ layer.name }}</strong> -
+      {% else %}
+        {% trans 'Layer' %}: <strong>{{ layer.name }}</strong> -
+      {% endif %}
+      {% trans 'ID' %}: <strong>{{ layer.id }}</strong> -
+      {% trans 'Color' %}: <strong>{{ layer.color_field }}</strong>
+    </p>
+    <a class="btn btn-primary"
+      href="{% url 'djeocad:layer_update' username=layer.drawing.user.username pk=layer.id %}"
+      title="{% trans 'Modify' %}">
+      <i class="fa fa-pencil"></i>
+    </a>
+    <button class="btn btn-danger"
+      hx-get="{% url 'djeocad:layer_delete' pk=layer.id %}"
+      hx-target="#layer-{{ layer.id }}"
+      hx-swap="outerHTML"
+      hx-confirm="{% trans 'Are you sure you want to delete this layer / block?' %}"
+      title="{% trans 'Delete' %}">
+      <i class="fa fa-trash-o"></i>
+      <span class="htmx-indicator spinner-border spinner-border-sm"></span>
+    </button>
+  </div>
+</div>
