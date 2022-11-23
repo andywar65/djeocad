@@ -421,14 +421,15 @@ class Layer(models.Model):
 
     @property
     def popupContent(self):
-        url = reverse(
-            "djeocad:layer_update",
-            kwargs={"username": self.drawing.user.username, "pk": self.id},
-        )
-        title_str = '<h6>%(layer)s: <a href="%(url)s">%(title)s</a></h6>' % {
-            "layer": _("Layer"),
+        if self.is_block:
+            ltype = _("Block")
+        else:
+            ltype = _("Layer")
+        title_str = "<h6>%(type)s: %(title)s, %(id)s: %(lid)d</h6>" % {
+            "type": ltype,
             "title": self.name,
-            "url": url,
+            "id": _("ID"),
+            "lid": self.id,
         }
         return {"content": title_str, "color": self.color_field}
 
@@ -501,6 +502,18 @@ class Insertion(models.Model):
     )
     geom = GeometryCollectionField(_("Entities"), default={})
 
+    __original_point = None
+    __original_rotation = None
+    __original_x_scale = None
+    __original_y_scale = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_point = self.point
+        self.__original_rotation = self.rotation
+        self.__original_x_scale = self.x_scale
+        self.__original_y_scale = self.y_scale
+
     @property
     def popupContent(self):
         title_str = """
@@ -515,3 +528,45 @@ class Insertion(models.Model):
             "bname": self.block.name,
         }
         return {"content": title_str, "color": self.layer.color_field}
+
+    def save(self, *args, **kwargs):
+        if (
+            self.__original_point != self.point
+            or self.__original_rotation != self.rotation
+            or self.__original_x_scale != self.x_scale
+            or self.__original_y_scale != self.y_scale
+        ):
+            if not self.layer.drawing.needs_refresh:
+                self.layer.drawing.needs_refresh = True
+                super(Drawing, self.layer.drawing).save()
+            geometries_b = []
+            for geom in self.block.geom["geometries"]:
+                if geom["type"] == "Polygon":
+                    vert = latlong2xy(geom["coordinates"][0], 0, 0)
+                else:
+                    vert = latlong2xy(geom["coordinates"], 0, 0)
+                long_b = self.point[0][0]
+                lat_b = self.point[0][1]
+                rot_b = radians(self.rotation)
+                vert = xy2latlong(
+                    vert, long_b, lat_b, rot_b, self.x_scale, self.y_scale
+                )
+                if geom["type"] == "Polygon":
+                    geometries_b.append(
+                        {
+                            "type": "Polygon",
+                            "coordinates": [vert],
+                        }
+                    )
+                else:
+                    geometries_b.append(
+                        {
+                            "type": "LineString",
+                            "coordinates": vert,
+                        }
+                    )
+            self.geom = {
+                "geometries": geometries_b,
+                "type": "GeometryCollection",
+            }
+        super(Insertion, self).save(*args, **kwargs)
