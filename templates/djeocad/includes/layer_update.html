@@ -28,4 +28,22 @@
       </form>
     </div>
   </div>
+  {% if object.is_block %}
+    <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
+      <h4>{% trans "Instances" %}:</h4>
+      {% if object.instances %}
+        <ul>
+          {% for inst in object.instances.all %}
+            <li>{{ inst.id }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>{% trans "No instances yet" %}</p>
+      {% endif %}
+      <a class="btn btn-primary"
+        href="#">
+        {% trans "Add instance" %}
+      </a>
+    </div>
+  {% endif %}
 {% endblock content %}
