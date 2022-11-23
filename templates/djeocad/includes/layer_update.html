@@ -6,7 +6,11 @@
   <div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
     <div class="card-header">
       <h4 class="card-title">
-        {% trans "Update layer"%}: {{ object }}
+        {% if object.is_block %}
+          {% trans "Update block"%}: {{ object.name }}, {% trans "ID"%}: {{ object.id }}
+        {% else %}
+          {% trans "Update layer"%}: {{ object.name }}, {% trans "ID"%}: {{ object.id }}
+        {% endif %}
       </h4>
     </div>
     <div class="card-body">
