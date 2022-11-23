@@ -1,0 +1,27 @@
+{% extends "djeocad/base_form.html" %}
+{% load bootstrap5 %}
+{% load i18n %}
+
+{% block content %}
+  <div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
+    <div class="card-header">
+      <h4 class="card-title">
+        {% trans "Update insertion"%}: {{ object.id }}, {% trans "Block"%}: {{ object.block.name }}
+      </h4>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input class="btn btn-primary"
+          type="submit"
+          value="{% trans 'Update' %}" />
+        <a class="btn btn-secondary"
+          href="{% url 'djeocad:layer_update' username=object.block.drawing.user.username pk=object.block.id %}"
+        >
+          {% trans "Discard" %}
+        </a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

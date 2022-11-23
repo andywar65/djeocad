@@ -6,7 +6,7 @@
       {% trans 'ID' %}: <strong>{{ insert.id }}</strong>
     </p>
     <a class="btn btn-primary"
-      href="#"
+      href="{% url 'djeocad:insert_update' username=insert.block.drawing.user.username pk=insert.id %}"
       title="{% trans 'Modify' %}">
       <i class="fa fa-pencil"></i>
     </a>

@@ -19,7 +19,7 @@ from django.views.generic import (
     UpdateView,
 )
 
-from .forms import DrawingCreateForm, LayerCreateForm
+from .forms import DrawingCreateForm, InsertionCreateForm, LayerCreateForm
 from .models import Drawing, Insertion, Layer
 
 User = get_user_model()
@@ -347,6 +347,31 @@ class LayerDeleteInlineView(LoginRequiredMixin, TemplateView):
             raise PermissionDenied
         messages.error(request, _('Layer "%s" deleted') % layer.name)
         layer.delete()
+
+
+class InsertionUpdateView(LoginRequiredMixin, UpdateView):
+    model = Insertion
+    form_class = InsertionCreateForm
+    template_name = "djeocad/includes/insertion_update.html"
+
+    def get_object(self, queryset=None):
+        self.object = super(InsertionUpdateView, self).get_object(queryset=None)
+        user = get_object_or_404(User, username=self.kwargs["username"])
+        if (
+            user != self.object.block.drawing.user
+            or self.request.user != self.object.block.drawing.user
+        ):
+            raise PermissionDenied
+        return self.object
+
+    def get_success_url(self):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={
+                "username": self.kwargs["username"],
+                "pk": self.object.block.drawing.id,
+            },
+        )
 
 
 class InsertionDeleteInlineView(LoginRequiredMixin, TemplateView):
