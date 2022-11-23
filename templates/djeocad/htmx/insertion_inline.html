@@ -1,0 +1,23 @@
+{% load i18n %}
+
+<div id="insert-{{ insert.id }}" class="card mx-auto" style="margin-bottom: 20px">
+  <div class="card-body">
+    <p>
+      {% trans 'ID' %}: <strong>{{ insert.id }}</strong>
+    </p>
+    <a class="btn btn-primary"
+      href="#"
+      title="{% trans 'Modify' %}">
+      <i class="fa fa-pencil"></i>
+    </a>
+    <button class="btn btn-danger"
+      hx-get="#"
+      hx-target="#insert-{{ insert.id }}"
+      hx-swap="outerHTML"
+      hx-confirm="{% trans 'Are you sure you want to delete this insert / block?' %}"
+      title="{% trans 'Delete' %}">
+      <i class="fa fa-trash-o"></i>
+      <span class="htmx-indicator spinner-border spinner-border-sm"></span>
+    </button>
+  </div>
+</div>

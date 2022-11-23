@@ -32,11 +32,9 @@
     <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
       <h4>{% trans "Instances" %}:</h4>
       {% if object.instances %}
-        <ul>
-          {% for inst in object.instances.all %}
-            <li>{{ inst.id }}</li>
-          {% endfor %}
-        </ul>
+        {% for insert in object.instances.all %}
+          {% include "djeocad/htmx/insertion_inline.html" %}
+        {% endfor %}
       {% else %}
         <p>{% trans "No instances yet" %}</p>
       {% endif %}
