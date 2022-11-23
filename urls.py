@@ -8,6 +8,7 @@ from .views import (
     DrawingDeleteView,
     DrawingDetailView,
     DrawingUpdateView,
+    InsertionDeleteInlineView,
     LayerCreateView,
     LayerDeleteInlineView,
     LayerDeleteView,
@@ -66,5 +67,10 @@ urlpatterns = [
         "layer/<pk>/delete/",
         LayerDeleteInlineView.as_view(),
         name="layer_delete_inline",
+    ),
+    path(
+        "insertion/<pk>/delete/",
+        InsertionDeleteInlineView.as_view(),
+        name="insert_delete_inline",
     ),
 ]
