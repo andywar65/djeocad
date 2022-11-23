@@ -422,7 +422,7 @@ class Layer(models.Model):
     @property
     def popupContent(self):
         url = reverse(
-            "djeocad:layer_detail",
+            "djeocad:layer_update",
             kwargs={"username": self.drawing.user.username, "pk": self.id},
         )
         title_str = '<h6>%(layer)s: <a href="%(url)s">%(title)s</a></h6>' % {
@@ -503,13 +503,15 @@ class Insertion(models.Model):
 
     @property
     def popupContent(self):
-        title_str = (
-            "<ul><li>%(layer)s: %(lname)s</li><li>%(block)s: %(bname)s</li></ul>"
-            % {
-                "layer": _("Layer"),
-                "lname": self.layer.name,
-                "block": _("Block"),
-                "bname": self.block.name,
-            }
-        )
+        title_str = """
+            <ul><li>%(id)s: %(iid)d</li><li>%(layer)s: %(lname)s</li>
+            <li>%(block)s: %(bname)s</li></ul>
+            """ % {
+            "id": _("ID"),
+            "iid": self.id,
+            "layer": _("Layer"),
+            "lname": self.layer.name,
+            "block": _("Block"),
+            "bname": self.block.name,
+        }
         return {"content": title_str, "color": self.layer.color_field}
