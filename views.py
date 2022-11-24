@@ -311,30 +311,6 @@ class LayerUpdateView(LoginRequiredMixin, UpdateView):
         )
 
 
-class LayerDeleteView(LoginRequiredMixin, RedirectView):
-    def setup(self, request, *args, **kwargs):
-        super(LayerDeleteView, self).setup(request, *args, **kwargs)
-        if not self.request.htmx:
-            raise Http404(_("Request without HTMX headers"))
-        get_object_or_404(User, username=self.kwargs["username"])
-        layer = get_object_or_404(Layer, id=self.kwargs["pk"])
-        self.drawing = layer.drawing
-        if request.user != self.drawing.user:
-            raise PermissionDenied
-        layer.delete()
-
-    def get_redirect_url(self, *args, **kwargs):
-        return reverse(
-            "djeocad:drawing_detail",
-            kwargs={"username": self.kwargs["username"], "pk": self.drawing.id},
-        )
-
-    def dispatch(self, request, *args, **kwargs):
-        response = super(LayerDeleteView, self).dispatch(request, *args, **kwargs)
-        response["HX-Request"] = True
-        return response
-
-
 class LayerDeleteInlineView(LoginRequiredMixin, TemplateView):
     template_name = "djeocad/htmx/item_delete.html"
 
