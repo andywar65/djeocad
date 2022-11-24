@@ -7,7 +7,7 @@ from colorfield.fields import ColorField
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
-from django.db import models
+from django.db import IntegrityError, models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from djgeojson.fields import GeometryCollectionField, PointField
@@ -444,7 +444,11 @@ class Layer(models.Model):
     def save(self, *args, **kwargs):
         if self.__original_name == "0":
             self.name = "0"
-        super(Layer, self).save(*args, **kwargs)
+        try:
+            super(Layer, self).save(*args, **kwargs)
+        except IntegrityError:
+            self.name = self.__original_name
+            super(Layer, self).save(*args, **kwargs)
         if not self.drawing.needs_refresh:
             self.drawing.needs_refresh = True
             super(Drawing, self.drawing).save()
