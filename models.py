@@ -285,15 +285,15 @@ class Drawing(models.Model):
                 block = Layer.objects.get(drawing_id=self.id, name=e.dxf.name)
             except Layer.DoesNotExist:
                 continue
-            point = xy2latlong([e.dxf.insert], longp, latp, rot, 1, 1)
+            point = xy2latlong([e.dxf.insert], longp, latp, rot, 1, 1)[0]
             geometries_b = []
             for geom in block.geom["geometries"]:
                 if geom["type"] == "Polygon":
                     vert = latlong2xy(geom["coordinates"][0], 0, 0)
                 else:
                     vert = latlong2xy(geom["coordinates"], 0, 0)
-                long_b = point[0][0]
-                lat_b = point[0][1]
+                long_b = point[0]
+                lat_b = point[1]
                 rot_b = rot + radians(e.dxf.rotation)
                 vert = xy2latlong(
                     vert, long_b, lat_b, rot_b, e.dxf.xscale, e.dxf.yscale
@@ -316,7 +316,7 @@ class Drawing(models.Model):
             Insertion.objects.create(
                 block=block,
                 layer=layer,
-                point=point,
+                point={"type": "Point", "coordinates": point},
                 rotation=e.dxf.rotation,
                 x_scale=e.dxf.xscale,
                 y_scale=e.dxf.yscale,
@@ -365,10 +365,10 @@ class Drawing(models.Model):
         # add insertions
         for drw_layer in drw_layers:
             for insert in drw_layer.insertions.all():
-                point = latlong2xy(insert.point, longp, latp)
+                point = latlong2xy(insert.point["coordinates"], longp, latp)
                 msp.add_blockref(
                     insert.block.name,
-                    point[0],
+                    point,
                     dxfattribs={
                         "xscale": insert.x_scale,
                         "yscale": insert.y_scale,
@@ -446,8 +446,8 @@ class Layer(models.Model):
                         vert = latlong2xy(geom["coordinates"][0], 0, 0)
                     else:
                         vert = latlong2xy(geom["coordinates"], 0, 0)
-                    long_b = insert.point[0][0]
-                    lat_b = insert.point[0][1]
+                    long_b = insert.point["coordinates"][0]
+                    lat_b = insert.point["coordinates"][1]
                     rot_b = radians(insert.rotation)
                     vert = xy2latlong(
                         vert, long_b, lat_b, rot_b, insert.x_scale, insert.y_scale
@@ -545,8 +545,8 @@ class Insertion(models.Model):
                     vert = latlong2xy(geom["coordinates"][0], 0, 0)
                 else:
                     vert = latlong2xy(geom["coordinates"], 0, 0)
-                long_b = self.point[0][0]
-                lat_b = self.point[0][1]
+                long_b = self.point["coordinates"][0]
+                lat_b = self.point["coordinates"][1]
                 rot_b = radians(self.rotation)
                 vert = xy2latlong(
                     vert, long_b, lat_b, rot_b, self.x_scale, self.y_scale
