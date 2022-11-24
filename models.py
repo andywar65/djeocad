@@ -466,7 +466,7 @@ class Layer(models.Model):
                                 "coordinates": vert,
                             }
                         )
-                insert.geom = {
+                insert.block_geom = {
                     "geometries": geometries_b,
                     "type": "GeometryCollection",
                 }
@@ -500,7 +500,7 @@ class Insertion(models.Model):
         _("Y scale"),
         default=1,
     )
-    geom = GeometryCollectionField(_("Entities"), default={})
+    block_geom = GeometryCollectionField(_("Entities"), default={})
 
     __original_point = None
     __original_rotation = None
@@ -565,7 +565,7 @@ class Insertion(models.Model):
                             "coordinates": vert,
                         }
                     )
-            self.geom = {
+            self.block_geom = {
                 "geometries": geometries_b,
                 "type": "GeometryCollection",
             }
