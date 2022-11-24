@@ -171,6 +171,12 @@ class DrawingUpdateView(LoginRequiredMixin, UpdateView):
             raise PermissionDenied
         return self.object
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["layers"] = self.object.related_layers.filter(is_block=False)
+        context["blocks"] = self.object.related_layers.filter(is_block=True)
+        return context
+
     def get_success_url(self):
         return reverse(
             "djeocad:drawing_detail",

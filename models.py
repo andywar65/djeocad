@@ -410,6 +410,12 @@ class Layer(models.Model):
     class Meta:
         verbose_name = _("Layer")
         verbose_name_plural = _("Layers")
+        ordering = ("name",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["drawing", "name"], name="unique_layer_name"
+            ),
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
