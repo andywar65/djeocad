@@ -19,9 +19,18 @@ class LayerCreateForm(ModelForm):
 
 
 class InsertionCreateForm(ModelForm):
+    def __init__(self, **kwargs):
+        super(InsertionCreateForm, self).__init__(**kwargs)
+        # filter layer queryset
+        layer = Layer.objects.get(id=self.initial["layer"])
+        self.fields["layer"].queryset = Layer.objects.filter(
+            drawing_id=layer.drawing.id, is_block=False
+        )
+
     class Meta:
         model = Insertion
         fields = [
+            "layer",
             "point",
             "rotation",
             "x_scale",
