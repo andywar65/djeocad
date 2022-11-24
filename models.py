@@ -404,6 +404,7 @@ class Layer(models.Model):
         editable=False,
     )
 
+    __original_name = None
     __original_geom = None
 
     class Meta:
@@ -412,6 +413,7 @@ class Layer(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.__original_name = self.name
         self.__original_geom = self.geom
 
     def __str__(self):
@@ -434,6 +436,8 @@ class Layer(models.Model):
         return {"content": title_str, "color": self.color_field}
 
     def save(self, *args, **kwargs):
+        if self.__original_name == "0":
+            self.name = "0"
         super(Layer, self).save(*args, **kwargs)
         if not self.drawing.needs_refresh:
             self.drawing.needs_refresh = True
