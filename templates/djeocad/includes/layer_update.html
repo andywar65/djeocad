@@ -39,7 +39,7 @@
         <p>{% trans "No instances yet" %}</p>
       {% endif %}
       <a class="btn btn-primary"
-        href="#">
+        href="{% url 'djeocad:insert_create' username=object.drawing.user.username pk=object.id %}">
         {% trans "Add instance" %}
       </a>
     </div>

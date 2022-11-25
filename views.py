@@ -325,10 +325,53 @@ class LayerDeleteInlineView(LoginRequiredMixin, TemplateView):
         if not self.request.htmx:
             raise Http404(_("Request without HTMX headers"))
         layer = get_object_or_404(Layer, id=self.kwargs["pk"])
+        if layer.name == "0":
+            raise Http404(_("Can't delete layer '0'"))
         if request.user != layer.drawing.user:
             raise PermissionDenied
         messages.error(request, _('Layer "%s" deleted') % layer.name)
         layer.delete()
+
+
+class InsertionCreateView(LoginRequiredMixin, CreateView):
+    model = Insertion
+    form_class = InsertionCreateForm
+    template_name = "djeocad/includes/insertion_create.html"
+
+    def setup(self, request, *args, **kwargs):
+        super(InsertionCreateView, self).setup(request, *args, **kwargs)
+        get_object_or_404(User, username=self.kwargs["username"])
+        self.block = get_object_or_404(Layer, id=self.kwargs["pk"])
+        if not self.block.is_block:
+            raise Http404(_("Layer is not a block"))
+        if request.user != self.block.drawing.user:
+            raise PermissionDenied
+
+    def get_initial(self):
+        initial = super(InsertionCreateView, self).get_initial()
+        initial["layer"] = Layer.objects.get(
+            drawing_id=self.block.drawing.id, name="0"
+        ).id
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # 'blok' is not a typo
+        context["blok"] = self.block
+        return context
+
+    def form_valid(self, form):
+        form.instance.block = self.block
+        return super(InsertionCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={
+                "username": self.kwargs["username"],
+                "pk": self.block.drawing.id,
+            },
+        )
 
 
 class InsertionUpdateView(LoginRequiredMixin, UpdateView):

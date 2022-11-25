@@ -8,6 +8,7 @@ from .views import (
     DrawingDeleteView,
     DrawingDetailView,
     DrawingUpdateView,
+    InsertionCreateView,
     InsertionDeleteInlineView,
     InsertionUpdateView,
     LayerCreateView,
@@ -57,7 +58,12 @@ urlpatterns = [
         name="layer_update",
     ),
     path(
-        _("<username>/insertion/<pk>/update/"),
+        _("<username>/block/<pk>/instance/add/"),
+        InsertionCreateView.as_view(),
+        name="insert_create",
+    ),
+    path(
+        _("<username>/block-instance/<pk>/update/"),
         InsertionUpdateView.as_view(),
         name="insert_update",
     ),
