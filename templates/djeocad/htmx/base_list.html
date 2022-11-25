@@ -30,7 +30,4 @@
     </a>
   </div>
 {% endif %}
-{% if crypto %}
-  {% load geojson_tags %}
-  <script id="{{ crypto }}" type="application/json">{{ drawings|geojsonfeature:"popupContent"|safe }}</script>
-{% endif %}
+{% include "djeocad/includes/map_data.html" %}

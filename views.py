@@ -52,15 +52,12 @@ class BaseListView(HxPageTemplateMixin, ListView):
         authors = Drawing.objects.values_list("user__username", flat=True)
         context["authors"] = list(dict.fromkeys(authors))
         context["mapbox_token"] = settings.MAPBOX_TOKEN
-        if self.request.htmx:
-            self.crypto = get_random_string(7)
-            context["crypto"] = self.crypto
         return context
 
     def dispatch(self, request, *args, **kwargs):
         response = super(BaseListView, self).dispatch(request, *args, **kwargs)
         if request.htmx:
-            dict = {"getMarkerCollection": self.crypto}
+            dict = {"refreshCollections": True}
             response["HX-Trigger-After-Swap"] = json.dumps(dict)
         return response
 
@@ -87,15 +84,12 @@ class AuthorListView(HxPageTemplateMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["author"] = self.author
         context["mapbox_token"] = settings.MAPBOX_TOKEN
-        if self.request.htmx:
-            self.crypto = get_random_string(7)
-            context["crypto"] = self.crypto
         return context
 
     def dispatch(self, request, *args, **kwargs):
         response = super(AuthorListView, self).dispatch(request, *args, **kwargs)
         if request.htmx:
-            dict = {"getMarkerCollection": self.crypto}
+            dict = {"refreshCollections": True}
             response["HX-Trigger-After-Swap"] = json.dumps(dict)
         return response
 
@@ -120,25 +114,13 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
         context["blocks"] = Insertion.objects.none()
         for layer in context["lines"]:
             context["blocks"] = context["blocks"] | layer.insertions.all()
-        if self.request.htmx:
-            self.m_crypto = get_random_string(7)
-            context["m_crypto"] = self.m_crypto
-            self.l_crypto = get_random_string(7)
-            context["l_crypto"] = self.l_crypto
-            self.b_crypto = get_random_string(7)
-            context["b_crypto"] = self.b_crypto
-        else:
-            context["drawings"] = self.object
+        context["drawings"] = self.object
         return context
 
     def dispatch(self, request, *args, **kwargs):
         response = super(DrawingDetailView, self).dispatch(request, *args, **kwargs)
         if request.htmx:
-            dict = {
-                "getMarkerCollection": self.m_crypto,
-                "getLineCollection": self.l_crypto,
-                "getBlockCollection": self.b_crypto,
-            }
+            dict = {"refreshCollections": True}
             response["HX-Trigger-After-Swap"] = json.dumps(dict)
         return response
 
