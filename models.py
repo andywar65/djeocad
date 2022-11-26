@@ -109,7 +109,10 @@ class Drawing(models.Model):
         if not image:
             return {"content": title_str + intro_str}
         image_str = '<img src="%(image)s">' % {"image": image}
-        return {"content": title_str + image_str + intro_str}
+        return {
+            "content": title_str + image_str + intro_str,
+            "layer": self.user.username,
+        }
 
     def get_thumbnail_path(self):
         if not self.fb_image:

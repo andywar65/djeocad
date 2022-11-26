@@ -44,15 +44,23 @@ function map_init(map, options) {
     layer_control.addBaseLayer(base_map, "Base");
     layer_control.addBaseLayer(sat_map, "Satellite");
     // add other layers to map and layer control
-    let mk_layer = L.layerGroup().addTo(map);
+    let collection = JSON.parse(document.getElementById("author_data").textContent);
+    for (author of collection) {
+      window[author] = L.layerGroup().addTo(map);
+      layer_control.addOverlay(window[author], author);
+    }
+    // let mk_layer = L.layerGroup().addTo(map);
     let ln_layer = L.layerGroup().addTo(map);
     layer_control.addOverlay(mk_layer, "Markers");
     layer_control.addOverlay(ln_layer, "lines");
     // add objects to layers
-    let collection = JSON.parse(document.getElementById("marker_data").textContent);
-    let markers = L.geoJson(collection, {onEachFeature: onEachFeature});
-    markers.addTo(mk_layer);
-    map.fitBounds(markers.getBounds(), {padding: [30,30]});
+    collection = JSON.parse(document.getElementById("marker_data").textContent);
+    for (marker of collection.features) {
+      L.geoJson(marker, {onEachFeature: onEachFeature}).addTo(window[marker.properties.popupContent.layer]);
+    }
+    // let markers = L.geoJson(collection, {onEachFeature: onEachFeature});
+    // markers.addTo(mk_layer);
+    map.fitBounds(L.geoJson(collection).getBounds(), {padding: [30,30]});
     collection = JSON.parse(document.getElementById("line_data").textContent);
     let lines = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
     lines.addTo(ln_layer);
