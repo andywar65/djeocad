@@ -14,7 +14,7 @@ function map_init(map, options) {
     {
       attribution: '',
       maxZoom: 19,
-    }).addTo(map);
+    });
 
   const mapbox_token = JSON.parse(document.getElementById("mapbox_token").textContent);
 
@@ -28,24 +28,27 @@ function map_init(map, options) {
       accessToken: mapbox_token
     });
 
-  let mk_layer = L.layerGroup().addTo(map);
-  let ln_layer = L.layerGroup().addTo(map);
-
-  const baseMaps = {
-    "Base": base_map,
-    "Satellite": sat_map
-  };
-
-  const overlayMaps = {
-    "Markers": mk_layer,
-    "Drawings": ln_layer
-  };
-
-  L.control.layers(baseMaps, overlayMaps).addTo(map);
+  const layer_control = L.control.layers(null).addTo(map);
 
   function getCollections() {
-    mk_layer.clearLayers();
-    ln_layer.clearLayers();
+    // add eventually inactive base layers so they can be removed
+    base_map.addTo(map);
+    sat_map.addTo(map);
+    // remove all layers from layer control and from map
+    map.eachLayer(function (layer) {
+      layer_control.removeLayer(layer);
+      map.removeLayer(layer);
+    });
+    // add base layers back to map and layer control
+    base_map.addTo(map);
+    layer_control.addBaseLayer(base_map, "Base");
+    layer_control.addBaseLayer(sat_map, "Satellite");
+    // add other layers to map and layer control
+    let mk_layer = L.layerGroup().addTo(map);
+    let ln_layer = L.layerGroup().addTo(map);
+    layer_control.addOverlay(mk_layer, "Markers");
+    layer_control.addOverlay(ln_layer, "lines");
+    // add objects to layers
     let collection = JSON.parse(document.getElementById("marker_data").textContent);
     let markers = L.geoJson(collection, {onEachFeature: onEachFeature});
     markers.addTo(mk_layer);
@@ -58,7 +61,7 @@ function map_init(map, options) {
     blocks.addTo(ln_layer);
   }
 
-  getCollections();
+  getCollections()
 
   addEventListener("refreshCollections", function(evt){
     getCollections();

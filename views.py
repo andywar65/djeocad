@@ -74,7 +74,7 @@ class AuthorListView(HxPageTemplateMixin, ListView):
     def get_queryset(self):
         self.qs = Drawing.objects.filter(user_id=self.author.uuid, private=False)
         if self.request.user == self.author:
-            qs2 = Drawing.objects.filter(user_id=self.athor.uuid, private=True)
+            qs2 = Drawing.objects.filter(user_id=self.author.uuid, private=True)
             self.qs = self.qs | qs2
         return self.qs.order_by(
             "id",
