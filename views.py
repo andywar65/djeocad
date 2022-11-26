@@ -50,7 +50,7 @@ class BaseListView(HxPageTemplateMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         authors = Drawing.objects.values_list("user__username", flat=True)
-        context["authors"] = list(dict.fromkeys(authors))
+        context["author_list"] = list(dict.fromkeys(authors))
         context["mapbox_token"] = settings.MAPBOX_TOKEN
         return context
 
@@ -83,6 +83,7 @@ class AuthorListView(HxPageTemplateMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["author"] = self.author
+        context["author_list"] = [self.author.username]
         context["mapbox_token"] = settings.MAPBOX_TOKEN
         return context
 
@@ -115,6 +116,7 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
         for layer in context["lines"]:
             context["blocks"] = context["blocks"] | layer.insertions.all()
         context["drawings"] = self.object
+        context["author_list"] = [self.object.user.username]
         return context
 
     def dispatch(self, request, *args, **kwargs):

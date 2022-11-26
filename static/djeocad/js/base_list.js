@@ -51,7 +51,7 @@ function map_init(map, options) {
     }
     // let mk_layer = L.layerGroup().addTo(map);
     let ln_layer = L.layerGroup().addTo(map);
-    layer_control.addOverlay(mk_layer, "Markers");
+    // layer_control.addOverlay(mk_layer, "Markers");
     layer_control.addOverlay(ln_layer, "lines");
     // add objects to layers
     collection = JSON.parse(document.getElementById("marker_data").textContent);

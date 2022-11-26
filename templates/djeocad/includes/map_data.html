@@ -3,4 +3,4 @@
 <script id="marker_data" type="application/json">{{ drawings|geojsonfeature:"popupContent"|safe }}</script>
 <script id="line_data" type="application/json">{{ lines|geojsonfeature:"popupContent"|safe }}</script>
 <script id="block_data" type="application/json">{{ blocks|geojsonfeature:"popupContent"|safe }}</script>
-{{ authors|json_script:"author_data" }}
+{{ author_list|json_script:"author_data" }}
