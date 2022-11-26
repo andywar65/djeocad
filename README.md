@@ -1,7 +1,7 @@
-# django-geocad 1.4.0
+# django-geocad 1.5.0
 Django app that imports CAD drawings in Leaflet maps
 ## Overview
-Show CAD drawings with no geo location in interactive web maps. Change / add layers to drawings, change / add elements to layers, download changed DXF files.
+Show CAD drawings with no geo location in interactive web maps. Change / add layers to drawings, change / add elements to layers, change blocks and change / add it's instances, download changed DXF files.
 ## Requirements
 This app is tested on Django 4.1 and Python 3.10.0. It relies on [django-leaflet](https://django-leaflet.readthedocs.io/en/latest/index.html/) as map engine, [django-geojson](https://django-geojson.readthedocs.io/en/latest/) for storing geodata, [django-filebrowser](https://django-filebrowser.readthedocs.io/en/latest/) for managing pictures, [ezdxf](https://ezdxf.mozman.at/) for for handling DXF files, [django-colorfield](https://github.com/fabiocaccamo/django-colorfield) for admin color fields and [django-htmx](https://django-htmx.readthedocs.io/en/latest/) for interactions. I use [Bootstrap 5](https://getbootstrap.com/) for styling. I develop this app inside my personal [starter project](https://github.com/andywar65/project_repo/tree/architettura) that provides all the libraries you need, along with an authentication engine. If you want to embed `django-geocad` into your project you will need to make some tweaks.
 ## Installation
@@ -26,12 +26,15 @@ So back to our admin panel, let's add a Drawing. You will have to select the `Au
 a `Title`, a short description, an image and the `DXF file`. In the map select the location of your
 `WCS origin`, then enter the `Rotation` (angle with respect to True North). Eventually check `Private` to prevent other users from viewing your drawing.
 Press the `Save and continue` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `ARC`, `CIRCLE`, `LINE` and `LWPOLYLINE` entities are visible on the map panel. It is possible to change layer name and layer entities.
-If unnested `BLOCKS` are present in the drawing, they will be extracted and inserted on respective layer. Please notice that all entities forming the `BLOCK` will be placed on layer `0`. `Blocks` share the same model as `Layers`, so they can be modified in admin. You will be dealing with the `Block` itself, not with it's instances. Insertion point is at (LAT=0, LONG=0).
+If unnested `BLOCKS` are present in the drawing, they will be extracted and inserted on respective layer. Please notice that all entities forming the `BLOCK` will be placed on layer `0`. `Blocks` share the same model as `Layers`, so they can be modified in frontend. Insertion point is at (LAT=0, LONG=0). When updating a `Block` you will be able to access it's instances.
 ## On the frontend
-On the navigation bar look for `Projects/GeoCAD`. Two `List` frontend views are implemented: `List of all drawings`, `List by author`, where drawings are just markers on the map. Note that `private` drawings will be hidden from non authors in all views. Click on a marker and follow the link in the popup: you will land on the `Drawing Detail` page, with layers displayed on the map. If you are the author of this drawing, you can access all `CRUD` views for `Drawings` and `Layers`. Note that all entities on a layer inherit layer color.
+On the navigation bar look for `Projects/GeoCAD`. Two `List` frontend views are implemented: `List of all drawings`, `List by author`, where drawings are just markers on the map. Note that `private` drawings will be hidden from non authors in all views. Click on a marker and follow the link in the popup: you will land on the `Drawing Detail` page, with layers displayed on the map. If you are the author of this drawing, you can access all `CRUD` views for `Drawings`, `Layers` and `Insertions`. Note that all entities on a layer inherit layer color.
 ## Downloading
 In `Drawing Detail` view it is possible to download back the (eventually modified) `DXF file`. Some limitations apply: the `True North` will be respected, `ARC` and `CIRCLE` entities will be approximated to `LWPOLYLINES`, and `Layers` will have `True Colors` instead of `ACI Colors`.
 Beware that if layers have been modified and a download is performed, the stored file will be replaced too, and rotation will be set to zero (True North).
+## Changelog v1.5.0
+* CRUD of block instances
+* Ability to switch single layers on/off in drawing detail view
 ## Changelog v1.4.0
 * Extended CRUD on frontend
 ## Changelog v1.3.0
@@ -40,5 +43,4 @@ Beware that if layers have been modified and a download is performed, the stored
 * Extract ARC and CIRCLE entities
 * Download drawings as DXF
 ## Further improvements
-* CRUD of block instances
-* Ability to switch single layers on/off in drawing detail view
+* Open to suggestions
