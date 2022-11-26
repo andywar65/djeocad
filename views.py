@@ -117,6 +117,8 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
             context["blocks"] = context["blocks"] | layer.insertions.all()
         context["drawings"] = self.object
         context["author_list"] = [self.object.user.username]
+        layer_list = context["lines"].values_list("name", flat=True)
+        context["layer_list"] = list(dict.fromkeys(layer_list))
         return context
 
     def dispatch(self, request, *args, **kwargs):

@@ -49,24 +49,38 @@ function map_init(map, options) {
       window[author] = L.layerGroup().addTo(map);
       layer_control.addOverlay(window[author], author);
     }
-    // let mk_layer = L.layerGroup().addTo(map);
-    let ln_layer = L.layerGroup().addTo(map);
-    // layer_control.addOverlay(mk_layer, "Markers");
-    layer_control.addOverlay(ln_layer, "lines");
+    collection = JSON.parse(document.getElementById("layer_data").textContent);
+    if (collection !== null) {
+      for (layer_name of collection) {
+        let name = "Layer - " + layer_name
+        window[name] = L.layerGroup().addTo(map);
+        layer_control.addOverlay(window[name], name);
+      }
+    }
     // add objects to layers
     collection = JSON.parse(document.getElementById("marker_data").textContent);
     for (marker of collection.features) {
       L.geoJson(marker, {onEachFeature: onEachFeature}).addTo(window[marker.properties.popupContent.layer]);
     }
-    // let markers = L.geoJson(collection, {onEachFeature: onEachFeature});
-    // markers.addTo(mk_layer);
     map.fitBounds(L.geoJson(collection).getBounds(), {padding: [30,30]});
     collection = JSON.parse(document.getElementById("line_data").textContent);
-    let lines = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
-    lines.addTo(ln_layer);
+    if (collection !== null) {
+      for (line of collection.features) {
+        let name = "Layer - " + line.properties.popupContent.layer
+        L.geoJson(line, {style: setLineStyle, onEachFeature: onEachFeature}).addTo(window[name]);
+      }
+    }
+    // let lines = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
+    // lines.addTo(ln_layer);
     collection = JSON.parse(document.getElementById("block_data").textContent);
-    let blocks = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
-    blocks.addTo(ln_layer);
+    if (collection !== null) {
+      for (block of collection.features) {
+        let name = "Layer - " + block.properties.popupContent.layer
+        L.geoJson(block, {style: setLineStyle, onEachFeature: onEachFeature}).addTo(window[name]);
+      }
+    }
+    // let blocks = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
+    // blocks.addTo(ln_layer);
   }
 
   getCollections()

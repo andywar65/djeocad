@@ -442,7 +442,11 @@ class Layer(models.Model):
             "id": _("ID"),
             "lid": self.id,
         }
-        return {"content": title_str, "color": self.color_field}
+        return {
+            "content": title_str,
+            "color": self.color_field,
+            "layer": self.name,
+        }
 
     def save(self, *args, **kwargs):
         if self.__original_name == "0":
@@ -544,7 +548,11 @@ class Insertion(models.Model):
             "block": _("Block"),
             "bname": self.block.name,
         }
-        return {"content": title_str, "color": self.layer.color_field}
+        return {
+            "content": title_str,
+            "color": self.layer.color_field,
+            "layer": self.layer.name,
+        }
 
     def save(self, *args, **kwargs):
         if (
