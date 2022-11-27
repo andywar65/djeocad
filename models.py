@@ -528,6 +528,9 @@ class Insertion(models.Model):
     __original_x_scale = None
     __original_y_scale = None
 
+    class Meta:
+        ordering = ("-id",)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__original_point = self.point
@@ -553,6 +556,12 @@ class Insertion(models.Model):
             "color": self.layer.color_field,
             "layer": self.layer.name,
         }
+
+    def explode_instance(self):
+        self.layer.geom["geometries"] = (
+            self.layer.geom["geometries"] + self.geom["geometries"]
+        )
+        self.layer.save()
 
     def save(self, *args, **kwargs):
         if (

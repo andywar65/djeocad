@@ -1,15 +1,28 @@
 {% load i18n %}
 
 <div id="insert-{{ insert.id }}" class="card mx-auto" style="margin-bottom: 20px">
+  <div class="card-header" style="background-color: {{ insert.layer.color_field }}">
+
+  </div>
   <div class="card-body">
     <p>
-      {% trans 'ID' %}: <strong>{{ insert.id }}</strong>
+      {% trans 'ID' %}: <strong>{{ insert.id }}</strong>,
+      {% trans 'Layer' %}: <strong>{{ insert.layer.name }}</strong>
     </p>
     <a class="btn btn-primary"
       href="{% url 'djeocad:insert_update' username=insert.block.drawing.user.username pk=insert.id %}"
       title="{% trans 'Modify' %}">
       <i class="fa fa-pencil"></i>
     </a>
+    <button class="btn btn-warning"
+      hx-get="{% url 'djeocad:insert_explode_inline' pk=insert.id %}"
+      hx-target="#insert-{{ insert.id }}"
+      hx-swap="outerHTML"
+      hx-confirm="{% trans 'Are you sure you want to explode this block instance?' %}"
+      title="{% trans 'Explode block instance to insertion layer' %}">
+      <i class="fa fa-bomb"></i>
+      <span class="htmx-indicator spinner-border spinner-border-sm"></span>
+    </button>
     <button class="btn btn-danger"
       hx-get="{% url 'djeocad:insert_delete_inline' pk=insert.id %}"
       hx-target="#insert-{{ insert.id }}"

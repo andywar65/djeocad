@@ -10,6 +10,7 @@ from .views import (
     DrawingUpdateView,
     InsertionCreateView,
     InsertionDeleteInlineView,
+    InsertionExplodeInlineView,
     InsertionUpdateView,
     LayerCreateView,
     LayerDeleteInlineView,
@@ -73,6 +74,11 @@ urlpatterns = [
         "layer/<pk>/delete/",
         LayerDeleteInlineView.as_view(),
         name="layer_delete_inline",
+    ),
+    path(
+        "insertion/<pk>/explode/",
+        InsertionExplodeInlineView.as_view(),
+        name="insert_explode_inline",
     ),
     path(
         "insertion/<pk>/delete/",

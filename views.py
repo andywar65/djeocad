@@ -399,6 +399,21 @@ class InsertionDeleteInlineView(LoginRequiredMixin, TemplateView):
         insert.delete()
 
 
+class InsertionExplodeInlineView(LoginRequiredMixin, TemplateView):
+    template_name = "djeocad/htmx/item_delete.html"
+
+    def setup(self, request, *args, **kwargs):
+        super(InsertionExplodeInlineView, self).setup(request, *args, **kwargs)
+        if not self.request.htmx:
+            raise Http404(_("Request without HTMX headers"))
+        insert = get_object_or_404(Insertion, id=self.kwargs["pk"])
+        if request.user != insert.block.drawing.user:
+            raise PermissionDenied
+        messages.error(request, _('Insertion "%d" exploded') % insert.id)
+        insert.explode_instance()
+        insert.delete()
+
+
 def drawing_download(request, pk):
     drawing = get_object_or_404(Drawing, id=pk)
     if drawing.private:
