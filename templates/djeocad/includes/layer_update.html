@@ -28,8 +28,8 @@
       </form>
     </div>
   </div>
-  {% if object.is_block %}
-    <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
+  <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
+    {% if object.is_block %}
       <h4>{% trans "Instances" %}:</h4>
       {% if object.instances %}
         {% for insert in object.instances.all %}
@@ -42,6 +42,12 @@
         href="{% url 'djeocad:insert_create' username=object.drawing.user.username pk=object.id %}">
         {% trans "Add instance" %}
       </a>
-    </div>
-  {% endif %}
+    {% else %}
+      <a class="btn btn-success"
+        href="{% url 'djeocad:layer_to_block' username=object.drawing.user.username pk=object.id %}"
+      >
+        {% trans "Transform layer to block" %}
+      </a>
+    {% endif %}
+  </div>
 {% endblock content %}

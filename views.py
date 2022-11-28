@@ -308,6 +308,26 @@ class LayerUpdateView(PermissionRequiredMixin, UpdateView):
         )
 
 
+class LayerToBlockView(PermissionRequiredMixin, RedirectView):
+    permission_required = "djeocad.change_layer"
+
+    def setup(self, request, *args, **kwargs):
+        super(LayerToBlockView, self).setup(request, *args, **kwargs)
+        get_object_or_404(User, username=self.kwargs["username"])
+        self.layer = get_object_or_404(Layer, id=self.kwargs["pk"])
+        if request.user != self.layer.drawing.user:
+            raise PermissionDenied
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={
+                "username": self.kwargs["username"],
+                "pk": self.layer.drawing.id,
+            },
+        )
+
+
 class LayerDeleteInlineView(PermissionRequiredMixin, TemplateView):
     permission_required = "djeocad.delete_layer"
     template_name = "djeocad/htmx/item_delete.html"
