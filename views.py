@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -31,8 +31,7 @@ class HxPageTemplateMixin:
     def get_template_names(self):
         if not self.request.htmx:
             return [self.template_name.replace("htmx/", "")]
-        else:
-            return [self.template_name]
+        return [self.template_name]
 
 
 class BaseListView(HxPageTemplateMixin, ListView):
@@ -129,10 +128,11 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
         return response
 
 
-class DrawingCreateView(LoginRequiredMixin, CreateView):
+class DrawingCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = "djeocad.drawing_create"
     model = Drawing
     form_class = DrawingCreateForm
-    template_name = "djeocad/includes/drawing_create.html"
+    template_name = "djeocad/includes/add_drawing.html"
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -145,7 +145,8 @@ class DrawingCreateView(LoginRequiredMixin, CreateView):
         )
 
 
-class DrawingUpdateView(LoginRequiredMixin, UpdateView):
+class DrawingUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = "djeocad.change_drawing"
     model = Drawing
     form_class = DrawingCreateForm
     template_name = "djeocad/includes/drawing_update.html"
@@ -170,7 +171,9 @@ class DrawingUpdateView(LoginRequiredMixin, UpdateView):
         )
 
 
-class DrawingDeleteView(LoginRequiredMixin, RedirectView):
+class DrawingDeleteView(PermissionRequiredMixin, RedirectView):
+    permission_required = "djeocad.delete_drawing"
+
     def setup(self, request, *args, **kwargs):
         super(DrawingDeleteView, self).setup(request, *args, **kwargs)
         if not self.request.htmx:
@@ -232,7 +235,8 @@ class LayerDetailView(HxPageTemplateMixin, DetailView):
         return response
 
 
-class LayerCreateView(LoginRequiredMixin, CreateView):
+class LayerCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = "djeocad.add_layer"
     model = Layer
     form_class = LayerCreateForm
     template_name = "djeocad/includes/layer_create.html"
@@ -269,7 +273,8 @@ class LayerCreateView(LoginRequiredMixin, CreateView):
         )
 
 
-class LayerUpdateView(LoginRequiredMixin, UpdateView):
+class LayerUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = "djeocad.change_layer"
     model = Layer
     form_class = LayerCreateForm
     template_name = "djeocad/includes/layer_update.html"
@@ -303,7 +308,8 @@ class LayerUpdateView(LoginRequiredMixin, UpdateView):
         )
 
 
-class LayerDeleteInlineView(LoginRequiredMixin, TemplateView):
+class LayerDeleteInlineView(PermissionRequiredMixin, TemplateView):
+    permission_required = "djeocad.delete_layer"
     template_name = "djeocad/htmx/item_delete.html"
 
     def setup(self, request, *args, **kwargs):
@@ -315,11 +321,12 @@ class LayerDeleteInlineView(LoginRequiredMixin, TemplateView):
             raise Http404(_("Can't delete layer '0'"))
         if request.user != layer.drawing.user:
             raise PermissionDenied
-        messages.error(request, _('Layer "%s" deleted') % layer.name)
         layer.delete()
+        messages.error(request, _('Layer "%s" deleted') % layer.name)
 
 
-class InsertionCreateView(LoginRequiredMixin, CreateView):
+class InsertionCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = "djeocad.add_insertion"
     model = Insertion
     form_class = InsertionCreateForm
     template_name = "djeocad/includes/insertion_create.html"
@@ -360,7 +367,8 @@ class InsertionCreateView(LoginRequiredMixin, CreateView):
         )
 
 
-class InsertionUpdateView(LoginRequiredMixin, UpdateView):
+class InsertionUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = "djeocad.change_insertion"
     model = Insertion
     form_class = InsertionCreateForm
     template_name = "djeocad/includes/insertion_update.html"
@@ -385,7 +393,8 @@ class InsertionUpdateView(LoginRequiredMixin, UpdateView):
         )
 
 
-class InsertionDeleteInlineView(LoginRequiredMixin, TemplateView):
+class InsertionDeleteInlineView(PermissionRequiredMixin, TemplateView):
+    permission_required = "djeocad.delete_insertion"
     template_name = "djeocad/htmx/item_delete.html"
 
     def setup(self, request, *args, **kwargs):
@@ -395,11 +404,12 @@ class InsertionDeleteInlineView(LoginRequiredMixin, TemplateView):
         insert = get_object_or_404(Insertion, id=self.kwargs["pk"])
         if request.user != insert.block.drawing.user:
             raise PermissionDenied
-        messages.error(request, _('Insertion "%d" deleted') % insert.id)
         insert.delete()
+        messages.error(request, _('Insertion "%d" deleted') % insert.id)
 
 
-class InsertionExplodeInlineView(LoginRequiredMixin, TemplateView):
+class InsertionExplodeInlineView(PermissionRequiredMixin, TemplateView):
+    permission_required = "djeocad.delete_insertion"
     template_name = "djeocad/htmx/item_delete.html"
 
     def setup(self, request, *args, **kwargs):
@@ -409,9 +419,9 @@ class InsertionExplodeInlineView(LoginRequiredMixin, TemplateView):
         insert = get_object_or_404(Insertion, id=self.kwargs["pk"])
         if request.user != insert.block.drawing.user:
             raise PermissionDenied
-        messages.error(request, _('Insertion "%d" exploded') % insert.id)
         insert.explode_instance()
         insert.delete()
+        messages.error(request, _('Insertion "%d" exploded') % insert.id)
 
 
 def drawing_download(request, pk):

@@ -24,14 +24,14 @@ urlpatterns = [
     path("", BaseListView.as_view(), name="base_list"),
     path("<username>/", AuthorListView.as_view(), name="author_list"),
     path(
-        _("<username>/drawing/<pk>/"),
-        DrawingDetailView.as_view(),
-        name="drawing_detail",
-    ),
-    path(
         _("<username>/drawing/add/"),
         DrawingCreateView.as_view(),
         name="drawing_create",
+    ),
+    path(
+        _("<username>/drawing/<pk>/"),
+        DrawingDetailView.as_view(),
+        name="drawing_detail",
     ),
     path(
         _("<username>/drawing/<pk>/update/"),
