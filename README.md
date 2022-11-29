@@ -1,4 +1,4 @@
-# django-geocad 1.5.0
+# django-geocad 1.6.0
 Django app that imports CAD drawings in Leaflet maps
 ## Overview
 Show CAD drawings with no geo location in interactive web maps. Change / add layers to drawings, change / add elements to layers, change blocks and change / add it's instances, download changed DXF files.
@@ -11,27 +11,26 @@ In your project root type `git clone https://github.com/andywar65/djeocad`, add 
     "DEFAULT_ZOOM": 10,
     "RESET_VIEW": False,
 }`
-If you want a satellite map layer you need a [Mapbox](https://www.mapbox.com/) token adding this to `settings.py` (I use `environs` for secrets):
-`MAPBOX_TOKEN = env.str("MAPBOX_TOKEN")`
+If you want a satellite map layer you need a [Mapbox](https://www.mapbox.com/) token adding this to `settings.py` (I use `environs` for secrets): `MAPBOX_TOKEN = env.str("MAPBOX_TOKEN")`
 ## Usage
-Django-geocad has three models: `Drawing`, `Layer` and `Insertion`. Creation, update and deletion of models may happen in admin, where you will need staff permission to perform these tasks. A `GeoCAD Manager` permission group is created at migration, but at the moment the feature is not implemented.
-To create a `Drawing` you will need a `DXF file` in ASCII format. `DXF` is a drawing exchange
-format widely used in `CAD` applications.
+Django-geocad has three models: `Drawing`, `Layer` and `Insertion`. Creation, update and deletion of models may happen in admin or on the frontend. To perform these tasks user must be granted `GeoCAD Manager` permission group (created at migration).
+To create a `Drawing` you will need a `DXF file` in ASCII format. `DXF` is a drawing exchange format widely used in `CAD` applications.
 If `geodata` is embedded in the file, it will be ignored: this app is suitable for small drawings,
-representing a building, a group of buildings or a small neighborhood. To geolocate the drawing you just need to know where your `World Coordinate System origin (0,0,0)` is located. A good position for the `WCS origin` could be the cornerstone of a building, or another geographic landmark close to
-the items of the drawing.
-Check also the rotation of the `Y axis` with respect to the `True North`: it is typical to orient
-the drawings most conveniently for drafting purposes, unrespectful of True North. Please note that positive angles (from Y axis to True North) are counter clockwise.
+representing a building, a group of buildings or a small neighborhood. To geolocate the drawing you just need to know where your `World Coordinate System origin (0,0,0)` is located. A good position for the `WCS origin` could be the cornerstone of a building, or another geographic landmark close to the items of the drawing.
+Check also the rotation of the `Y axis` with respect to the `True North`: it is typical to orient the drawings most conveniently for drafting purposes, unrespectful of True North. Please note that positive angles (from Y axis to True North) are counter clockwise.
 So back to our admin panel, let's add a Drawing. You will have to select the `Author` of the drawing,
 a `Title`, a short description, an image and the `DXF file`. In the map select the location of your
 `WCS origin`, then enter the `Rotation` (angle with respect to True North). Eventually check `Private` to prevent other users from viewing your drawing.
 Press the `Save and continue` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `ARC`, `CIRCLE`, `LINE` and `LWPOLYLINE` entities are visible on the map panel. It is possible to change layer name and layer entities.
-If unnested `BLOCKS` are present in the drawing, they will be extracted and inserted on respective layer. Please notice that all entities forming the `BLOCK` will be placed on layer `0`. `Blocks` share the same model as `Layers`, so they can be modified in frontend. Insertion point is at (LAT=0, LONG=0). When updating a `Block` you will be able to access it's instances. Apart from normal CRUD operations, you can also `explode` an instance: the instance will be deleted, but it's entities will be transferred to insertion layer (this is common practice in CAD).
+If unnested `BLOCKS` are present in the drawing, they will be extracted and inserted on respective layer. Please notice that all entities forming the `BLOCK` will be placed on layer `0`. `Blocks` share the same model as `Layers`, so they can be modified in frontend. Insertion point is at (LAT=0, LONG=0). When updating a `Block` you will be able to access it's instances. Apart from normal CRUD operations, you can also `explode` an instance: the instance will be deleted, but it's entities will be transferred to insertion layer (this is common practice in CAD). If you want to create a new `BLOCK`, make a `Layer` first. Layer can be transformed to block (an instance of the block will replace layer).
 ## On the frontend
 On the navigation bar look for `Projects/GeoCAD`. Two `List` frontend views are implemented: `List of all drawings`, `List by author`, where drawings are just markers on the map. Note that `private` drawings will be hidden from non authors in all views. Click on a marker and follow the link in the popup: you will land on the `Drawing Detail` page, with layers displayed on the map. If you are the author of this drawing, you can access all `CRUD` views for `Drawings`, `Layers` and `Insertions`. Note that all entities on a layer inherit layer color.
 ## Downloading
 In `Drawing Detail` view it is possible to download back the (eventually modified) `DXF file`. Some limitations apply: the `True North` will be respected, `ARC` and `CIRCLE` entities will be approximated to `LWPOLYLINES`, and `Layers` will have `True Colors` instead of `ACI Colors`.
 Beware that if layers have been modified and a download is performed, the stored file will be replaced too, and rotation will be set to zero (True North).
+## Changelog v1.6.0
+* Transform layer to block
+* C*UD views need permissions
 ## Changelog v1.5.0
 * CRUD of block instances
 * Ability to switch single layers on/off in drawing detail view
