@@ -317,6 +317,7 @@ class LayerToBlockView(PermissionRequiredMixin, RedirectView):
         self.layer = get_object_or_404(Layer, id=self.kwargs["pk"])
         if request.user != self.layer.drawing.user:
             raise PermissionDenied
+        self.layer.transform_to_block()
 
     def get_redirect_url(self, *args, **kwargs):
         return reverse(
@@ -341,8 +342,9 @@ class LayerDeleteInlineView(PermissionRequiredMixin, TemplateView):
             raise Http404(_("Can't delete layer '0'"))
         if request.user != layer.drawing.user:
             raise PermissionDenied
+        name = layer.name
         layer.delete()
-        messages.error(request, _('Layer "%s" deleted') % layer.name)
+        messages.error(request, _('Layer "%s" deleted') % name)
 
 
 class InsertionCreateView(PermissionRequiredMixin, CreateView):
@@ -424,8 +426,9 @@ class InsertionDeleteInlineView(PermissionRequiredMixin, TemplateView):
         insert = get_object_or_404(Insertion, id=self.kwargs["pk"])
         if request.user != insert.block.drawing.user:
             raise PermissionDenied
+        id = insert.id
         insert.delete()
-        messages.error(request, _('Insertion "%d" deleted') % insert.id)
+        messages.error(request, _('Insertion "%d" deleted') % id)
 
 
 class InsertionExplodeInlineView(PermissionRequiredMixin, TemplateView):
@@ -440,8 +443,9 @@ class InsertionExplodeInlineView(PermissionRequiredMixin, TemplateView):
         if request.user != insert.block.drawing.user:
             raise PermissionDenied
         insert.explode_instance()
+        id = insert.id
         insert.delete()
-        messages.error(request, _('Insertion "%d" exploded') % insert.id)
+        messages.error(request, _('Insertion "%d" exploded') % id)
 
 
 def drawing_download(request, pk):

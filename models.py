@@ -430,6 +430,59 @@ class Layer(models.Model):
             return "block-" + self.name + "-" + str(self.id)
         return self.name + "-" + str(self.id)
 
+    def transform_to_block(self):
+        # layer "0" can't be transformed in block
+        if self.name == "0":
+            return
+        # already a block
+        if self.is_block:
+            return
+        # get drawing's "0" layer
+        zero = Layer.objects.get(drawing_id=self.drawing.id, name="0")
+        # prepare and save block insertion
+        insert = Insertion(
+            layer=zero,
+            block=self,
+            point=self.drawing.geom,
+            geom=self.geom,
+        )
+        insert.save()
+        # get drawing origin
+        long_d = self.drawing.geom["coordinates"][0]
+        lat_d = self.drawing.geom["coordinates"][1]
+        # prepare block geometries
+        geometries_b = []
+        for geom in self.geom["geometries"]:
+            # from longlat to xy
+            if geom["type"] == "Polygon":
+                vert = latlong2xy(geom["coordinates"][0], long_d, lat_d)
+            else:
+                vert = latlong2xy(geom["coordinates"], long_d, lat_d)
+            # back to longlat with coordinates (0,0)
+            vert = xy2latlong(vert, 0, 0, 0, 1, 1)
+            if geom["type"] == "Polygon":
+                geometries_b.append(
+                    {
+                        "type": "Polygon",
+                        "coordinates": [vert],
+                    }
+                )
+            else:
+                geometries_b.append(
+                    {
+                        "type": "LineString",
+                        "coordinates": vert,
+                    }
+                )
+        # prepare and save block
+        self.geom = {
+            "geometries": geometries_b,
+            "type": "GeometryCollection",
+        }
+        self.color_field = "#FFFFFF"
+        self.is_block = True
+        super().save()
+
     @property
     def popupContent(self):
         if self.is_block:
