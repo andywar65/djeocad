@@ -11,6 +11,13 @@ class DrawingCreateForm(ModelForm):
         widgets = {"geom": LeafletWidget()}
 
 
+class DrawingSimpleCreateForm(ModelForm):
+    class Meta:
+        model = Drawing
+        fields = ["title", "intro", "dxf", "geom", "rotation"]
+        widgets = {"geom": LeafletWidget()}
+
+
 class LayerCreateForm(ModelForm):
     class Meta:
         model = Layer

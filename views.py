@@ -129,10 +129,10 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
 
 
 class DrawingCreateView(PermissionRequiredMixin, CreateView):
-    permission_required = "djeocad.drawing_create"
+    permission_required = "djeocad.add_drawing"
     model = Drawing
     form_class = DrawingCreateForm
-    template_name = "djeocad/includes/add_drawing.html"
+    template_name = "djeocad/includes/drawing_create.html"
 
     def form_valid(self, form):
         form.instance.user = self.request.user
