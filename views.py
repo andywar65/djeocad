@@ -19,7 +19,12 @@ from django.views.generic import (
     UpdateView,
 )
 
-from .forms import DrawingCreateForm, InsertionCreateForm, LayerCreateForm
+from .forms import (
+    DrawingCreateForm,
+    DrawingSimpleCreateForm,
+    InsertionCreateForm,
+    LayerCreateForm,
+)
 from .models import Drawing, Insertion, Layer
 
 User = get_user_model()
@@ -142,6 +147,23 @@ class DrawingCreateView(PermissionRequiredMixin, CreateView):
         return reverse(
             "djeocad:drawing_detail",
             kwargs={"username": self.request.user.username, "pk": self.object.id},
+        )
+
+
+class DrawingSimpleCreateView(CreateView):
+    model = Drawing
+    form_class = DrawingSimpleCreateForm
+    template_name = "djeocad/includes/drawing_simple_create.html"
+
+    def form_valid(self, form):
+        user = User.objects.get(username=_("geocad_visitors"))
+        form.instance.user = user
+        return super(DrawingSimpleCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={"username": _("geocad_visitors"), "pk": self.object.id},
         )
 
 

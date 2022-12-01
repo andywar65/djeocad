@@ -22,12 +22,17 @@
     <p>{% trans "No authors yet" %}</p>
   {% endif %}
 </div>
-{% if user.is_authenticated %}
-  <div class="card-footer">
+<div class="card-footer">
+  {% if user.is_authenticated %}
     <a class="btn btn-primary"
       href="{% url 'djeocad:drawing_create' username=request.user.username %}">
       {% trans "Add drawing" %}
     </a>
-  </div>
-{% endif %}
+  {% else %}
+    <a class="btn btn-primary"
+      href="{% url 'djeocad:drawing_simple_create' %}">
+      {% trans "Add drawing" %}
+    </a>
+  {% endif %}
+</div>
 {% include "djeocad/includes/map_data.html" %}

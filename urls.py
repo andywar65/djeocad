@@ -7,6 +7,7 @@ from .views import (
     DrawingCreateView,
     DrawingDeleteView,
     DrawingDetailView,
+    DrawingSimpleCreateView,
     DrawingUpdateView,
     InsertionCreateView,
     InsertionDeleteInlineView,
@@ -23,6 +24,11 @@ from .views import (
 app_name = "djeocad"
 urlpatterns = [
     path("", BaseListView.as_view(), name="base_list"),
+    path(
+        _("drawing/add/"),
+        DrawingSimpleCreateView.as_view(),
+        name="drawing_simple_create",
+    ),
     path("<username>/", AuthorListView.as_view(), name="author_list"),
     path(
         _("<username>/drawing/add/"),

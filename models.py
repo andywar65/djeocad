@@ -107,7 +107,10 @@ class Drawing(models.Model):
         intro_str = "<small>%(intro)s</small>" % {"intro": self.intro}
         image = self.get_thumbnail_path()
         if not image:
-            return {"content": title_str + intro_str}
+            return {
+                "content": title_str + intro_str,
+                "layer": self.user.username,
+            }
         image_str = '<img src="%(image)s">' % {"image": image}
         return {
             "content": title_str + image_str + intro_str,
