@@ -371,10 +371,10 @@ class Drawing(models.Model):
         # add insertions
         for drw_layer in drw_layers:
             for insert in drw_layer.insertions.all():
-                point = latlong2xy(insert.point["coordinates"], longp, latp)
+                point = latlong2xy([insert.point["coordinates"]], longp, latp)
                 msp.add_blockref(
                     insert.block.name,
-                    point,
+                    point[0],
                     dxfattribs={
                         "xscale": insert.x_scale,
                         "yscale": insert.y_scale,
