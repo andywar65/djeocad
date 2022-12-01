@@ -1,4 +1,4 @@
-# django-geocad 1.6.0
+# django-geocad 1.6.1
 Django app that imports CAD drawings in Leaflet maps
 ## Overview
 Show CAD drawings with no geo location in interactive web maps. Change / add layers to drawings, change / add elements to layers, change blocks and change / add it's instances, download changed DXF files.
@@ -24,10 +24,13 @@ a `Title`, a short description, an image and the `DXF file`. In the map select t
 Press the `Save and continue` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `ARC`, `CIRCLE`, `LINE` and `LWPOLYLINE` entities are visible on the map panel. It is possible to change layer name and layer entities.
 If unnested `BLOCKS` are present in the drawing, they will be extracted and inserted on respective layer. Please notice that all entities forming the `BLOCK` will be placed on layer `0`. `Blocks` share the same model as `Layers`, so they can be modified in frontend. Insertion point is at (LAT=0, LONG=0). When updating a `Block` you will be able to access it's instances. Apart from normal CRUD operations, you can also `explode` an instance: the instance will be deleted, but it's entities will be transferred to insertion layer (this is common practice in CAD). If you want to create a new `BLOCK`, make a `Layer` first. Layer can be transformed to block (an instance of the block will replace layer).
 ## On the frontend
-On the navigation bar look for `Projects/GeoCAD`. Two `List` frontend views are implemented: `List of all drawings`, `List by author`, where drawings are just markers on the map. Note that `private` drawings will be hidden from non authors in all views. Click on a marker and follow the link in the popup: you will land on the `Drawing Detail` page, with layers displayed on the map. If you are the author of this drawing, you can access all `CRUD` views for `Drawings`, `Layers` and `Insertions`. Note that all entities on a layer inherit layer color.
+On the navigation bar look for `Projects/GeoCAD`. Two `List` frontend views are implemented: `List of all drawings`, `List by author`, where drawings are just markers on the map. Note that `private` drawings will be hidden from non authors in all views. Click on a marker and follow the link in the popup: you will land on the `Drawing Detail` page, with layers displayed on the map. If you are the author of this drawing, you can access all `CRUD` views for `Drawings`, `Layers` and `Insertions`. Note that all entities on a layer inherit layer color. You can create drawings either if you are logged in or out, bur login is required to modify drawings.
 ## Downloading
 In `Drawing Detail` view it is possible to download back the (eventually modified) `DXF file`. Some limitations apply: the `True North` will be respected, `ARC` and `CIRCLE` entities will be approximated to `LWPOLYLINES`, and `Layers` will have `True Colors` instead of `ACI Colors`.
 Beware that if layers have been modified and a download is performed, the stored file will be replaced too, and rotation will be set to zero (True North).
+## Changelog v1.6.1
+* Fixed bug in drawing download
+* Upload files without login
 ## Changelog v1.6.0
 * Transform layer to block
 * C*UD views need permissions

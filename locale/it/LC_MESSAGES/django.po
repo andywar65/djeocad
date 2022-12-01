@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 19:08+0100\n"
-"PO-Revision-Date: 2022-11-29 19:10+0100\n"
+"POT-Creation-Date: 2022-12-01 20:47+0100\n"
+"PO-Revision-Date: 2022-12-01 21:35+0100\n"
 "Last-Translator: andywar65 <andy.war1965@gmail.com>\n"
 "Language-Team: \n"
 "Language: it\n"
@@ -18,8 +18,13 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: .\djeocad\apps.py:10
+#: .\djeocad\apps.py:14
 msgid "GeoCAD Manager"
+msgstr ""
+
+#: .\djeocad\apps.py:23 .\djeocad\apps.py:27 .\djeocad\views.py:159
+#: .\djeocad\views.py:166
+msgid "geocad_visitors"
 msgstr ""
 
 #: .\djeocad\models.py:29 .\djeocad\templates\djeocad\htmx\author_list.html:4
@@ -46,11 +51,11 @@ msgstr "Immagine"
 msgid "DXF file"
 msgstr "File DXF"
 
-#: .\djeocad\models.py:63 .\djeocad\models.py:564
+#: .\djeocad\models.py:63 .\djeocad\models.py:567
 msgid "Location"
 msgstr "Posizione"
 
-#: .\djeocad\models.py:65 .\djeocad\models.py:566
+#: .\djeocad\models.py:65 .\djeocad\models.py:569
 msgid "Rotation"
 msgstr "Rotazione"
 
@@ -62,7 +67,7 @@ msgstr "Disegno privato"
 msgid "Refresh DXF file from layers"
 msgstr "Aggiorna il file DXF partendo dai livelli"
 
-#: .\djeocad\models.py:85 .\djeocad\models.py:396
+#: .\djeocad\models.py:85 .\djeocad\models.py:399
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:5
 msgid "Drawing"
 msgstr "Disegno"
@@ -71,37 +76,37 @@ msgstr "Disegno"
 msgid "Drawings"
 msgstr "Disegni"
 
-#: .\djeocad\models.py:399
+#: .\djeocad\models.py:402
 msgid "Layer / block name"
 msgstr "Nome del livello / blocco"
 
-#: .\djeocad\models.py:403 .\djeocad\models.py:577
+#: .\djeocad\models.py:406 .\djeocad\models.py:580
 msgid "Entities"
 msgstr "Entità"
 
-#: .\djeocad\models.py:405
+#: .\djeocad\models.py:408
 msgid "Block definition"
 msgstr "Definizione del blocco"
 
-#: .\djeocad\models.py:414 .\djeocad\models.py:491 .\djeocad\models.py:562
-#: .\djeocad\models.py:602
+#: .\djeocad\models.py:417 .\djeocad\models.py:494 .\djeocad\models.py:565
+#: .\djeocad\models.py:605
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:10
 #: .\djeocad\templates\djeocad\htmx\layer_detail.html:4
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:12
 msgid "Layer"
 msgstr "Livello"
 
-#: .\djeocad\models.py:415
+#: .\djeocad\models.py:418
 msgid "Layers"
 msgstr "Livelli"
 
-#: .\djeocad\models.py:489 .\djeocad\models.py:556 .\djeocad\models.py:604
+#: .\djeocad\models.py:492 .\djeocad\models.py:559 .\djeocad\models.py:607
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:10
 #: .\djeocad\templates\djeocad\includes\insertion_update.html:9
 msgid "Block"
 msgstr "Blocco"
 
-#: .\djeocad\models.py:495 .\djeocad\models.py:600
+#: .\djeocad\models.py:498 .\djeocad\models.py:603
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:9
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:14
 #: .\djeocad\templates\djeocad\includes\layer_update.html:10
@@ -109,11 +114,11 @@ msgstr "Blocco"
 msgid "ID"
 msgstr ""
 
-#: .\djeocad\models.py:570
+#: .\djeocad\models.py:573
 msgid "X scale"
 msgstr "Scala in X"
 
-#: .\djeocad\models.py:574
+#: .\djeocad\models.py:577
 msgid "Y scale"
 msgstr "Scala in Y"
 
@@ -122,12 +127,15 @@ msgid "No drawings yet"
 msgstr "Ancora nessun disegno"
 
 #: .\djeocad\templates\djeocad\htmx\author_list.html:28
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:26
 msgid "All authors"
 msgstr "Tutti gli autori"
 
 #: .\djeocad\templates\djeocad\htmx\author_list.html:35
 #: .\djeocad\templates\djeocad\htmx\base_list.html:29
+#: .\djeocad\templates\djeocad\htmx\base_list.html:34
 #: .\djeocad\templates\djeocad\includes\drawing_create.html:9
+#: .\djeocad\templates\djeocad\includes\drawing_simple_create.html:9
 msgid "Add drawing"
 msgstr "Aggiungi disegno"
 
@@ -143,26 +151,26 @@ msgstr "Autori"
 msgid "No authors yet"
 msgstr "Ancora nessun autore"
 
-#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:16
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:18
 msgid "Back to author"
 msgstr "Torna all'autore"
 
-#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:21
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:34
 msgid "Download drawing"
 msgstr "Scarica disegno"
 
-#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:30
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:39
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:14
 #: .\djeocad\templates\djeocad\htmx\layer_detail.html:23
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:19
 msgid "Modify"
 msgstr "Modifica"
 
-#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:36
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:45
 msgid "Are you sure you want to delete this drawing?"
 msgstr "Sei sicuro di voler eliminare questo disegno?"
 
-#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:37
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:46
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:31
 #: .\djeocad\templates\djeocad\htmx\layer_detail.html:30
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:28
@@ -198,10 +206,33 @@ msgid "Are you sure you want to delete this layer / block?"
 msgstr "Sei sicuro di voler eliminare questo livello / blocco?"
 
 #: .\djeocad\templates\djeocad\includes\drawing_create.html:19
+#: .\djeocad\templates\djeocad\includes\drawing_simple_create.html:27
 #: .\djeocad\templates\djeocad\includes\insertion_create.html:18
 #: .\djeocad\templates\djeocad\includes\layer_create.html:18
 msgid "Add"
 msgstr "Aggiungi"
+
+#: .\djeocad\templates\djeocad\includes\drawing_simple_create.html:12
+msgid ""
+"\n"
+"          Insert Title and a short description. Choose a DXF file (ASCII "
+"type). Eventual geodata\n"
+"          will be misregarded. On the map insert the WCS origin of the "
+"drawing.\n"
+"          Choose the origin wisely, i.e. a building cornerstone. Insert "
+"rotation of drawing\n"
+"          with respect to True North (counterclockwise is positive).\n"
+"        "
+msgstr ""
+"\n"
+"          Inserisci il titolo e una breve descrizione. Scegli un file DXF "
+"(tipo ASCII). Geodata eventuali\n"
+"          non saranno considereti. Sulla mappa inserisci l'origine degli "
+"assi del disegno (WCS).\n"
+"          Scegli l'origine degli assi in modo consono, p. es. l'angolo di "
+"un edificio. Inserisci la rotazione\n"
+"          del disegno rispetto al Nord reale (il senso antiorario è "
+"positivo)."
 
 #: .\djeocad\templates\djeocad\includes\drawing_update.html:10
 msgid "Update drawing"
@@ -266,81 +297,85 @@ msgid "Transform layer to block"
 msgstr "Trasforma livello in blocco"
 
 #: .\djeocad\urls.py:28
+msgid "drawing/add/"
+msgstr "disegno/aggiungi/"
+
+#: .\djeocad\urls.py:34
 msgid "<username>/drawing/add/"
 msgstr "<username>/disegno/aggiungi/"
 
-#: .\djeocad\urls.py:33
+#: .\djeocad\urls.py:39
 msgid "<username>/drawing/<pk>/"
 msgstr "<username>/disegno/<pk>/"
 
-#: .\djeocad\urls.py:38
+#: .\djeocad\urls.py:44
 msgid "<username>/drawing/<pk>/update/"
 msgstr "<username>/disegno/<pk>/aggiorna/"
 
-#: .\djeocad\urls.py:43
+#: .\djeocad\urls.py:49
 msgid "<username>/drawing/<pk>/delete/"
 msgstr "<username>/disegno/<pk>/elimina/"
 
-#: .\djeocad\urls.py:48
+#: .\djeocad\urls.py:54
 msgid "<username>/drawing/<pk>/layer/add/"
 msgstr "<username>/disegno/<pk>/livello/aggiungi/"
 
-#: .\djeocad\urls.py:53
+#: .\djeocad\urls.py:59
 msgid "<username>/layer/<pk>/"
 msgstr "<username>/livello/<pk>/"
 
-#: .\djeocad\urls.py:58
+#: .\djeocad\urls.py:64
 msgid "<username>/layer/<pk>/update/"
 msgstr "<username>/livello/<pk>/aggiorna/"
 
-#: .\djeocad\urls.py:63
+#: .\djeocad\urls.py:69
 msgid "<username>/layer/<pk>/to/block/"
 msgstr "<username>/livello/<pk>/in/blocco/"
 
-#: .\djeocad\urls.py:68
+#: .\djeocad\urls.py:74
 msgid "<username>/block/<pk>/instance/add/"
 msgstr "<username>/blocco/<pk>/aggiungi/istanza/"
 
-#: .\djeocad\urls.py:73
+#: .\djeocad\urls.py:79
 msgid "<username>/block-instance/<pk>/update/"
 msgstr "<username>/istanza/<pk>/aggiorna/"
 
-#: .\djeocad\urls.py:77
+#: .\djeocad\urls.py:83
 msgid "drawing/<pk>/download/"
 msgstr "disegno/<pk>/download/"
 
-#: .\djeocad\views.py:105
+#: .\djeocad\views.py:110
 msgid "Drawing does not belong to User"
 msgstr "Il disegno non appartiene all'utente"
 
-#: .\djeocad\views.py:180 .\djeocad\views.py:339 .\djeocad\views.py:425
-#: .\djeocad\views.py:441
+#: .\djeocad\views.py:202 .\djeocad\views.py:361 .\djeocad\views.py:447
+#: .\djeocad\views.py:463
 msgid "Request without HTMX headers"
 msgstr ""
 
-#: .\djeocad\views.py:206
+#: .\djeocad\views.py:228
 msgid "Layer does not belong to User"
 msgstr "Il livello non appartiene all'utente"
 
-#: .\djeocad\views.py:342
+#: .\djeocad\views.py:364
 msgid "Can't delete layer '0'"
 msgstr "Non si può cancellare il livello '0'"
 
-#: .\djeocad\views.py:347
+#: .\djeocad\views.py:369
 #, python-format
 msgid "Layer \"%s\" deleted"
 msgstr "Livello \"%s\" eliminato"
 
-#: .\djeocad\views.py:361
+#: .\djeocad\views.py:383
 msgid "Layer is not a block"
 msgstr "Il livello non è un blocco"
 
-#: .\djeocad\views.py:431
+#: .\djeocad\views.py:453
 #, python-format
 msgid "Insertion \"%d\" deleted"
 msgstr "Inserimento \"%d\" eliminato"
 
-#: .\djeocad\views.py:448
+#: .\djeocad\views.py:470
 #, python-format
 msgid "Insertion \"%d\" exploded"
 msgstr "Inserimento \"%d\" esploso"
