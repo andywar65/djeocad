@@ -74,6 +74,11 @@ class Drawing(models.Model):
         default=True,
         editable=False,
     )
+    epsg = models.IntegerField(
+        _("CRS code"),
+        null=True,
+        editable=False,
+    )
 
     __original_dxf = None
     __original_geom = None
