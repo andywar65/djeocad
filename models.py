@@ -14,6 +14,8 @@ from djgeojson.fields import GeometryCollectionField, PointField
 from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
 from PIL import ImageColor
+from pyproj.aoi import AreaOfInterest
+from pyproj.database import query_utm_crs_info
 
 from .utils import cad2hex, check_wide_image, latlong2xy, xy2latlong
 
@@ -129,6 +131,18 @@ class Drawing(models.Model):
         return settings.MEDIA_URL + path
 
     def save(self, *args, **kwargs):
+        if not self.epsg:
+            # let's try to find proper UTM
+            utm_crs_list = query_utm_crs_info(
+                datum_name="WGS 84",
+                area_of_interest=AreaOfInterest(
+                    west_lon_degree=self.geom["coordinates"][0],
+                    south_lat_degree=self.geom["coordinates"][1],
+                    east_lon_degree=self.geom["coordinates"][0],
+                    north_lat_degree=self.geom["coordinates"][1],
+                ),
+            )
+            self.epsg = utm_crs_list[0].code
         # save and eventually upload image file
         super(Drawing, self).save(*args, **kwargs)
         if self.image:
