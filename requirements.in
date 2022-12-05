@@ -9,3 +9,4 @@ jsonfield
 django-leaflet
 ezdxf
 django-colorfield
+pyproj
