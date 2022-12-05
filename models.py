@@ -14,6 +14,7 @@ from djgeojson.fields import GeometryCollectionField, PointField
 from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
 from PIL import ImageColor
+from pyproj import Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
 
@@ -160,9 +161,16 @@ class Drawing(models.Model):
             self.extract_dxf()
 
     def extract_dxf(self):
-        #  following conditional for test to work
+        # following conditional for test to work
         if isinstance(self.geom, str):
             self.geom = json.loads(self.geom)
+        # prepare transformers
+        world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
+        utm2world = Transformer.from_crs(self.epsg, 4326)  # noqa
+        utm_wcs = world2utm.transform(  # noqa
+            self.geom["coordinates"][0], self.geom["coordinates"][1]
+        )
+        assert False
         longp = self.geom["coordinates"][0]
         latp = self.geom["coordinates"][1]
         rot = radians(self.rotation)
