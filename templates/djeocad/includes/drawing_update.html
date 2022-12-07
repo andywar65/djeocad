@@ -34,17 +34,19 @@
       </form>
     </div>
   </div>
-  <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
-    <h4>{% trans "Layers / Blocks" %}:</h4>
-    {% for layer in layers %}
-      {% include "djeocad/htmx/layer_inline.html" %}
-    {% endfor %}
-    {% for layer in blocks %}
-      {% include "djeocad/htmx/layer_inline.html" %}
-    {% endfor %}
-    <a class="btn btn-primary"
-      href="{% url 'djeocad:layer_create' username=object.user.username pk=object.id %}">
-      {% trans "Add layer" %}
-    </a>
-  </div>
+  {% if object.epsg %}
+    <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
+      <h4>{% trans "Layers / Blocks" %}:</h4>
+      {% for layer in layers %}
+        {% include "djeocad/htmx/layer_inline.html" %}
+      {% endfor %}
+      {% for layer in blocks %}
+        {% include "djeocad/htmx/layer_inline.html" %}
+      {% endfor %}
+      <a class="btn btn-primary"
+        href="{% url 'djeocad:layer_create' username=object.user.username pk=object.id %}">
+        {% trans "Add layer" %}
+      </a>
+    </div>
+  {% endif %}
 {% endblock content %}
