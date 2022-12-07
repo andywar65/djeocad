@@ -63,7 +63,7 @@ class Drawing(models.Model):
             )
         ],
     )
-    geom = PointField(_("Location"))
+    geom = PointField(_("Location"), null=True)
     rotation = models.FloatField(
         _("Rotation"),
         default=0,
@@ -170,7 +170,6 @@ class Drawing(models.Model):
         utm_wcs = world2utm.transform(  # noqa
             self.geom["coordinates"][0], self.geom["coordinates"][1]
         )
-        assert False
         longp = self.geom["coordinates"][0]
         latp = self.geom["coordinates"][1]
         rot = radians(self.rotation)
