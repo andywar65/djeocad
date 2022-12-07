@@ -22,6 +22,7 @@ from django.views.generic import (
 from .forms import (
     DrawingCreateForm,
     DrawingSimpleCreateForm,
+    DrawingUpdateForm,
     InsertionCreateForm,
     LayerCreateForm,
 )
@@ -144,6 +145,20 @@ class DrawingCreateView(PermissionRequiredMixin, CreateView):
         return super(DrawingCreateView, self).form_valid(form)
 
     def get_success_url(self):
+        if not self.object.epsg:
+            messages.error(
+                self.request,
+                _(
+                    """
+                    No Geodata found. Please insert WCS Origin on map and Rotation
+                    with respect to True North (counterclockwise is positive)
+                    """
+                ),
+            )
+            return reverse(
+                "djeocad:drawing_update",
+                kwargs={"username": self.request.user.username, "pk": self.object.id},
+            )
         return reverse(
             "djeocad:drawing_detail",
             kwargs={"username": self.request.user.username, "pk": self.object.id},
@@ -170,7 +185,7 @@ class DrawingSimpleCreateView(CreateView):
 class DrawingUpdateView(PermissionRequiredMixin, UpdateView):
     permission_required = "djeocad.change_drawing"
     model = Drawing
-    form_class = DrawingCreateForm
+    form_class = DrawingUpdateForm
     template_name = "djeocad/includes/drawing_update.html"
 
     def get_object(self, queryset=None):

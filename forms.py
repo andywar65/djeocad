@@ -7,6 +7,13 @@ from .models import Drawing, Insertion, Layer
 class DrawingCreateForm(ModelForm):
     class Meta:
         model = Drawing
+        fields = ["title", "intro", "image", "dxf", "private"]
+        widgets = {"geom": LeafletWidget()}
+
+
+class DrawingUpdateForm(ModelForm):
+    class Meta:
+        model = Drawing
         fields = ["title", "intro", "image", "dxf", "geom", "rotation", "private"]
         widgets = {"geom": LeafletWidget()}
 

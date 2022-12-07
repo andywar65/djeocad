@@ -132,18 +132,20 @@ class Drawing(models.Model):
         return settings.MEDIA_URL + path
 
     def save(self, *args, **kwargs):
-        if not self.epsg:
-            # let's try to find proper UTM
-            utm_crs_list = query_utm_crs_info(
-                datum_name="WGS 84",
-                area_of_interest=AreaOfInterest(
-                    west_lon_degree=self.geom["coordinates"][0],
-                    south_lat_degree=self.geom["coordinates"][1],
-                    east_lon_degree=self.geom["coordinates"][0],
-                    north_lat_degree=self.geom["coordinates"][1],
-                ),
-            )
-            self.epsg = utm_crs_list[0].code
+        # this check will change when we will inspect geodata
+        if self.geom:
+            if not self.epsg:
+                # let's try to find proper UTM
+                utm_crs_list = query_utm_crs_info(
+                    datum_name="WGS 84",
+                    area_of_interest=AreaOfInterest(
+                        west_lon_degree=self.geom["coordinates"][0],
+                        south_lat_degree=self.geom["coordinates"][1],
+                        east_lon_degree=self.geom["coordinates"][0],
+                        north_lat_degree=self.geom["coordinates"][1],
+                    ),
+                )
+                self.epsg = utm_crs_list[0].code
         # save and eventually upload image file
         super(Drawing, self).save(*args, **kwargs)
         if self.image:
@@ -152,19 +154,21 @@ class Drawing(models.Model):
             self.image = None
             super(Drawing, self).save(*args, **kwargs)
             check_wide_image(self.fb_image)
-        if (
-            self.__original_dxf != self.dxf
-            or self.__original_geom != self.geom
-            or self.__original_rotation != self.rotation
-        ):
-            self.related_layers.all().delete()
-            self.extract_dxf()
+        # without geom we can't extract DXF
+        if self.geom:
+            if (
+                self.__original_dxf != self.dxf
+                or self.__original_geom != self.geom
+                or self.__original_rotation != self.rotation
+            ):
+                self.related_layers.all().delete()
+                self.extract_dxf()
 
     def extract_dxf(self):
         # following conditional for test to work
         if isinstance(self.geom, str):
             self.geom = json.loads(self.geom)
-        # prepare transformers
+        # prepare transformers (still not used)
         world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
         utm2world = Transformer.from_crs(self.epsg, 4326)  # noqa
         utm_wcs = world2utm.transform(  # noqa

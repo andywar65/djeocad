@@ -11,6 +11,9 @@
       </h4>
     </div>
     <div class="card-body">
+      {% if messages %}
+        {% include "djeocad/htmx/item_delete.html" %}
+      {% endif %}
       {% if object.fb_image %}
         <img class="card-img-top"
           src="{% version object.fb_image 'big' %}"
@@ -22,10 +25,12 @@
         <input class="btn btn-primary"
           type="submit"
           value="{% trans 'Update' %}" />
-        <a class="btn btn-secondary"
-          href="{% url 'djeocad:drawing_detail' username=object.user.username pk=object.id %}">
-          {% trans "Discard" %}
-        </a>
+        {% if object.epsg %}
+          <a class="btn btn-secondary"
+            href="{% url 'djeocad:drawing_detail' username=object.user.username pk=object.id %}">
+            {% trans "Discard" %}
+          </a>
+        {% endif %}
       </form>
     </div>
   </div>
