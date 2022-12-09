@@ -18,7 +18,7 @@ from pyproj import Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
 
-from .utils import cad2hex, check_wide_image, latlong2xy, xy2latlong
+from .utils import cad2hex, check_wide_image, latlong2xy, trans_utm2world, xy2latlong
 
 User = get_user_model()
 
@@ -171,7 +171,7 @@ class Drawing(models.Model):
         # prepare transformers (still not used)
         world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
         utm2world = Transformer.from_crs(self.epsg, 4326)  # noqa
-        utm_wcs = world2utm.transform(  # noqa
+        utm_wcs = world2utm.transform(
             self.geom["coordinates"][0], self.geom["coordinates"][1]
         )
         longp = self.geom["coordinates"][0]
@@ -194,7 +194,8 @@ class Drawing(models.Model):
         # extract lines
         for e in msp.query("LINE"):
             points = [e.dxf.start, e.dxf.end]
-            vert = xy2latlong(points, longp, latp, rot, 1, 1)
+            vert = trans_utm2world(points, utm_wcs, utm2world, rot, 1, 1)
+            # vert = xy2latlong(points, longp, latp, rot, 1, 1)
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "LineString",

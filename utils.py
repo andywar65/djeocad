@@ -17,6 +17,24 @@ def cad2hex(color):
     return "#{:06X}".format(rgb24)
 
 
+def trans_utm2world(vert, origin, transformer, rot, xsc, ysc):
+    trans = []
+    for v in vert:
+        # scale in case of insertion
+        x = v[0] * xsc
+        y = v[1] * ysc
+        # rotate to true north
+        xr = x * cos(rot) - y * sin(rot)
+        yr = x * sin(rot) + y * cos(rot)
+        # translate point
+        xr += origin[0]
+        yr += origin[1]
+        # transform and append point
+        p = transformer.transform(xr, yr)
+        trans.append([p[1], p[0]])
+    return trans
+
+
 def xy2latlong(vert, longp, latp, rot, xsc, ysc):
     trans = []
     gy = 1 / (6371 * 1000)
