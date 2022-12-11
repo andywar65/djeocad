@@ -1,5 +1,5 @@
 import json
-from math import radians
+from math import cos, radians, sin
 from pathlib import Path
 
 import ezdxf
@@ -174,11 +174,38 @@ class Drawing(models.Model):
         utm_wcs = world2utm.transform(
             self.geom["coordinates"][0], self.geom["coordinates"][1]
         )
-        longp = self.geom["coordinates"][0]
-        latp = self.geom["coordinates"][1]
+        longp = self.geom["coordinates"][0]  # noqa
+        latp = self.geom["coordinates"][1]  # noqa
         rot = radians(self.rotation)
         doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
         msp = doc.modelspace()
+        # faking geodata
+        geodata = msp.new_geodata()
+        geodata.coordinate_system_definition = """
+                <Alias id="%(epsg)s" type="CoordinateSystem">
+                <ObjectId>OSGB1936.NationalGrid</ObjectId>
+                <Namespace>EPSG Code</Namespace>
+                </Alias>
+                <Axis uom="METER">
+                <CoordinateSystemAxis>
+                <AxisOrder>1</AxisOrder>
+                <AxisName>Easting</AxisName>
+                <AxisAbbreviation>E</AxisAbbreviation>
+                <AxisDirection>east</AxisDirection>
+                </CoordinateSystemAxis>
+                <CoordinateSystemAxis>
+                <AxisOrder>2</AxisOrder>
+                <AxisName>Northing</AxisName>
+                <AxisAbbreviation>N</AxisAbbreviation>
+                <AxisDirection>north</AxisDirection>
+                </CoordinateSystemAxis>
+                </Axis>
+                """ % {
+            "epsg": self.epsg
+        }
+        geodata.dxf.design_point = (0, 0, 0)
+        geodata.dxf.reference_point = utm_wcs
+        geodata.dxf.north_direction = (sin(rot), cos(rot))
         # prepare layer table
         layer_table = {}
         for layer in doc.layers:
@@ -204,7 +231,8 @@ class Drawing(models.Model):
             )
         # extract polylines
         for e in msp.query("LWPOLYLINE"):
-            vert = xy2latlong(e.vertices_in_wcs(), longp, latp, rot, 1, 1)
+            vert = trans_utm2world(e.vertices_in_wcs(), utm_wcs, utm2world, rot, 1, 1)
+            # vert = xy2latlong(e.vertices_in_wcs(), longp, latp, rot, 1, 1)
             if e.is_closed:
                 vert.append(vert[0])
                 layer_table[e.dxf.layer]["geometries"].append(
@@ -222,7 +250,8 @@ class Drawing(models.Model):
                 )
         # extract circles
         for e in msp.query("CIRCLE"):
-            vert = xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
+            vert = trans_utm2world(e.flattening(0.1), utm_wcs, utm2world, rot, 1, 1)
+            # vert = xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "Polygon",
@@ -231,7 +260,8 @@ class Drawing(models.Model):
             )
         # extract arcs
         for e in msp.query("ARC"):
-            vert = xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
+            vert = trans_utm2world(e.flattening(0.1), utm_wcs, utm2world, rot, 1, 1)
+            # vert = xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
             layer_table[e.dxf.layer]["geometries"].append(
                 {
                     "type": "LineString",
@@ -255,10 +285,12 @@ class Drawing(models.Model):
             if block.name in self.name_blacklist:
                 continue
             geometries = []
+            origin = (0, 0)
             # extract lines
             for e in block.query("LINE"):
                 points = [e.dxf.start, e.dxf.end]
-                vert = xy2latlong(points, 0, 0, 0, 1, 1)
+                vert = trans_utm2world(points, origin, utm2world, 0, 1, 1)
+                # vert = xy2latlong(points, 0, 0, 0, 1, 1)
                 geometries.append(
                     {
                         "type": "LineString",
@@ -267,7 +299,8 @@ class Drawing(models.Model):
                 )
             # extract polylines
             for e in block.query("LWPOLYLINE"):
-                vert = xy2latlong(e.vertices_in_wcs(), 0, 0, 0, 1, 1)
+                vert = trans_utm2world(e.vertices_in_wcs(), origin, utm2world, 0, 1, 1)
+                # vert = xy2latlong(e.vertices_in_wcs(), 0, 0, 0, 1, 1)
                 if e.is_closed:
                     vert.append(vert[0])
                     geometries.append(
@@ -285,7 +318,8 @@ class Drawing(models.Model):
                     )
             # extract circles
             for e in block.query("CIRCLE"):
-                vert = xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
+                vert = trans_utm2world(e.flattening(0.1), origin, utm2world, 0, 1, 1)
+                # vert = xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
                 vert.append(vert[0])  # sometimes polygons don't close
                 geometries.append(
                     {
@@ -295,7 +329,8 @@ class Drawing(models.Model):
                 )
             # extract arcs
             for e in block.query("ARC"):
-                vert = xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
+                vert = trans_utm2world(e.flattening(0.1), origin, utm2world, 0, 1, 1)
+                # vert = xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
                 geometries.append(
                     {
                         "type": "LineString",
@@ -322,19 +357,23 @@ class Drawing(models.Model):
                 block = Layer.objects.get(drawing_id=self.id, name=e.dxf.name)
             except Layer.DoesNotExist:
                 continue
-            point = xy2latlong([e.dxf.insert], longp, latp, rot, 1, 1)[0]
+            point = trans_utm2world([e.dxf.insert], utm_wcs, utm2world, rot, 1, 1)[0]
+            # point = xy2latlong([e.dxf.insert], longp, latp, rot, 1, 1)[0]
             geometries_b = []
             for geom in block.geom["geometries"]:
                 if geom["type"] == "Polygon":
                     vert = latlong2xy(geom["coordinates"][0], 0, 0)
                 else:
                     vert = latlong2xy(geom["coordinates"], 0, 0)
-                long_b = point[0]
-                lat_b = point[1]
+                long_b = point[0]  # noqa
+                lat_b = point[1]  # noqa
                 rot_b = rot + radians(e.dxf.rotation)
-                vert = xy2latlong(
-                    vert, long_b, lat_b, rot_b, e.dxf.xscale, e.dxf.yscale
+                vert = trans_utm2world(
+                    vert, point, utm2world, rot_b, e.dxf.xscale, e.dxf.yscale
                 )
+                # vert = xy2latlong(
+                # vert, long_b, lat_b, rot_b, e.dxf.xscale, e.dxf.yscale
+                # )
                 if geom["type"] == "Polygon":
                     geometries_b.append(
                         {
