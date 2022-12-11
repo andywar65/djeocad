@@ -182,30 +182,33 @@ class Drawing(models.Model):
         # faking geodata
         geodata = msp.new_geodata()
         geodata.coordinate_system_definition = """
-                <Alias id="%(epsg)s" type="CoordinateSystem">
-                <ObjectId>OSGB1936.NationalGrid</ObjectId>
-                <Namespace>EPSG Code</Namespace>
-                </Alias>
-                <Axis uom="METER">
-                <CoordinateSystemAxis>
-                <AxisOrder>1</AxisOrder>
-                <AxisName>Easting</AxisName>
-                <AxisAbbreviation>E</AxisAbbreviation>
-                <AxisDirection>east</AxisDirection>
-                </CoordinateSystemAxis>
-                <CoordinateSystemAxis>
-                <AxisOrder>2</AxisOrder>
-                <AxisName>Northing</AxisName>
-                <AxisAbbreviation>N</AxisAbbreviation>
-                <AxisDirection>north</AxisDirection>
-                </CoordinateSystemAxis>
-                </Axis>
-                """ % {
+<?xml version="1.0" encoding="UTF-16" standalone="no" ?>
+<Dictionary version="1.0" xmlns="http://www.osgeo.org/mapguide/coordinatesystem">
+<Alias id="%(epsg)s" type="CoordinateSystem">
+<ObjectId>OSGB1936.NationalGrid</ObjectId>
+<Namespace>EPSG Code</Namespace>
+</Alias>
+<Axis uom="METER">
+<CoordinateSystemAxis>
+<AxisOrder>1</AxisOrder>
+<AxisName>Easting</AxisName>
+<AxisAbbreviation>E</AxisAbbreviation>
+<AxisDirection>east</AxisDirection>
+</CoordinateSystemAxis>
+<CoordinateSystemAxis>
+<AxisOrder>2</AxisOrder>
+<AxisName>Northing</AxisName>
+<AxisAbbreviation>N</AxisAbbreviation>
+<AxisDirection>north</AxisDirection>
+</CoordinateSystemAxis>
+</Axis>
+</Dictionary>""" % {
             "epsg": self.epsg
         }
         geodata.dxf.design_point = (0, 0, 0)
         geodata.dxf.reference_point = utm_wcs
         geodata.dxf.north_direction = (sin(rot), cos(rot))
+        m, epsg = geodata.get_crs_transformation(no_checks=True)  # noqa
         # prepare layer table
         layer_table = {}
         for layer in doc.layers:
