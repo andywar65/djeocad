@@ -11,6 +11,8 @@ from django.db import IntegrityError, models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from djgeojson.fields import GeometryCollectionField, PointField
+from ezdxf.addons import geo
+from ezdxf.math import Vec3
 from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
 from PIL import ImageColor
@@ -170,7 +172,7 @@ class Drawing(models.Model):
             self.geom = json.loads(self.geom)
         # prepare transformers (still not used)
         world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
-        utm2world = Transformer.from_crs(self.epsg, 4326)  # noqa
+        utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)  # noqa
         utm_wcs = world2utm.transform(
             self.geom["coordinates"][0], self.geom["coordinates"][1]
         )
@@ -181,8 +183,8 @@ class Drawing(models.Model):
         msp = doc.modelspace()
         # faking geodata
         geodata = msp.new_geodata()
-        geodata.coordinate_system_definition = """
-<?xml version="1.0" encoding="UTF-16" standalone="no" ?>
+        geodata.coordinate_system_definition = """<?xml version="1.0"
+encoding="UTF-16" standalone="no" ?>
 <Dictionary version="1.0" xmlns="http://www.osgeo.org/mapguide/coordinatesystem">
 <Alias id="%(epsg)s" type="CoordinateSystem">
 <ObjectId>OSGB1936.NationalGrid</ObjectId>
@@ -223,15 +225,13 @@ class Drawing(models.Model):
             }
         # extract lines
         for e in msp.query("LINE"):
-            points = [e.dxf.start, e.dxf.end]
-            vert = trans_utm2world(points, utm_wcs, utm2world, rot, 1, 1)
+            geo_proxy = geo.proxy(e)
+            geo_proxy.wcs_to_crs(m)
+            geo_proxy.apply(lambda v: Vec3(utm2world.transform(v.x, v.y)))
+            # points = [e.dxf.start, e.dxf.end]
+            # vert = trans_utm2world(points, utm_wcs, utm2world, rot, 1, 1)
             # vert = xy2latlong(points, longp, latp, rot, 1, 1)
-            layer_table[e.dxf.layer]["geometries"].append(
-                {
-                    "type": "LineString",
-                    "coordinates": vert,
-                }
-            )
+            layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
         # extract polylines
         for e in msp.query("LWPOLYLINE"):
             vert = trans_utm2world(e.vertices_in_wcs(), utm_wcs, utm2world, rot, 1, 1)
