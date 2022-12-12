@@ -167,7 +167,7 @@ class Drawing(models.Model):
                 self.extract_dxf()
 
     def get_geo_proxy(self, entity, matrix, transformer):
-        geo_proxy = geo.proxy(entity)
+        geo_proxy = geo.proxy(entity, force_line_string=True)
         geo_proxy.wcs_to_crs(matrix)
         geo_proxy.apply(lambda v: Vec3(transformer.transform(v.x, v.y)))
         return geo_proxy
@@ -239,24 +239,12 @@ encoding="UTF-16" standalone="no" ?>
             layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
         # extract circles
         for e in msp.query("CIRCLE"):
-            vert = trans_utm2world(e.flattening(0.1), utm_wcs, utm2world, rot, 1, 1)
-            # vert = xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
-            layer_table[e.dxf.layer]["geometries"].append(
-                {
-                    "type": "Polygon",
-                    "coordinates": [vert],
-                }
-            )
+            geo_proxy = self.get_geo_proxy(e, m, utm2world)
+            layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
         # extract arcs
         for e in msp.query("ARC"):
-            vert = trans_utm2world(e.flattening(0.1), utm_wcs, utm2world, rot, 1, 1)
-            # vert = xy2latlong(e.flattening(0.1), longp, latp, rot, 1, 1)
-            layer_table[e.dxf.layer]["geometries"].append(
-                {
-                    "type": "LineString",
-                    "coordinates": vert,
-                }
-            )
+            geo_proxy = self.get_geo_proxy(e, m, utm2world)
+            layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
         # create Layers
         for name, layer in layer_table.items():
             if not layer["geometries"] == []:
