@@ -166,6 +166,12 @@ class Drawing(models.Model):
                 self.related_layers.all().delete()
                 self.extract_dxf()
 
+    def get_geo_proxy(self, entity, matrix, transformer):
+        geo_proxy = geo.proxy(entity)
+        geo_proxy.wcs_to_crs(matrix)
+        geo_proxy.apply(lambda v: Vec3(transformer.transform(v.x, v.y)))
+        return geo_proxy
+
     def extract_dxf(self):
         # following conditional for test to work
         if isinstance(self.geom, str):
@@ -225,32 +231,12 @@ encoding="UTF-16" standalone="no" ?>
             }
         # extract lines
         for e in msp.query("LINE"):
-            geo_proxy = geo.proxy(e)
-            geo_proxy.wcs_to_crs(m)
-            geo_proxy.apply(lambda v: Vec3(utm2world.transform(v.x, v.y)))
-            # points = [e.dxf.start, e.dxf.end]
-            # vert = trans_utm2world(points, utm_wcs, utm2world, rot, 1, 1)
-            # vert = xy2latlong(points, longp, latp, rot, 1, 1)
+            geo_proxy = self.get_geo_proxy(e, m, utm2world)
             layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
         # extract polylines
         for e in msp.query("LWPOLYLINE"):
-            vert = trans_utm2world(e.vertices_in_wcs(), utm_wcs, utm2world, rot, 1, 1)
-            # vert = xy2latlong(e.vertices_in_wcs(), longp, latp, rot, 1, 1)
-            if e.is_closed:
-                vert.append(vert[0])
-                layer_table[e.dxf.layer]["geometries"].append(
-                    {
-                        "type": "Polygon",
-                        "coordinates": [vert],
-                    }
-                )
-            else:
-                layer_table[e.dxf.layer]["geometries"].append(
-                    {
-                        "type": "LineString",
-                        "coordinates": vert,
-                    }
-                )
+            geo_proxy = self.get_geo_proxy(e, m, utm2world)
+            layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
         # extract circles
         for e in msp.query("CIRCLE"):
             vert = trans_utm2world(e.flattening(0.1), utm_wcs, utm2world, rot, 1, 1)
