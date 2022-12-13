@@ -20,7 +20,7 @@ from pyproj import Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
 
-from .utils import cad2hex, check_wide_image, latlong2xy, trans_utm2world, xy2latlong
+from .utils import cad2hex, check_wide_image, latlong2xy, xy2latlong
 
 User = get_user_model()
 
@@ -290,55 +290,46 @@ encoding="UTF-16" standalone="no" ?>
                     is_block=True,
                 )
         # extract insertions
-        for e in msp.query("INSERT"):
-            if e.dxf.name in self.name_blacklist:
+        for ins in msp.query("INSERT"):
+            if ins.dxf.name in self.name_blacklist:
                 continue
             try:
-                layer = Layer.objects.get(drawing_id=self.id, name=e.dxf.layer)
-                block = Layer.objects.get(drawing_id=self.id, name=e.dxf.name)
+                layer = Layer.objects.get(drawing_id=self.id, name=ins.dxf.layer)
+                block = Layer.objects.get(drawing_id=self.id, name=ins.dxf.name)
             except Layer.DoesNotExist:
                 continue
-            point = trans_utm2world([e.dxf.insert], utm_wcs, utm2world, rot, 1, 1)[0]
-            # point = xy2latlong([e.dxf.insert], longp, latp, rot, 1, 1)[0]
-            geometries_b = []
-            for geom in block.geom["geometries"]:
-                if geom["type"] == "Polygon":
-                    vert = latlong2xy(geom["coordinates"][0], 0, 0)
-                else:
-                    vert = latlong2xy(geom["coordinates"], 0, 0)
-                long_b = point[0]  # noqa
-                lat_b = point[1]  # noqa
-                rot_b = rot + radians(e.dxf.rotation)
-                vert = trans_utm2world(
-                    vert, point, utm2world, rot_b, e.dxf.xscale, e.dxf.yscale
-                )
-                # vert = xy2latlong(
-                # vert, long_b, lat_b, rot_b, e.dxf.xscale, e.dxf.yscale
-                # )
-                if geom["type"] == "Polygon":
-                    geometries_b.append(
-                        {
-                            "type": "Polygon",
-                            "coordinates": [vert],
-                        }
-                    )
-                else:
-                    geometries_b.append(
-                        {
-                            "type": "LineString",
-                            "coordinates": vert,
-                        }
-                    )
-
+            point = msp.add_point(ins.dxf.insert)
+            geo_proxy = self.get_geo_proxy(point, m, utm2world)
+            insertion_point = geo_proxy.__geo_interface__
+            geometries = []
+            # 'generator' object has no attribute 'query'
+            for e in ins.virtual_entities():
+                if e.dxftype() == "LINE":
+                    # extract line
+                    geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                    geometries.append(geo_proxy.__geo_interface__)
+                elif e.dxftype() == "LWPOLYLINE":
+                    # extract polyline
+                    geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                    geometries.append(geo_proxy.__geo_interface__)
+                elif e.dxftype() == "CIRCLE":
+                    # extract circle
+                    geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                    geometries.append(geo_proxy.__geo_interface__)
+                elif e.dxftype() == "ARC":
+                    # extract arc
+                    geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                    geometries.append(geo_proxy.__geo_interface__)
+            # create Insertion
             Insertion.objects.create(
                 block=block,
                 layer=layer,
-                point={"type": "Point", "coordinates": point},
-                rotation=e.dxf.rotation,
-                x_scale=e.dxf.xscale,
-                y_scale=e.dxf.yscale,
+                point=insertion_point,
+                rotation=ins.dxf.rotation,
+                x_scale=ins.dxf.xscale,
+                y_scale=ins.dxf.yscale,
                 geom={
-                    "geometries": geometries_b,
+                    "geometries": geometries,
                     "type": "GeometryCollection",
                 },
             )
