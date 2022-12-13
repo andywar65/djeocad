@@ -262,58 +262,22 @@ encoding="UTF-16" standalone="no" ?>
             if block.name in self.name_blacklist:
                 continue
             geometries = []
-            origin = (0, 0)
             # extract lines
             for e in block.query("LINE"):
-                points = [e.dxf.start, e.dxf.end]
-                vert = trans_utm2world(points, origin, utm2world, 0, 1, 1)
-                # vert = xy2latlong(points, 0, 0, 0, 1, 1)
-                geometries.append(
-                    {
-                        "type": "LineString",
-                        "coordinates": vert,
-                    }
-                )
+                geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                geometries.append(geo_proxy.__geo_interface__)
             # extract polylines
             for e in block.query("LWPOLYLINE"):
-                vert = trans_utm2world(e.vertices_in_wcs(), origin, utm2world, 0, 1, 1)
-                # vert = xy2latlong(e.vertices_in_wcs(), 0, 0, 0, 1, 1)
-                if e.is_closed:
-                    vert.append(vert[0])
-                    geometries.append(
-                        {
-                            "type": "Polygon",
-                            "coordinates": [vert],
-                        }
-                    )
-                else:
-                    geometries.append(
-                        {
-                            "type": "LineString",
-                            "coordinates": vert,
-                        }
-                    )
+                geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                geometries.append(geo_proxy.__geo_interface__)
             # extract circles
             for e in block.query("CIRCLE"):
-                vert = trans_utm2world(e.flattening(0.1), origin, utm2world, 0, 1, 1)
-                # vert = xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
-                vert.append(vert[0])  # sometimes polygons don't close
-                geometries.append(
-                    {
-                        "type": "Polygon",
-                        "coordinates": [vert],
-                    }
-                )
+                geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                geometries.append(geo_proxy.__geo_interface__)
             # extract arcs
             for e in block.query("ARC"):
-                vert = trans_utm2world(e.flattening(0.1), origin, utm2world, 0, 1, 1)
-                # vert = xy2latlong(e.flattening(0.1), 0, 0, 0, 1, 1)
-                geometries.append(
-                    {
-                        "type": "LineString",
-                        "coordinates": vert,
-                    }
-                )
+                geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                geometries.append(geo_proxy.__geo_interface__)
             # create block as Layer
             if not geometries == []:
                 Layer.objects.create(
