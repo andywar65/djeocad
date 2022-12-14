@@ -229,22 +229,14 @@ encoding="UTF-16" standalone="no" ?>
                 "linetype": layer.dxf.linetype,
                 "geometries": [],
             }
-        # extract lines
-        for e in msp.query("LINE"):
-            geo_proxy = self.get_geo_proxy(e, m, utm2world)
-            layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
-        # extract polylines
-        for e in msp.query("LWPOLYLINE"):
-            geo_proxy = self.get_geo_proxy(e, m, utm2world)
-            layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
-        # extract circles
-        for e in msp.query("CIRCLE"):
-            geo_proxy = self.get_geo_proxy(e, m, utm2world)
-            layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
-        # extract arcs
-        for e in msp.query("ARC"):
-            geo_proxy = self.get_geo_proxy(e, m, utm2world)
-            layer_table[e.dxf.layer]["geometries"].append(geo_proxy.__geo_interface__)
+        entity_types = ["LINE", "LWPOLYLINE", "CIRCLE", "ARC"]
+        for e_type in entity_types:
+            # extract entities
+            for e in msp.query(e_type):
+                geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                layer_table[e.dxf.layer]["geometries"].append(
+                    geo_proxy.__geo_interface__
+                )
         # create Layers
         for name, layer in layer_table.items():
             if not layer["geometries"] == []:
@@ -262,22 +254,11 @@ encoding="UTF-16" standalone="no" ?>
             if block.name in self.name_blacklist:
                 continue
             geometries = []
-            # extract lines
-            for e in block.query("LINE"):
-                geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                geometries.append(geo_proxy.__geo_interface__)
-            # extract polylines
-            for e in block.query("LWPOLYLINE"):
-                geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                geometries.append(geo_proxy.__geo_interface__)
-            # extract circles
-            for e in block.query("CIRCLE"):
-                geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                geometries.append(geo_proxy.__geo_interface__)
-            # extract arcs
-            for e in block.query("ARC"):
-                geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                geometries.append(geo_proxy.__geo_interface__)
+            for e_type in entity_types:
+                # extract entities
+                for e in block.query(e_type):
+                    geo_proxy = self.get_geo_proxy(e, m, utm2world)
+                    geometries.append(geo_proxy.__geo_interface__)
             # create block as Layer
             if not geometries == []:
                 Layer.objects.create(
@@ -304,20 +285,8 @@ encoding="UTF-16" standalone="no" ?>
             geometries = []
             # 'generator' object has no attribute 'query'
             for e in ins.virtual_entities():
-                if e.dxftype() == "LINE":
-                    # extract line
-                    geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                    geometries.append(geo_proxy.__geo_interface__)
-                elif e.dxftype() == "LWPOLYLINE":
-                    # extract polyline
-                    geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                    geometries.append(geo_proxy.__geo_interface__)
-                elif e.dxftype() == "CIRCLE":
-                    # extract circle
-                    geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                    geometries.append(geo_proxy.__geo_interface__)
-                elif e.dxftype() == "ARC":
-                    # extract arc
+                if e.dxftype() in entity_types:
+                    # extract entity
                     geo_proxy = self.get_geo_proxy(e, m, utm2world)
                     geometries.append(geo_proxy.__geo_interface__)
             # create Insertion
