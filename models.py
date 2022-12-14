@@ -1,5 +1,5 @@
 import json
-from math import cos, radians, sin
+from math import atan2, cos, degrees, radians, sin
 from pathlib import Path
 
 import ezdxf
@@ -134,20 +134,6 @@ class Drawing(models.Model):
         return settings.MEDIA_URL + path
 
     def save(self, *args, **kwargs):
-        # this check will change when we will inspect geodata
-        if self.geom:
-            if not self.epsg:
-                # let's try to find proper UTM
-                utm_crs_list = query_utm_crs_info(
-                    datum_name="WGS 84",
-                    area_of_interest=AreaOfInterest(
-                        west_lon_degree=self.geom["coordinates"][0],
-                        south_lat_degree=self.geom["coordinates"][1],
-                        east_lon_degree=self.geom["coordinates"][0],
-                        north_lat_degree=self.geom["coordinates"][1],
-                    ),
-                )
-                self.epsg = utm_crs_list[0].code
         # save and eventually upload image file
         super(Drawing, self).save(*args, **kwargs)
         if self.image:
@@ -156,6 +142,36 @@ class Drawing(models.Model):
             self.image = None
             super(Drawing, self).save(*args, **kwargs)
             check_wide_image(self.fb_image)
+        # check if we have coordinate system
+        if not self.epsg:
+            # search for geodata in DXF
+            doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
+            msp = doc.modelspace()
+            geodata = msp.get_geodata()
+            if geodata:
+                # this section has to be checked
+                self.epsg = geodata.get_crs()[0]
+                utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)
+                world_point = utm2world.transform(geodata.dxf.reference_point)
+                self.geom = {"type": "Point", "coordinates": world_point}
+                self.rotation = degrees(atan2(geodata.dxf.north_direction))
+                super(Drawing, self).save(*args, **kwargs)
+            else:
+                # can't find geodata in DXF, need manual insertion
+                # check if user has inserted origin on map
+                if self.geom:
+                    # let's try to find proper UTM
+                    utm_crs_list = query_utm_crs_info(
+                        datum_name="WGS 84",
+                        area_of_interest=AreaOfInterest(
+                            west_lon_degree=self.geom["coordinates"][0],
+                            south_lat_degree=self.geom["coordinates"][1],
+                            east_lon_degree=self.geom["coordinates"][0],
+                            north_lat_degree=self.geom["coordinates"][1],
+                        ),
+                    )
+                    self.epsg = utm_crs_list[0].code
+                    super(Drawing, self).save(*args, **kwargs)
         # without geom we can't extract DXF
         if self.geom:
             if (
