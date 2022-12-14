@@ -152,9 +152,15 @@ class Drawing(models.Model):
                 # this section has to be checked
                 self.epsg = geodata.get_crs()[0]
                 utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)
-                world_point = utm2world.transform(geodata.dxf.reference_point)
+                world_point = utm2world.transform(
+                    geodata.dxf.reference_point[0], geodata.dxf.reference_point[1]
+                )
                 self.geom = {"type": "Point", "coordinates": world_point}
-                self.rotation = degrees(atan2(geodata.dxf.north_direction))
+                self.rotation = degrees(
+                    atan2(
+                        geodata.dxf.north_direction[0], geodata.dxf.north_direction[1]
+                    )
+                )
                 super(Drawing, self).save(*args, **kwargs)
             else:
                 # can't find geodata in DXF, need manual insertion

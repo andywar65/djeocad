@@ -3,7 +3,7 @@ window.addEventListener("map:init", function (event) {
     map.locate().on('locationfound', userFound).on('locationerror', userNotFound);
 
     function userNotFound(e) {
-      alert(e.message);
+      // alert(e.message);
     };
 
     function userFound(e) {
