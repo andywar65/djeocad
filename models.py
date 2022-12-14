@@ -149,7 +149,6 @@ class Drawing(models.Model):
             msp = doc.modelspace()
             geodata = msp.get_geodata()
             if geodata:
-                # this section has to be checked
                 self.epsg = geodata.get_crs()[0]
                 utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)
                 world_point = utm2world.transform(
