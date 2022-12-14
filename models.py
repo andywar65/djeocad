@@ -206,7 +206,6 @@ class Drawing(models.Model):
         if not geodata:
             # faking geodata
             geodata = msp.new_geodata()
-            # here we still have to check axis direction
             geodata.coordinate_system_definition = """<?xml version="1.0"
 encoding="UTF-16" standalone="no" ?>
 <Dictionary version="1.0" xmlns="http://www.osgeo.org/mapguide/coordinatesystem">
@@ -323,10 +322,46 @@ encoding="UTF-16" standalone="no" ?>
             )
 
     def get_file_to_download(self):
-        longp = self.geom["coordinates"][0]
-        latp = self.geom["coordinates"][1]
+        # prepare transformers
+        world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
+        utm_wcs = world2utm.transform(
+            self.geom["coordinates"][0], self.geom["coordinates"][1]
+        )
+        rot = radians(self.rotation)
+        # start DXF
         doc = ezdxf.new()
         msp = doc.modelspace()
+        # we fake geodata
+        geodata = msp.new_geodata()
+        geodata.coordinate_system_definition = """<?xml version="1.0"
+encoding="UTF-16" standalone="no" ?>
+<Dictionary version="1.0" xmlns="http://www.osgeo.org/mapguide/coordinatesystem">
+<Alias id="%(epsg)s" type="CoordinateSystem">
+<ObjectId>OSGB1936.NationalGrid</ObjectId>
+<Namespace>EPSG Code</Namespace>
+</Alias>
+<Axis uom="METER">
+<CoordinateSystemAxis>
+<AxisOrder>1</AxisOrder>
+<AxisName>Easting</AxisName>
+<AxisAbbreviation>E</AxisAbbreviation>
+<AxisDirection>east</AxisDirection>
+</CoordinateSystemAxis>
+<CoordinateSystemAxis>
+<AxisOrder>2</AxisOrder>
+<AxisName>Northing</AxisName>
+<AxisAbbreviation>N</AxisAbbreviation>
+<AxisDirection>north</AxisDirection>
+</CoordinateSystemAxis>
+</Axis>
+</Dictionary>""" % {
+            "epsg": self.epsg
+        }
+        geodata.dxf.design_point = (0, 0, 0)
+        geodata.dxf.reference_point = utm_wcs
+        geodata.dxf.north_direction = (sin(rot), cos(rot))
+        # get transform matrix from fake geodata
+        m, epsg = geodata.get_crs_transformation(no_checks=True)  # noqa
         # create layers and add entities
         drw_layers = self.related_layers.filter(is_block=False)
         for drw_layer in drw_layers:
@@ -338,33 +373,35 @@ encoding="UTF-16" standalone="no" ?>
             doc_layer.rgb = color
             geometries = drw_layer.geom["geometries"]
             for geom in geometries:
-                if geom["type"] == "Polygon":
-                    vert = latlong2xy(geom["coordinates"][0], longp, latp)
-                    msp.add_lwpolyline(
-                        vert, dxfattribs={"layer": drw_layer.name}
-                    ).close()
-                else:
-                    vert = latlong2xy(geom["coordinates"], longp, latp)
-                    msp.add_lwpolyline(vert, dxfattribs={"layer": drw_layer.name})
+                geo_proxy = geo.GeoProxy.parse(geom)
+                geo_proxy.apply(lambda v: Vec3(world2utm.transform(v.x, v.y)))
+                geo_proxy.crs_to_wcs(m)
+                for entity in geo_proxy.to_dxf_entities(
+                    dxfattribs={"layer": drw_layer.name}
+                ):
+                    msp.add_entity(entity)
         # create blocks and add entities
         drw_blocks = self.related_layers.filter(is_block=True)
         for drw_block in drw_blocks:
             block = doc.blocks.new(name=drw_block.name)
             geometries = drw_block.geom["geometries"]
             for geom in geometries:
-                if geom["type"] == "Polygon":
-                    vert = latlong2xy(geom["coordinates"][0], 0, 0)
-                    block.add_lwpolyline(vert).close()
-                else:
-                    vert = latlong2xy(geom["coordinates"], 0, 0)
-                    block.add_lwpolyline(vert)
+                geo_proxy = geo.GeoProxy.parse(geom)
+                geo_proxy.apply(lambda v: Vec3(world2utm.transform(v.x, v.y)))
+                geo_proxy.crs_to_wcs(m)
+                for entity in geo_proxy.to_dxf_entities(dxfattribs={"layer": "0"}):
+                    block.add_entity(entity)
         # add insertions
         for drw_layer in drw_layers:
             for insert in drw_layer.insertions.all():
-                point = latlong2xy([insert.point["coordinates"]], longp, latp)
+                geo_proxy = geo.GeoProxy.parse(insert.point)
+                geo_proxy.apply(lambda v: Vec3(world2utm.transform(v.x, v.y)))
+                geo_proxy.crs_to_wcs(m)
+                for entity in geo_proxy.to_dxf_entities():
+                    point = entity.dxf.location
                 msp.add_blockref(
                     insert.block.name,
-                    point[0],
+                    point,
                     dxfattribs={
                         "xscale": insert.x_scale,
                         "yscale": insert.y_scale,
@@ -372,11 +409,8 @@ encoding="UTF-16" standalone="no" ?>
                         "layer": insert.layer.name,
                     },
                 )
-                insert.rotation = insert.rotation + self.rotation
-                insert.save()
         doc.saveas(filename=self.dxf.path, encoding="utf-8", fmt="asc")
         self.needs_refresh = False
-        self.rotation = 0
         super(Drawing, self).save()
 
 
