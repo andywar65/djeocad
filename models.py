@@ -445,7 +445,10 @@ class Layer(models.Model):
     class Meta:
         verbose_name = _("Layer")
         verbose_name_plural = _("Layers")
-        ordering = ("name",)
+        ordering = (
+            "drawing",
+            "name",
+        )
         constraints = [
             models.UniqueConstraint(
                 fields=["drawing", "name"], name="unique_layer_name"

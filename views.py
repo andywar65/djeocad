@@ -21,6 +21,7 @@ from django.views.generic import (
 
 from .forms import (
     DrawingCreateForm,
+    DrawingGeoDataForm,
     DrawingSimpleCreateForm,
     DrawingUpdateForm,
     InsertionCreateForm,
@@ -156,9 +157,29 @@ class DrawingCreateView(PermissionRequiredMixin, CreateView):
                 ),
             )
             return reverse(
-                "djeocad:drawing_update",
+                "djeocad:drawing_geodata",
                 kwargs={"username": self.request.user.username, "pk": self.object.id},
             )
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={"username": self.request.user.username, "pk": self.object.id},
+        )
+
+
+class DrawingGeoDataView(PermissionRequiredMixin, UpdateView):
+    permission_required = "djeocad.change_drawing"
+    model = Drawing
+    form_class = DrawingGeoDataForm
+    template_name = "djeocad/includes/drawing_geodata.html"
+
+    def get_object(self, queryset=None):
+        self.object = super(DrawingGeoDataView, self).get_object(queryset=None)
+        user = get_object_or_404(User, username=self.kwargs["username"])
+        if user != self.object.user or self.request.user != self.object.user:
+            raise PermissionDenied
+        return self.object
+
+    def get_success_url(self):
         return reverse(
             "djeocad:drawing_detail",
             kwargs={"username": self.request.user.username, "pk": self.object.id},

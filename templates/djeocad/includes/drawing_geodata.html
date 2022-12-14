@@ -1,0 +1,25 @@
+{% extends "djeocad/base_form.html" %}
+{% load bootstrap5 %}
+{% load i18n %}
+
+{% block content %}
+  <div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
+    <div class="card-header">
+      <h4 class="card-title">
+        {% trans "Add GeoData"%}: {{ object }}
+      </h4>
+    </div>
+    <div class="card-body">
+      {% if messages %}
+        {% include "djeocad/htmx/item_delete.html" %}
+      {% endif %}
+      <form method="POST" action="">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input class="btn btn-primary"
+          type="submit"
+          value="{% trans 'Add GeoData' %}" />
+      </form>
+    </div>
+  </div>
+{% endblock content %}

@@ -7,6 +7,7 @@ from .views import (
     DrawingCreateView,
     DrawingDeleteView,
     DrawingDetailView,
+    DrawingGeoDataView,
     DrawingSimpleCreateView,
     DrawingUpdateView,
     InsertionCreateView,
@@ -39,6 +40,11 @@ urlpatterns = [
         _("<username>/drawing/<pk>/"),
         DrawingDetailView.as_view(),
         name="drawing_detail",
+    ),
+    path(
+        _("<username>/drawing/<pk>/geodata/"),
+        DrawingGeoDataView.as_view(),
+        name="drawing_geodata",
     ),
     path(
         _("<username>/drawing/<pk>/update/"),

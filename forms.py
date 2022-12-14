@@ -10,14 +10,21 @@ class DrawingCreateForm(ModelForm):
         fields = ["title", "intro", "dxf", "image", "private"]
 
 
+class DrawingGeoDataForm(ModelForm):
+    class Meta:
+        model = Drawing
+        fields = ["geom", "rotation"]
+        widgets = {"geom": LeafletWidget()}
+
+    class Media:
+        js = ("djeocad/js/locate_user.js",)
+
+
 class DrawingUpdateForm(ModelForm):
     class Meta:
         model = Drawing
         fields = ["title", "intro", "dxf", "image", "geom", "rotation", "private"]
         widgets = {"geom": LeafletWidget()}
-
-    class Media:
-        js = ("djeocad/js/locate_user.js",)
 
 
 class DrawingSimpleCreateForm(ModelForm):
