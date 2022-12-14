@@ -192,20 +192,22 @@ class Drawing(models.Model):
         # following conditional for test to work
         if isinstance(self.geom, str):
             self.geom = json.loads(self.geom)
-        # prepare transformers (still not used)
+        # prepare transformers
         world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
-        utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)  # noqa
+        utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)
         utm_wcs = world2utm.transform(
             self.geom["coordinates"][0], self.geom["coordinates"][1]
         )
-        longp = self.geom["coordinates"][0]  # noqa
-        latp = self.geom["coordinates"][1]  # noqa
         rot = radians(self.rotation)
+        # get DXF
         doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
         msp = doc.modelspace()
-        # faking geodata
-        geodata = msp.new_geodata()
-        geodata.coordinate_system_definition = """<?xml version="1.0"
+        geodata = msp.get_geodata()
+        if not geodata:
+            # faking geodata
+            geodata = msp.new_geodata()
+            # here we still have to check axis direction
+            geodata.coordinate_system_definition = """<?xml version="1.0"
 encoding="UTF-16" standalone="no" ?>
 <Dictionary version="1.0" xmlns="http://www.osgeo.org/mapguide/coordinatesystem">
 <Alias id="%(epsg)s" type="CoordinateSystem">
@@ -227,11 +229,12 @@ encoding="UTF-16" standalone="no" ?>
 </CoordinateSystemAxis>
 </Axis>
 </Dictionary>""" % {
-            "epsg": self.epsg
-        }
-        geodata.dxf.design_point = (0, 0, 0)
-        geodata.dxf.reference_point = utm_wcs
-        geodata.dxf.north_direction = (sin(rot), cos(rot))
+                "epsg": self.epsg
+            }
+            geodata.dxf.design_point = (0, 0, 0)
+            geodata.dxf.reference_point = utm_wcs
+            geodata.dxf.north_direction = (sin(rot), cos(rot))
+        # get transform matrix from true or fake geodata
         m, epsg = geodata.get_crs_transformation(no_checks=True)  # noqa
         # prepare layer table
         layer_table = {}
