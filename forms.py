@@ -30,8 +30,7 @@ class DrawingUpdateForm(ModelForm):
 class DrawingSimpleCreateForm(ModelForm):
     class Meta:
         model = Drawing
-        fields = ["title", "intro", "dxf", "geom", "rotation"]
-        widgets = {"geom": LeafletWidget()}
+        fields = ["title", "intro", "dxf"]
 
 
 class LayerCreateForm(ModelForm):

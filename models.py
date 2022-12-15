@@ -222,7 +222,7 @@ class Drawing(models.Model):
 encoding="UTF-16" standalone="no" ?>
 <Dictionary version="1.0" xmlns="http://www.osgeo.org/mapguide/coordinatesystem">
 <Alias id="%(epsg)s" type="CoordinateSystem">
-<ObjectId>OSGB1936.NationalGrid</ObjectId>
+<ObjectId>EPSG=%(epsg)s</ObjectId>
 <Namespace>EPSG Code</Namespace>
 </Alias>
 <Axis uom="METER">
@@ -349,7 +349,7 @@ encoding="UTF-16" standalone="no" ?>
 encoding="UTF-16" standalone="no" ?>
 <Dictionary version="1.0" xmlns="http://www.osgeo.org/mapguide/coordinatesystem">
 <Alias id="%(epsg)s" type="CoordinateSystem">
-<ObjectId>OSGB1936.NationalGrid</ObjectId>
+<ObjectId>EPSG=%(epsg)s</ObjectId>
 <Namespace>EPSG Code</Namespace>
 </Alias>
 <Axis uom="METER">
@@ -417,7 +417,7 @@ encoding="UTF-16" standalone="no" ?>
                     dxfattribs={
                         "xscale": insert.x_scale,
                         "yscale": insert.y_scale,
-                        "rotation": insert.rotation + self.rotation,
+                        "rotation": insert.rotation,
                         "layer": insert.layer.name,
                     },
                 )

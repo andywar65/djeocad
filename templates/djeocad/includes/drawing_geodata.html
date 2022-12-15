@@ -10,9 +10,15 @@
       </h4>
     </div>
     <div class="card-body">
-      {% if messages %}
-        {% include "djeocad/htmx/item_delete.html" %}
-      {% endif %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {% blocktrans %}
+          No Geodata found in DXF, you must insert it manually.
+          On the map draw a marker corresponding to DXF axis origin (0,0,0).
+          Rotation is the angle in degrees from Y axis to True North
+          (counterclockwise is positive).
+        {% endblocktrans %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
       <form method="POST" action="">
         {% csrf_token %}
         {% bootstrap_form form %}

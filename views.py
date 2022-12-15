@@ -147,15 +147,6 @@ class DrawingCreateView(PermissionRequiredMixin, CreateView):
 
     def get_success_url(self):
         if not self.object.epsg:
-            messages.error(
-                self.request,
-                _(
-                    """
-                    No Geodata found. Please insert WCS Origin on map and Rotation
-                    with respect to True North (counterclockwise is positive)
-                    """
-                ),
-            )
             return reverse(
                 "djeocad:drawing_geodata",
                 kwargs={"username": self.request.user.username, "pk": self.object.id},
@@ -195,6 +186,23 @@ class DrawingSimpleCreateView(CreateView):
         user = User.objects.get(username=_("geocad_visitors"))
         form.instance.user = user
         return super(DrawingSimpleCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        if not self.object.epsg:
+            return reverse(
+                "djeocad:drawing_simple_geodata",
+                kwargs={"pk": self.object.id},
+            )
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={"username": _("geocad_visitors"), "pk": self.object.id},
+        )
+
+
+class DrawingSimpleGeoDataView(UpdateView):
+    model = Drawing
+    form_class = DrawingGeoDataForm
+    template_name = "djeocad/includes/drawing_geodata.html"
 
     def get_success_url(self):
         return reverse(
