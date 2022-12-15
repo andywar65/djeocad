@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from djgeojson.fields import GeometryCollectionField, PointField
 from ezdxf.addons import geo
+from ezdxf.lldxf.const import InvalidGeoDataException
 from ezdxf.math import Vec3
 from filebrowser.base import FileObject
 from filebrowser.fields import FileBrowseField
@@ -149,7 +150,13 @@ class Drawing(models.Model):
             msp = doc.modelspace()
             geodata = msp.get_geodata()
             if geodata:
-                self.epsg = geodata.get_crs()[0]
+                # check if valid XML and axis order
+                try:
+                    self.epsg, axis = geodata.get_crs()
+                    if not axis:
+                        return
+                except InvalidGeoDataException:
+                    return
                 utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)
                 world_point = utm2world.transform(
                     geodata.dxf.reference_point[0], geodata.dxf.reference_point[1]
