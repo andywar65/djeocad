@@ -193,6 +193,10 @@ class Drawing(models.Model):
             ):
                 self.related_layers.all().delete()
                 self.extract_dxf()
+                # layers have changed, you have to refresh stored DXF
+                if not self.needs_refresh:
+                    self.needs_refresh = True
+                    super(Drawing, self).save()
 
     def get_geo_proxy(self, entity, matrix, transformer):
         geo_proxy = geo.proxy(entity, force_line_string=True)
@@ -488,42 +492,15 @@ class Layer(models.Model):
             point=self.drawing.geom,
             geom=self.geom,
         )
-        insert.save()
-        # get drawing origin
-        long_d = self.drawing.geom["coordinates"][0]
-        lat_d = self.drawing.geom["coordinates"][1]
-        # prepare block geometries
-        geometries_b = []
-        for geom in self.geom["geometries"]:
-            # from longlat to xy
-            if geom["type"] == "Polygon":
-                vert = latlong2xy(geom["coordinates"][0], long_d, lat_d)
-            else:
-                vert = latlong2xy(geom["coordinates"], long_d, lat_d)
-            # back to longlat with coordinates (0,0)
-            vert = xy2latlong(vert, 0, 0, 0, 1, 1)
-            if geom["type"] == "Polygon":
-                geometries_b.append(
-                    {
-                        "type": "Polygon",
-                        "coordinates": [vert],
-                    }
-                )
-            else:
-                geometries_b.append(
-                    {
-                        "type": "LineString",
-                        "coordinates": vert,
-                    }
-                )
-        # prepare and save block
-        self.geom = {
-            "geometries": geometries_b,
-            "type": "GeometryCollection",
-        }
+        super(Insertion, insert).save()
+        # transform layer into block and save it
         self.color_field = "#FFFFFF"
         self.is_block = True
-        super().save()
+        super(Layer, self).save()
+        # check if drawing needs refresh
+        if not self.drawing.needs_refresh:
+            self.drawing.needs_refresh = True
+            super(Drawing, self.drawing).save()
 
     @property
     def popupContent(self):
