@@ -646,7 +646,11 @@ class Insertion(models.Model):
         self.layer.geom["geometries"] = (
             self.layer.geom["geometries"] + self.geom["geometries"]
         )
-        self.layer.save()
+        super(Layer, self.layer).save()
+        if not self.layer.drawing.needs_refresh:
+            self.layer.drawing.needs_refresh = True
+            super(Drawing, self.layer.drawing).save()
+        self.delete()
 
     def save(self, *args, **kwargs):
         if (
