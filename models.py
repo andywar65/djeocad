@@ -650,7 +650,6 @@ class Insertion(models.Model):
         if not self.layer.drawing.needs_refresh:
             self.layer.drawing.needs_refresh = True
             super(Drawing, self.layer.drawing).save()
-        self.delete()
 
     def save(self, *args, **kwargs):
         if (
