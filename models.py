@@ -91,6 +91,7 @@ class Drawing(models.Model):
     __original_rotation = None
     gy = 1 / (6371 * 1000)
     name_blacklist = ["*Model_Space", "DynamicInputDot"]
+    entity_types = ["LINE", "LWPOLYLINE", "CIRCLE", "ARC"]
 
     class Meta:
         verbose_name = _("Drawing")
@@ -204,25 +205,8 @@ class Drawing(models.Model):
         geo_proxy.apply(lambda v: Vec3(transformer.transform(v.x, v.y)))
         return geo_proxy
 
-    def extract_dxf(self):
-        # following conditional for test to work
-        if isinstance(self.geom, str):
-            self.geom = json.loads(self.geom)
-        # prepare transformers
-        world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
-        utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)
-        utm_wcs = world2utm.transform(
-            self.geom["coordinates"][0], self.geom["coordinates"][1]
-        )
-        rot = radians(self.rotation)
-        # get DXF
-        doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
-        msp = doc.modelspace()
-        geodata = msp.get_geodata()
-        if not geodata:
-            # faking geodata
-            geodata = msp.new_geodata()
-            geodata.coordinate_system_definition = """<?xml version="1.0"
+    def get_epsg_xml(self):
+        xml = """<?xml version="1.0"
 encoding="UTF-16" standalone="no" ?>
 <Dictionary version="1.0" xmlns="http://www.osgeo.org/mapguide/coordinatesystem">
 <Alias id="%(epsg)s" type="CoordinateSystem">
@@ -244,8 +228,29 @@ encoding="UTF-16" standalone="no" ?>
 </CoordinateSystemAxis>
 </Axis>
 </Dictionary>""" % {
-                "epsg": self.epsg
-            }
+            "epsg": self.epsg
+        }
+        return xml
+
+    def extract_dxf(self):
+        # following conditional for test to work
+        if isinstance(self.geom, str):
+            self.geom = json.loads(self.geom)
+        # prepare transformers
+        world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
+        utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)
+        utm_wcs = world2utm.transform(
+            self.geom["coordinates"][0], self.geom["coordinates"][1]
+        )
+        rot = radians(self.rotation)
+        # get DXF
+        doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
+        msp = doc.modelspace()
+        geodata = msp.get_geodata()
+        if not geodata:
+            # faking geodata
+            geodata = msp.new_geodata()
+            geodata.coordinate_system_definition = self.get_epsg_xml()
             geodata.dxf.design_point = (0, 0, 0)
             geodata.dxf.reference_point = utm_wcs
             geodata.dxf.north_direction = (sin(rot), cos(rot))
@@ -263,8 +268,7 @@ encoding="UTF-16" standalone="no" ?>
                 "linetype": layer.dxf.linetype,
                 "geometries": [],
             }
-        entity_types = ["LINE", "LWPOLYLINE", "CIRCLE", "ARC"]
-        for e_type in entity_types:
+        for e_type in self.entity_types:
             # extract entities
             for e in msp.query(e_type):
                 geo_proxy = self.get_geo_proxy(e, m, utm2world)
@@ -288,7 +292,7 @@ encoding="UTF-16" standalone="no" ?>
             if block.name in self.name_blacklist:
                 continue
             geometries = []
-            for e_type in entity_types:
+            for e_type in self.entity_types:
                 # extract entities
                 for e in block.query(e_type):
                     geo_proxy = self.get_geo_proxy(e, m, utm2world)
@@ -319,7 +323,7 @@ encoding="UTF-16" standalone="no" ?>
             geometries = []
             # 'generator' object has no attribute 'query'
             for e in ins.virtual_entities():
-                if e.dxftype() in entity_types:
+                if e.dxftype() in self.entity_types:
                     # extract entity
                     geo_proxy = self.get_geo_proxy(e, m, utm2world)
                     geometries.append(geo_proxy.__geo_interface__)
@@ -349,30 +353,7 @@ encoding="UTF-16" standalone="no" ?>
         msp = doc.modelspace()
         # we fake geodata
         geodata = msp.new_geodata()
-        geodata.coordinate_system_definition = """<?xml version="1.0"
-encoding="UTF-16" standalone="no" ?>
-<Dictionary version="1.0" xmlns="http://www.osgeo.org/mapguide/coordinatesystem">
-<Alias id="%(epsg)s" type="CoordinateSystem">
-<ObjectId>EPSG=%(epsg)s</ObjectId>
-<Namespace>EPSG Code</Namespace>
-</Alias>
-<Axis uom="METER">
-<CoordinateSystemAxis>
-<AxisOrder>1</AxisOrder>
-<AxisName>Easting</AxisName>
-<AxisAbbreviation>E</AxisAbbreviation>
-<AxisDirection>east</AxisDirection>
-</CoordinateSystemAxis>
-<CoordinateSystemAxis>
-<AxisOrder>2</AxisOrder>
-<AxisName>Northing</AxisName>
-<AxisAbbreviation>N</AxisAbbreviation>
-<AxisDirection>north</AxisDirection>
-</CoordinateSystemAxis>
-</Axis>
-</Dictionary>""" % {
-            "epsg": self.epsg
-        }
+        geodata.coordinate_system_definition = self.get_epsg_xml()
         geodata.dxf.design_point = (0, 0, 0)
         geodata.dxf.reference_point = utm_wcs
         geodata.dxf.north_direction = (sin(rot), cos(rot))
@@ -521,49 +502,81 @@ class Layer(models.Model):
         }
 
     def save(self, *args, **kwargs):
+        # can't change 0 layer name
         if self.__original_name == "0":
             self.name = "0"
+        # check for layer unique name
         try:
             super(Layer, self).save(*args, **kwargs)
         except IntegrityError:
             self.name = self.__original_name
             super(Layer, self).save(*args, **kwargs)
+        # need to refresh stored DXF
         if not self.drawing.needs_refresh:
             self.drawing.needs_refresh = True
             super(Drawing, self.drawing).save()
+        # if block geom changed, need to update instance geom
         if self.is_block and self.__original_geom != self.geom:
+            # we will use a fake DXF to help us
+            # prepare transformers
+            world2utm = Transformer.from_crs(4326, self.drawing.epsg, always_xy=True)
+            utm2world = Transformer.from_crs(self.drawing.epsg, 4326, always_xy=True)
+            utm_wcs = world2utm.transform(
+                self.drawing.geom["coordinates"][0], self.drawing.geom["coordinates"][1]
+            )
+            rot = radians(self.drawing.rotation)
+            # start fake DXF
+            doc = ezdxf.new()
+            msp = doc.modelspace()
+            # we fake geodata
+            geodata = msp.new_geodata()
+            geodata.coordinate_system_definition = self.drawing.get_epsg_xml()
+            geodata.dxf.design_point = (0, 0, 0)
+            geodata.dxf.reference_point = utm_wcs
+            geodata.dxf.north_direction = (sin(rot), cos(rot))
+            # get transform matrix from fake geodata
+            m, epsg = geodata.get_crs_transformation(no_checks=True)  # noqa
+            # add block to fake DXF
+            block = doc.blocks.new(name=self.name)
+            geometries = self.geom["geometries"]
+            for geom in geometries:
+                geo_proxy = geo.GeoProxy.parse(geom)
+                geo_proxy.apply(lambda v: Vec3(world2utm.transform(v.x, v.y)))
+                geo_proxy.crs_to_wcs(m)
+                for entity in geo_proxy.to_dxf_entities(dxfattribs={"layer": "0"}):
+                    block.add_entity(entity)
+            # handle instances
             for insert in self.instances.all():
-                geometries_b = []
-                for geom in self.geom["geometries"]:
-                    if geom["type"] == "Polygon":
-                        vert = latlong2xy(geom["coordinates"][0], 0, 0)
-                    else:
-                        vert = latlong2xy(geom["coordinates"], 0, 0)
-                    long_b = insert.point["coordinates"][0]
-                    lat_b = insert.point["coordinates"][1]
-                    rot_b = radians(insert.rotation)
-                    vert = xy2latlong(
-                        vert, long_b, lat_b, rot_b, insert.x_scale, insert.y_scale
-                    )
-                    if geom["type"] == "Polygon":
-                        geometries_b.append(
-                            {
-                                "type": "Polygon",
-                                "coordinates": [vert],
-                            }
-                        )
-                    else:
-                        geometries_b.append(
-                            {
-                                "type": "LineString",
-                                "coordinates": vert,
-                            }
-                        )
+                # add instance in fake DXF
+                geo_proxy = geo.GeoProxy.parse(insert.point)
+                geo_proxy.apply(lambda v: Vec3(world2utm.transform(v.x, v.y)))
+                geo_proxy.crs_to_wcs(m)
+                for entity in geo_proxy.to_dxf_entities():
+                    point = entity.dxf.location
+                instance = msp.add_blockref(
+                    insert.block.name,
+                    point,
+                    dxfattribs={
+                        "xscale": insert.x_scale,
+                        "yscale": insert.y_scale,
+                        "rotation": insert.rotation,
+                        "layer": insert.layer.name,
+                    },
+                )
+                # use fake instance to generate new geometries
+                geometries = []
+                # 'generator' object has no attribute 'query'
+                for e in instance.virtual_entities():
+                    if e.dxftype() in self.drawing.entity_types:
+                        # extract entity
+                        geo_proxy = self.drawing.get_geo_proxy(e, m, utm2world)
+                        geometries.append(geo_proxy.__geo_interface__)
+                # update Insertion
                 insert.geom = {
-                    "geometries": geometries_b,
+                    "geometries": geometries,
                     "type": "GeometryCollection",
                 }
-                insert.save()
+                super(Insertion, insert).save()
 
 
 class Insertion(models.Model):
