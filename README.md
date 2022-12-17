@@ -1,4 +1,4 @@
-# django-geocad 2.0.0
+# django-geocad 2.1.0
 Django app that imports CAD drawings in Leaflet maps
 ## Overview
 Show CAD drawings with no geo location in interactive web maps. Change / add layers to drawings, change / add elements to layers, change blocks and change / add it's instances, download changed DXF files with geo location.
@@ -20,7 +20,7 @@ If `geodata` is embedded in the file, the drawing will be imported in the exact 
 Check also the rotation of the `Y axis` with respect to the `True North`: it is typical to orient the drawings most conveniently for drafting purposes, unrespectful of True North. Please note that positive angles (from Y axis to True North) are counter clockwise.
 Try to upload files with few entities at the building scale, as the conversion may be unaccurate for small items (units must me in meters).
 Add a `Title` and a short description (if you are authenticated you can als add and check the drawing as `Private` to prevent other users from viewing it).
-Press the `Save` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `ARC`, `CIRCLE`, `LINE` and `LWPOLYLINE` entities are visible on the map panel, where they inherit layer color. If unnested `BLOCKS` are present in the drawing, they will be extracted and inserted on respective layer.
+Press the `Save` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `ARC`, `CIRCLE`, `ELLIPSE`, `SPLINE`, `3DFACE`, `LINE` and `LWPOLYLINE` entities are visible on the map panel, where they inherit layer color. If unnested `BLOCKS` are present in the drawing, they will be extracted and inserted on respective layer.
 ## Downloading
 In `Drawing Detail` view it is possible to download back the (eventually modified) `DXF file`. Some limitations apply: `ARC` and `CIRCLE` entities will be approximated to `LWPOLYLINES`, `Layers` will have `True Colors` instead of `ACI Colors` and entities in blocks will all belong to layer `0`. On the other hand, `GeoData` will be associated to the `DXF`, so if you upload the file again, it will be automatically located on the map.
 ## Modify drawings
@@ -50,5 +50,5 @@ Beware that if a download is performed, the original file will be replaced too, 
 * Extract ARC and CIRCLE entities
 * Download drawings as DXF
 ## Further improvements
-* Import other entity types
+* Import hatches
 * Accept multiple entities in Leaflet.draw module
