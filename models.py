@@ -89,9 +89,18 @@ class Drawing(models.Model):
     __original_dxf = None
     __original_geom = None
     __original_rotation = None
-    gy = 1 / (6371 * 1000)
     name_blacklist = ["*Model_Space", "DynamicInputDot"]
-    entity_types = ["LINE", "LWPOLYLINE", "CIRCLE", "ARC"]
+    entity_types = [
+        "POINT",
+        "LINE",
+        "LWPOLYLINE",
+        "POLYLINE",
+        "3DFACE",
+        "CIRCLE",
+        "ARC",
+        "ELLIPSE",
+        "SPLINE",
+    ]
 
     class Meta:
         verbose_name = _("Drawing")
