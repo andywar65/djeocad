@@ -21,7 +21,7 @@ from pyproj import Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
 
-from .utils import cad2hex, check_wide_image, latlong2xy, xy2latlong
+from .utils import cad2hex, check_wide_image
 
 User = get_user_model()
 
@@ -194,7 +194,7 @@ class Drawing(models.Model):
             ):
                 self.related_layers.all().delete()
                 self.extract_dxf()
-                # layers have changed, you have to refresh stored DXF
+                # flag drawing as refreshable
                 if not self.needs_refresh:
                     self.needs_refresh = True
                     super(Drawing, self).save()
@@ -406,7 +406,9 @@ encoding="UTF-16" standalone="no" ?>
                         "layer": insert.layer.name,
                     },
                 )
+        # replace stored DXF
         doc.saveas(filename=self.dxf.path, encoding="utf-8", fmt="asc")
+        # flag drawing as refreshed and save it
         self.needs_refresh = False
         super(Drawing, self).save()
 
@@ -478,7 +480,7 @@ class Layer(models.Model):
         self.color_field = "#FFFFFF"
         self.is_block = True
         super(Layer, self).save()
-        # check if drawing needs refresh
+        # flag drawing as refreshable
         if not self.drawing.needs_refresh:
             self.drawing.needs_refresh = True
             super(Drawing, self.drawing).save()
@@ -511,7 +513,7 @@ class Layer(models.Model):
         except IntegrityError:
             self.name = self.__original_name
             super(Layer, self).save(*args, **kwargs)
-        # need to refresh stored DXF
+        # flag drawing as refreshable
         if not self.drawing.needs_refresh:
             self.drawing.needs_refresh = True
             super(Drawing, self.drawing).save()
@@ -647,48 +649,79 @@ class Insertion(models.Model):
             self.layer.geom["geometries"] + self.geom["geometries"]
         )
         super(Layer, self.layer).save()
+        # flag drawing as refreshable
         if not self.layer.drawing.needs_refresh:
             self.layer.drawing.needs_refresh = True
             super(Drawing, self.layer.drawing).save()
 
     def save(self, *args, **kwargs):
+        # check if insertion has changed
         if (
             self.__original_point != self.point
             or self.__original_rotation != self.rotation
             or self.__original_x_scale != self.x_scale
             or self.__original_y_scale != self.y_scale
         ):
-            if not self.layer.drawing.needs_refresh:
-                self.layer.drawing.needs_refresh = True
-                super(Drawing, self.layer.drawing).save()
-            geometries_b = []
-            for geom in self.block.geom["geometries"]:
-                if geom["type"] == "Polygon":
-                    vert = latlong2xy(geom["coordinates"][0], 0, 0)
-                else:
-                    vert = latlong2xy(geom["coordinates"], 0, 0)
-                long_b = self.point["coordinates"][0]
-                lat_b = self.point["coordinates"][1]
-                rot_b = radians(self.rotation)
-                vert = xy2latlong(
-                    vert, long_b, lat_b, rot_b, self.x_scale, self.y_scale
-                )
-                if geom["type"] == "Polygon":
-                    geometries_b.append(
-                        {
-                            "type": "Polygon",
-                            "coordinates": [vert],
-                        }
-                    )
-                else:
-                    geometries_b.append(
-                        {
-                            "type": "LineString",
-                            "coordinates": vert,
-                        }
-                    )
+            # we will use a fake DXF to help us
+            # prepare transformers
+            drawing = self.layer.drawing
+            world2utm = Transformer.from_crs(4326, drawing.epsg, always_xy=True)
+            utm2world = Transformer.from_crs(drawing.epsg, 4326, always_xy=True)
+            utm_wcs = world2utm.transform(
+                drawing.geom["coordinates"][0], drawing.geom["coordinates"][1]
+            )
+            rot = radians(drawing.rotation)
+            # start fake DXF
+            doc = ezdxf.new()
+            msp = doc.modelspace()
+            # we fake geodata
+            geodata = msp.new_geodata()
+            geodata.coordinate_system_definition = drawing.get_epsg_xml()
+            geodata.dxf.design_point = (0, 0, 0)
+            geodata.dxf.reference_point = utm_wcs
+            geodata.dxf.north_direction = (sin(rot), cos(rot))
+            # get transform matrix from fake geodata
+            m, epsg = geodata.get_crs_transformation(no_checks=True)  # noqa
+            # add block to fake DXF
+            block = doc.blocks.new(name=self.block.name)
+            geometries = self.block.geom["geometries"]
+            for geom in geometries:
+                geo_proxy = geo.GeoProxy.parse(geom)
+                geo_proxy.apply(lambda v: Vec3(world2utm.transform(v.x, v.y)))
+                geo_proxy.crs_to_wcs(m)
+                for entity in geo_proxy.to_dxf_entities(dxfattribs={"layer": "0"}):
+                    block.add_entity(entity)
+            # add instance to fake DXF
+            geo_proxy = geo.GeoProxy.parse(self.point)
+            geo_proxy.apply(lambda v: Vec3(world2utm.transform(v.x, v.y)))
+            geo_proxy.crs_to_wcs(m)
+            for entity in geo_proxy.to_dxf_entities():
+                point = entity.dxf.location
+            instance = msp.add_blockref(
+                block.name,
+                point,
+                dxfattribs={
+                    "xscale": self.x_scale,
+                    "yscale": self.y_scale,
+                    "rotation": self.rotation,
+                    "layer": "0",
+                },
+            )
+            # use fake instance to generate new geometries
+            geometries = []
+            # 'generator' object has no attribute 'query'
+            for e in instance.virtual_entities():
+                if e.dxftype() in drawing.entity_types:
+                    # extract entity
+                    geo_proxy = drawing.get_geo_proxy(e, m, utm2world)
+                    geometries.append(geo_proxy.__geo_interface__)
+            # update Insertion
             self.geom = {
-                "geometries": geometries_b,
+                "geometries": geometries,
                 "type": "GeometryCollection",
             }
+            # flag drawing as refreshable
+            if not drawing.needs_refresh:
+                drawing.needs_refresh = True
+                super(Drawing, drawing).save()
         super(Insertion, self).save(*args, **kwargs)

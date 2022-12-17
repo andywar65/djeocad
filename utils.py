@@ -1,4 +1,3 @@
-from math import cos, degrees, fabs, radians, sin
 from pathlib import Path
 
 from django.conf import settings
@@ -15,52 +14,6 @@ def cad2hex(color):
         return "#{:02x}{:02x}{:02x}".format(color[0], color[1], color[2])
     rgb24 = colors.DXF_DEFAULT_COLORS[color]
     return "#{:06X}".format(rgb24)
-
-
-def trans_utm2world(vert, origin, transformer, rot, xsc, ysc):
-    trans = []
-    for v in vert:
-        # scale in case of insertion
-        x = v[0] * xsc
-        y = v[1] * ysc
-        # rotate to true north
-        xr = x * cos(rot) - y * sin(rot)
-        yr = x * sin(rot) + y * cos(rot)
-        # translate point
-        xr += origin[0]
-        yr += origin[1]
-        # transform and append point
-        p = transformer.transform(xr, yr)
-        trans.append([p[1], p[0]])
-    return trans
-
-
-def xy2latlong(vert, longp, latp, rot, xsc, ysc):
-    trans = []
-    gy = 1 / (6371 * 1000)
-    gx = gy * 1 / (fabs(cos(radians(latp))))
-    for v in vert:
-        # use temp variables
-        x = v[0] * xsc
-        y = v[1] * ysc
-        # get true north
-        xr = x * cos(rot) - y * sin(rot)
-        yr = x * sin(rot) + y * cos(rot)
-        # objects are very small with respect to earth, so our transformation
-        # from CAD x,y coords to latlong is approximate
-        long = longp + degrees(xr * gx)
-        lat = latp + degrees(yr * gy)
-        trans.append([long, lat])
-    return trans
-
-
-def latlong2xy(vert, longp, latp):
-    trans = []
-    for v in vert:
-        x = -6371000 * (radians(longp - v[0])) * cos(radians(latp))
-        y = -6371000 * (radians(latp - v[1]))  # verify
-        trans.append((x, y))
-    return trans
 
 
 def check_wide_image(fb_image):
