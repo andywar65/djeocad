@@ -39,6 +39,9 @@ class LayerCreateForm(ModelForm):
         fields = ["name", "color_field", "geom"]
         widgets = {"geom": LeafletWidget()}
 
+    class Media:
+        js = ("djeocad/js/locate_drawing.js",)
+
 
 class InsertionCreateForm(ModelForm):
     def __init__(self, **kwargs):
@@ -59,3 +62,6 @@ class InsertionCreateForm(ModelForm):
             "y_scale",
         ]
         widgets = {"point": LeafletWidget()}
+
+    class Media:
+        js = ("djeocad/js/locate_drawing.js",)

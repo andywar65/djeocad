@@ -24,4 +24,5 @@
       </form>
     </div>
   </div>
+  {{ drawing.geom|json_script:"locate_drawing" }}
 {% endblock content %}
