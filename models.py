@@ -101,7 +101,7 @@ class Drawing(models.Model):
         "ARC",
         "ELLIPSE",
         "SPLINE",
-        # "HATCH",
+        "HATCH",
     ]
 
     class Meta:
@@ -211,7 +211,7 @@ class Drawing(models.Model):
                     super(Drawing, self).save()
 
     def get_geo_proxy(self, entity, matrix, transformer):
-        geo_proxy = geo.proxy(entity, force_line_string=True)
+        geo_proxy = geo.proxy(entity)
         if geo_proxy.geotype == "Polygon":
             if not shape(geo_proxy).is_valid:
                 return False
