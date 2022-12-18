@@ -10,3 +10,4 @@ django-leaflet
 ezdxf
 django-colorfield
 pyproj
+shapely

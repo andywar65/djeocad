@@ -20,6 +20,7 @@ from PIL import ImageColor
 from pyproj import Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
+from shapely.geometry import shape
 
 from .utils import cad2hex, check_wide_image
 
@@ -100,6 +101,7 @@ class Drawing(models.Model):
         "ARC",
         "ELLIPSE",
         "SPLINE",
+        # "HATCH",
     ]
 
     class Meta:
@@ -210,6 +212,9 @@ class Drawing(models.Model):
 
     def get_geo_proxy(self, entity, matrix, transformer):
         geo_proxy = geo.proxy(entity, force_line_string=True)
+        if geo_proxy.geotype == "Polygon":
+            if not shape(geo_proxy).is_valid:
+                return False
         geo_proxy.wcs_to_crs(matrix)
         geo_proxy.apply(lambda v: Vec3(transformer.transform(v.x, v.y)))
         return geo_proxy
@@ -281,9 +286,10 @@ encoding="UTF-16" standalone="no" ?>
             # extract entities
             for e in msp.query(e_type):
                 geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                layer_table[e.dxf.layer]["geometries"].append(
-                    geo_proxy.__geo_interface__
-                )
+                if geo_proxy:
+                    layer_table[e.dxf.layer]["geometries"].append(
+                        geo_proxy.__geo_interface__
+                    )
         # create Layers
         for name, layer in layer_table.items():
             if not layer["geometries"] == []:
@@ -305,7 +311,8 @@ encoding="UTF-16" standalone="no" ?>
                 # extract entities
                 for e in block.query(e_type):
                     geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                    geometries.append(geo_proxy.__geo_interface__)
+                    if geo_proxy:
+                        geometries.append(geo_proxy.__geo_interface__)
             # create block as Layer
             if not geometries == []:
                 Layer.objects.create(
@@ -328,14 +335,16 @@ encoding="UTF-16" standalone="no" ?>
                 continue
             point = msp.add_point(ins.dxf.insert)
             geo_proxy = self.get_geo_proxy(point, m, utm2world)
-            insertion_point = geo_proxy.__geo_interface__
+            if geo_proxy:
+                insertion_point = geo_proxy.__geo_interface__
             geometries = []
             # 'generator' object has no attribute 'query'
             for e in ins.virtual_entities():
                 if e.dxftype() in self.entity_types:
                     # extract entity
                     geo_proxy = self.get_geo_proxy(e, m, utm2world)
-                    geometries.append(geo_proxy.__geo_interface__)
+                    if geo_proxy:
+                        geometries.append(geo_proxy.__geo_interface__)
             # create Insertion
             Insertion.objects.create(
                 block=block,
@@ -581,7 +590,8 @@ class Layer(models.Model):
                     if e.dxftype() in self.drawing.entity_types:
                         # extract entity
                         geo_proxy = self.drawing.get_geo_proxy(e, m, utm2world)
-                        geometries.append(geo_proxy.__geo_interface__)
+                        if geo_proxy:
+                            geometries.append(geo_proxy.__geo_interface__)
                 # update Insertion
                 insert.geom = {
                     "geometries": geometries,
@@ -723,7 +733,8 @@ class Insertion(models.Model):
                 if e.dxftype() in drawing.entity_types:
                     # extract entity
                     geo_proxy = drawing.get_geo_proxy(e, m, utm2world)
-                    geometries.append(geo_proxy.__geo_interface__)
+                    if geo_proxy:
+                        geometries.append(geo_proxy.__geo_interface__)
             # update Insertion
             self.geom = {
                 "geometries": geometries,
