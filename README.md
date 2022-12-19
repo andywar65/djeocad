@@ -35,6 +35,7 @@ Geodata can be stored in DXF, but `ezdxf` library can't deal with all kind of co
 ## Changelog v2.2.0
 * Hatch support
 * Correct geometry type in Leaflet.draw module
+* Layer linetypes
 ## Changelog v2.1.0
 * More entity types
 ## Changelog v2.0.0
@@ -57,4 +58,4 @@ Geodata can be stored in DXF, but `ezdxf` library can't deal with all kind of co
 * Extract ARC and CIRCLE entities
 * Download drawings as DXF
 ## Further improvements
-* Layer linetypes
+* Open to suggestions
