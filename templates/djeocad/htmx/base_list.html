@@ -30,7 +30,9 @@
     </a>
   {% else %}
     <a class="btn btn-primary"
-      href="{% url 'djeocad:drawing_simple_create' %}">
+      hx-get="{% url 'djeocad:drawing_simple_create' %}"
+      hx-target="#nav-card"
+      hx-push-url="true">
       {% trans "Add drawing" %}
     </a>
   {% endif %}

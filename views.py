@@ -177,10 +177,10 @@ class DrawingGeoDataView(PermissionRequiredMixin, UpdateView):
         )
 
 
-class DrawingSimpleCreateView(CreateView):
+class DrawingSimpleCreateView(HxPageTemplateMixin, CreateView):
     model = Drawing
     form_class = DrawingSimpleCreateForm
-    template_name = "djeocad/includes/drawing_simple_create.html"
+    template_name = "djeocad/htmx/drawing_simple_create.html"
 
     def form_valid(self, form):
         user = User.objects.get(username=_("geocad_visitors"))

@@ -9,7 +9,10 @@
     <ul>
       {% for drawing in drawings %}
         <li>
-          <a href="{% url 'djeocad:drawing_detail' username=drawing.user.username pk=drawing.id %}">
+          <a class="link-primary"
+            hx-get="{% url 'djeocad:drawing_detail' username=drawing.user.username pk=drawing.id %}"
+            hx-target="#nav-card"
+            hx-push-url="true">
             {{ drawing }}
           </a>
           <small>
@@ -28,12 +31,19 @@
     {% trans "All authors"%}
   </a>
 </div>
-{% if user.is_authenticated %}
-  <div class="card-footer">
+<div class="card-footer">
+  {% if user.is_authenticated %}
     <a class="btn btn-primary"
       href="{% url 'djeocad:drawing_create' username=request.user.username %}">
       {% trans "Add drawing" %}
     </a>
-  </div>
-{% endif %}
+  {% else %}
+    <a class="btn btn-primary"
+      hx-get="{% url 'djeocad:drawing_simple_create' %}"
+      hx-target="#nav-card"
+      hx-push-url="true">
+      {% trans "Add drawing" %}
+    </a>
+  {% endif %}
+</div>
 {% include "djeocad/includes/map_data.html" %}
