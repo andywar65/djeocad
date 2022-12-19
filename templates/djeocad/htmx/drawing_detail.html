@@ -30,9 +30,8 @@
 </div>
 <div class="card-footer">
   <a class="btn btn-success"
-    href="{% url 'djeocad:drawing_download' pk=object.id %}"
-    title="{% trans "Download drawing" %}">
-    <i class="fa fa-download"></i>
+    href="{% url 'djeocad:drawing_download' pk=object.id %}">
+    {% trans "Download drawing" %}
   </a>
   {% if request.user == object.user %}
     <a class="btn btn-primary"

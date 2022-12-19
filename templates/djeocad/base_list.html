@@ -27,7 +27,7 @@
         </div>
         {{ mapbox_token|json_script:"mapbox_token"}}
         <script src="{% static 'djeocad/js/base_list.js'%}"></script>
-        <div class="col col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+        <div class="col col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
           {% leaflet_map "mymap" callback="window.map_init" %}
         </div>
       </div>
