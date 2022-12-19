@@ -7,7 +7,11 @@ function map_init(map, options) {
   }
 
   function setLineStyle(feature) {
-    return {"color": feature.properties.popupContent.color, "weight": 5 };
+    if (feature.properties.popupContent.linetype) {
+      return {"color": feature.properties.popupContent.color, "weight": 5 };
+    } else {
+      return {"color": feature.properties.popupContent.color, "weight": 5, dashArray: "20, 20" };
+    }
   }
 
   const base_map = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",

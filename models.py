@@ -444,6 +444,10 @@ class Layer(models.Model):
         max_length=50,
     )
     color_field = ColorField(default="#FFFFFF")
+    linetype = models.BooleanField(
+        _("Continuous linetype"),
+        default=True,
+    )
     geom = GeometryCollectionField(_("Entities"))
     is_block = models.BooleanField(
         _("Block definition"),
@@ -518,6 +522,7 @@ class Layer(models.Model):
         return {
             "content": title_str,
             "color": self.color_field,
+            "linetype": self.linetype,
             "layer": self.name,
         }
 
@@ -660,6 +665,7 @@ class Insertion(models.Model):
         return {
             "content": title_str,
             "color": self.layer.color_field,
+            "linetype": self.layer.linetype,
             "layer": self.layer.name,
         }
 

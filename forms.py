@@ -48,7 +48,7 @@ class DrawingSimpleCreateForm(ModelForm):
 class LayerCreateForm(ModelForm):
     class Meta:
         model = Layer
-        fields = ["name", "color_field", "geom"]
+        fields = ["name", "color_field", "linetype", "geom"]
         widgets = {
             "geom": LeafletWidget(
                 attrs={
