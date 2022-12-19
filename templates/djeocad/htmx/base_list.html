@@ -25,7 +25,9 @@
 <div class="card-footer">
   {% if user.is_authenticated %}
     <a class="btn btn-primary"
-      href="{% url 'djeocad:drawing_create' username=request.user.username %}">
+      hx-get="{% url 'djeocad:drawing_create' username=request.user.username %}"
+      hx-target="#nav-card"
+      hx-push-url="true">
       {% trans "Add drawing" %}
     </a>
   {% else %}
