@@ -14,7 +14,13 @@ class DrawingGeoDataForm(ModelForm):
     class Meta:
         model = Drawing
         fields = ["geom", "rotation"]
-        widgets = {"geom": LeafletWidget()}
+        widgets = {
+            "geom": LeafletWidget(
+                attrs={
+                    "geom_type": "Point",
+                }
+            )
+        }
 
     class Media:
         js = ("djeocad/js/locate_user.js",)
@@ -24,7 +30,13 @@ class DrawingUpdateForm(ModelForm):
     class Meta:
         model = Drawing
         fields = ["title", "intro", "dxf", "image", "geom", "rotation", "private"]
-        widgets = {"geom": LeafletWidget()}
+        widgets = {
+            "geom": LeafletWidget(
+                attrs={
+                    "geom_type": "Point",
+                }
+            )
+        }
 
 
 class DrawingSimpleCreateForm(ModelForm):
@@ -37,7 +49,13 @@ class LayerCreateForm(ModelForm):
     class Meta:
         model = Layer
         fields = ["name", "color_field", "geom"]
-        widgets = {"geom": LeafletWidget()}
+        widgets = {
+            "geom": LeafletWidget(
+                attrs={
+                    "geom_type": "GeometryCollection",
+                }
+            )
+        }
 
     class Media:
         js = ("djeocad/js/locate_drawing.js",)
@@ -61,7 +79,13 @@ class InsertionCreateForm(ModelForm):
             "x_scale",
             "y_scale",
         ]
-        widgets = {"point": LeafletWidget()}
+        widgets = {
+            "point": LeafletWidget(
+                attrs={
+                    "geom_type": "Point",
+                }
+            )
+        }
 
     class Media:
         js = ("djeocad/js/locate_drawing.js",)
