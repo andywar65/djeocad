@@ -57,4 +57,4 @@ Geodata can be stored in DXF, but `ezdxf` library can't deal with all kind of co
 * Extract ARC and CIRCLE entities
 * Download drawings as DXF
 ## Further improvements
-* Open to suggestions
+* Layer linetypes

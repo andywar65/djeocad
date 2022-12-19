@@ -3,31 +3,41 @@
 {% load i18n %}
 
 {% block content %}
-  <div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
-    <div class="card-header">
-      <h4 class="card-title">
-        {% if object.is_block %}
-          {% trans "Update block"%}: {{ object.name }}, {% trans "ID"%}: {{ object.id }}
-        {% else %}
-          {% trans "Update layer"%}: {{ object.name }}, {% trans "ID"%}: {{ object.id }}
-        {% endif %}
-      </h4>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col" style="margin-bottom: 20px">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">
+              {% if object.is_block %}
+                {% trans "Update block"%}: {{ object.name }}, {% trans "ID"%}: {{ object.id }}
+              {% else %}
+                {% trans "Update layer"%}: {{ object.name }}, {% trans "ID"%}: {{ object.id }}
+              {% endif %}
+            </h4>
+          </div>
+          <div class="card-body">
+            {% bootstrap_field form.name %}
+            {% bootstrap_field form.color_field %}
+          </div>
+          <div class="card-footer">
+            <input class="btn btn-primary"
+              type="submit"
+              value="{% trans 'Update' %}" />
+            <a class="btn btn-secondary"
+              href="{% url 'djeocad:drawing_update' username=object.drawing.user.username pk=object.drawing.id %}"
+            >
+              {% trans "Discard" %}
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
+        {% bootstrap_field form.geom %}
+      </div>
     </div>
-    <div class="card-body">
-      <form method="POST" action="">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <input class="btn btn-primary"
-          type="submit"
-          value="{% trans 'Update' %}" />
-        <a class="btn btn-secondary"
-          href="{% url 'djeocad:drawing_update' username=object.drawing.user.username pk=object.drawing.id %}"
-        >
-          {% trans "Discard" %}
-        </a>
-      </form>
-    </div>
-  </div>
+  </form>
   <div class="mx-auto" style="max-width: 480px; margin-top: 20px">
     {% if object.is_block %}
       <h4>{% trans "Instances" %}:</h4>
