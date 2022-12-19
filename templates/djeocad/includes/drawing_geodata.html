@@ -3,29 +3,37 @@
 {% load i18n %}
 
 {% block content %}
-  <div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
-    <div class="card-header">
-      <h4 class="card-title">
-        {% trans "Add GeoData"%}: {{ object }}
-      </h4>
-    </div>
-    <div class="card-body">
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {% blocktrans %}
-          No Geodata found in DXF, you must insert it manually.
-          On the map draw a marker corresponding to DXF axis origin (0,0,0).
-          Rotation is the angle in degrees from Y axis to True North
-          (counterclockwise is positive).
-        {% endblocktrans %}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  <form method="POST" action="">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col" style="margin-bottom: 20px">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">
+              {% trans "Add GeoData"%}: {{ object }}
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {% blocktrans %}
+                No Geodata found in DXF, you must insert it manually.
+                On the map draw a marker corresponding to DXF axis origin (0,0,0).
+                Rotation is the angle in degrees from Y axis to True North
+                (counterclockwise is positive).
+              {% endblocktrans %}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% bootstrap_field form.rotation %}
+            <input class="btn btn-primary"
+              type="submit"
+              value="{% trans 'Add GeoData' %}" />
+
+          </div>
+        </div>
       </div>
-      <form method="POST" action="">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <input class="btn btn-primary"
-          type="submit"
-          value="{% trans 'Add GeoData' %}" />
-      </form>
+      <div class="col col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+        {% bootstrap_field form.geom %}
+      </div>
     </div>
-  </div>
+  </form>
 {% endblock content %}
