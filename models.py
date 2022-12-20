@@ -247,6 +247,9 @@ encoding="UTF-16" standalone="no" ?>
         return xml
 
     def extract_dxf(self):
+        # limit the number of entities for non private drawings
+        # (will be transformed in setting in the future)
+        max_ent = 20
         # following conditional for test to work
         if isinstance(self.geom, str):
             self.geom = json.loads(self.geom)
@@ -283,8 +286,12 @@ encoding="UTF-16" standalone="no" ?>
                 "geometries": [],
             }
         for e_type in self.entity_types:
+            i = 0
             # extract entities
             for e in msp.query(e_type):
+                i += 1
+                if not self.private and i >= max_ent:
+                    break
                 geo_proxy = self.get_geo_proxy(e, m, utm2world)
                 if geo_proxy:
                     layer_table[e.dxf.layer]["geometries"].append(
@@ -308,8 +315,12 @@ encoding="UTF-16" standalone="no" ?>
                 continue
             geometries = []
             for e_type in self.entity_types:
+                i = 0
                 # extract entities
                 for e in block.query(e_type):
+                    i += 1
+                    if not self.private and i >= max_ent:
+                        break
                     geo_proxy = self.get_geo_proxy(e, m, utm2world)
                     if geo_proxy:
                         geometries.append(geo_proxy.__geo_interface__)
