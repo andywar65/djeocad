@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-20 00:04+0100\n"
-"PO-Revision-Date: 2022-12-20 00:06+0100\n"
+"POT-Creation-Date: 2022-12-20 12:59+0100\n"
+"PO-Revision-Date: 2022-12-20 13:04+0100\n"
 "Last-Translator: andywar65 <andy.war1965@gmail.com>\n"
 "Language-Team: \n"
 "Language: it\n"
@@ -51,11 +51,11 @@ msgstr "Immagine"
 msgid "DXF file"
 msgstr "File DXF"
 
-#: .\djeocad\models.py:70 .\djeocad\models.py:622
+#: .\djeocad\models.py:70 .\djeocad\models.py:633
 msgid "Location"
 msgstr "Posizione"
 
-#: .\djeocad\models.py:72 .\djeocad\models.py:624
+#: .\djeocad\models.py:72 .\djeocad\models.py:635
 msgid "Rotation"
 msgstr "Rotazione"
 
@@ -71,7 +71,7 @@ msgstr "Aggiorna il file DXF partendo dai livelli"
 msgid "CRS code"
 msgstr "Codice CRS"
 
-#: .\djeocad\models.py:108 .\djeocad\models.py:440
+#: .\djeocad\models.py:108 .\djeocad\models.py:451
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:5
 msgid "Drawing"
 msgstr "Disegno"
@@ -80,42 +80,42 @@ msgstr "Disegno"
 msgid "Drawings"
 msgstr "Disegni"
 
-#: .\djeocad\models.py:443
+#: .\djeocad\models.py:454
 msgid "Layer / block name"
 msgstr "Nome del livello / blocco"
 
-#: .\djeocad\models.py:448
+#: .\djeocad\models.py:459
 msgid "Continuous linetype"
 msgstr "Linea continua"
 
-#: .\djeocad\models.py:451 .\djeocad\models.py:635
+#: .\djeocad\models.py:462 .\djeocad\models.py:646
 msgid "Entities"
 msgstr "Entità"
 
-#: .\djeocad\models.py:453
+#: .\djeocad\models.py:464
 msgid "Block definition"
 msgstr "Definizione del blocco"
 
-#: .\djeocad\models.py:462 .\djeocad\models.py:515 .\djeocad\models.py:620
-#: .\djeocad\models.py:660
+#: .\djeocad\models.py:473 .\djeocad\models.py:526 .\djeocad\models.py:631
+#: .\djeocad\models.py:671
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:10
 #: .\djeocad\templates\djeocad\htmx\layer_detail.html:4
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:12
 msgid "Layer"
 msgstr "Livello"
 
-#: .\djeocad\models.py:463
+#: .\djeocad\models.py:474
 #: .\djeocad\templates\djeocad\includes\drawing_update.html:48
 msgid "Layers"
 msgstr "Livelli"
 
-#: .\djeocad\models.py:513 .\djeocad\models.py:614 .\djeocad\models.py:662
+#: .\djeocad\models.py:524 .\djeocad\models.py:625 .\djeocad\models.py:673
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:10
 #: .\djeocad\templates\djeocad\includes\insertion_update.html:13
 msgid "Block"
 msgstr "Blocco"
 
-#: .\djeocad\models.py:519 .\djeocad\models.py:658
+#: .\djeocad\models.py:530 .\djeocad\models.py:669
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:9
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:14
 #: .\djeocad\templates\djeocad\includes\layer_update.html:14
@@ -123,11 +123,11 @@ msgstr "Blocco"
 msgid "ID"
 msgstr ""
 
-#: .\djeocad\models.py:628
+#: .\djeocad\models.py:639
 msgid "X scale"
 msgstr "Scala in X"
 
-#: .\djeocad\models.py:632
+#: .\djeocad\models.py:643
 msgid "Y scale"
 msgstr "Scala in Y"
 
@@ -233,17 +233,20 @@ msgid ""
 "                No Geodata found in DXF, you must insert it manually.\n"
 "                On the map draw a marker corresponding to DXF axis origin "
 "(0,0,0).\n"
-"                Rotation is the angle in degrees from Y axis to True North\n"
-"                (counterclockwise is positive).\n"
+"                Rotation is the angle you need to rotate the drawing to "
+"orient it\n"
+"                correctly to True North (angle in degrees, counterclockwise "
+"is positive).\n"
 "              "
 msgstr ""
 "\n"
 "          Non ci sono Geodata nel DXF, devi inserirli manualmente.\n"
 "          Sulla mappa inserisci un marker in corrispondenza dell'origine "
-"degli assi nel DXF (0,0,0).\n"
-"          La Rotazione è l'angolo in gradi tra l'asse Y e il Nord "
-"geografico\n"
-"          (il senso antiorario è positivo)."
+"degli assi del DXF (0,0,0).\n"
+"          La Rotazione è l'angolo necessario a ruotare il disegno in modo da "
+"orientarlo\n"
+"          correttamente verso il Nord geografico (angolo in gradi, il senso "
+"antiorario è positivo)."
 
 #: .\djeocad\templates\djeocad\includes\drawing_update.html:14
 msgid "Update drawing"
