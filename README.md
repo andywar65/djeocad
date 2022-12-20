@@ -1,4 +1,4 @@
-# django-geocad 2.2.0
+# django-geocad 2.2.1
 Django app that imports CAD drawings in Leaflet maps
 ## Overview
 Show CAD drawings with no geo location in interactive web maps. Change / add layers to drawings, change / add elements to layers, change blocks and change / add it's instances, download changed DXF files with geo location.
@@ -17,21 +17,23 @@ On the navigation bar look for `Projects/GeoCAD`. You will be presented with a `
 ## Create drawings
 Unauthenticated users can upload a drawing (to modify it see further paragraph). To create a `Drawing` you will need a `DXF file` in ASCII format. `DXF` is a drawing exchange format widely used in `CAD` applications.
 If `geodata` is embedded in the file, the drawing will be imported in the exact geographical location. If `geodata` is unavailable, you will have to insert it manually: to geolocate the drawing you need to know where the `World Coordinate System origin (0,0,0)` is. A good position for the `WCS origin` could be the cornerstone of a building, or another geographic landmark nearby the entities of your drawing.
-Check also the rotation of the `Y axis` with respect to the `True North`: it is typical to orient the drawings most conveniently for drafting purposes, unrespectful of True North. Please note that positive angles (from Y axis to True North) are counter clockwise.
-Try to upload files with few entities at the building scale, as the conversion may be unaccurate for small items (units must me in meters).
-Add a `Title` and a short description (if you are authenticated you can als add and check the drawing as `Private` to prevent other users from viewing it).
+Check also the rotation of the drawing with respect to the `True North`: it is typical to orient the drawings most conveniently for drafting purposes, unrespectful of True North. Please note that in CAD counterclockwise rotations are positive, so if you have to rotate the drawing clockwise to orient it correctly, you will have to enter a negative angle.
+Try to upload files with few entities at the building scale, as the conversion may be unaccurate for small items (units must be in meters).
+Add a `Title` and a short description (if you are authenticated you can also check the drawing as `Private` to prevent other users from viewing it). The `Private` flag also unlimits the number of extracted entities.
 Press the `Save` button. If all goes well the `DXF file` will be extracted and a list of `Layers` will be attached to your drawing. Each layer inherits the `Name` and color originally assigned in CAD. `POINT`, `ARC`, `CIRCLE`, `ELLIPSE`, `SPLINE`, `3DFACE`, `HATCH`, `LINE` and `LWPOLYLINE` entities are visible on the map panel, where they inherit layer color. If unnested `BLOCKS` are present in the drawing, they will be extracted and inserted on respective layer.
 ## Downloading
 In `Drawing Detail` view it is possible to download back the (eventually modified) `DXF file`. Some limitations apply: curved entities will be approximated to `LWPOLYLINES`, `Layers` will have `True Colors` instead of `ACI Colors` and entities in blocks will all belong to layer `0`. Closed polylines will be transformed in hatches. On the other hand, `GeoData` will be associated to the `DXF`, so if you upload the file again, it will be automatically located on the map.
 ## Modify drawings
 If you are authenticated and granted `GeoCAD Manager` permissions, you can modify the drawings you have personally uploaded.
 You can modify the drawing `Title`, image and descripition, along with the `DXF` source file or geographic location / rotation. You can check the drawing as `Private` to prevent others from viewing it.
-You can create, update and delete `Layers` associated to the drawing. You can access layer `Name`, color and linetype, and modify entity geometries. Some limitations occour: Layer `0` can't be deleted or renamed and you can't have duplicate layer names in the same drawing (that's consistent with CAD behaviour).
+You can create, update and delete `Layers` associated to the drawing. You can access layer `Name`, color and linetype (continuous and dashed are the allowed types), and modify entity geometries. Some limitations occour: Layer `0` can't be deleted or renamed and you can't have duplicate layer names in the same drawing (that's consistent with CAD behaviour).
 If you want to create a new `BLOCK`, make a `Layer` first, then transform it to block (an instance of the block will replace the layer). `Blocks` share the same model as `Layers`, so they can be modified. When updating a `Block` you will be able to access it's instances. Apart from normal CRUD operations, you can also `explode` an instance: the instance will be deleted, but it's entities will be transferred to insertion layer (this is common practice in CAD).
 Beware that if a download is performed, the original file will be replaced by the downloaded copy, so you will eventually lose some data.
 ## About Geodata
 Geodata can be stored in DXF, but `ezdxf` library can't deal with all kind of coordinate reference systems (CRS). If Geodata is not found in the file (or if the CRS is not compatible) `django-geocad` asks for user input: the location of the drawing origin of axis (WCS), and the rotation with respect to True North. The `pyproj` library hands over the best Universal Transverse Mercator CRS for the location (UTM is compatible with `ezdxf`). Thanks to UTM and to rotation input, Geodata can be built from scratch and incorporated into the file.
 
+## Changelog v2.2.1
+* Correct explanation of Rotation field
 ## Changelog v2.2.0
 * Hatch support
 * Correct geometry type in Leaflet.draw module
