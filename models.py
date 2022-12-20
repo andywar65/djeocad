@@ -299,7 +299,7 @@ encoding="UTF-16" standalone="no" ?>
                     )
         # create Layers
         for name, layer in layer_table.items():
-            if not layer["geometries"] == []:
+            if name == "0" or not layer["geometries"] == []:
                 Layer.objects.create(
                     drawing_id=self.id,
                     name=name,
