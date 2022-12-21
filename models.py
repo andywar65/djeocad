@@ -467,6 +467,8 @@ class Layer(models.Model):
     )
 
     __original_name = None
+    __original_color_field = None
+    __original_linetype = None
     __original_geom = None
 
     class Meta:
@@ -484,8 +486,11 @@ class Layer(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__original_name = self.name
-        self.__original_geom = self.geom
+        # access dict to avoid recursion error upon deleting parent (bug #31435)
+        self.__original_name = self.__dict__.get("name")
+        self.__original_color_field = self.__dict__.get("color_field")
+        self.__original_linetype = self.__dict__.get("linetype")
+        self.__original_geom = self.__dict__.get("geom")
 
     def __str__(self):
         if self.is_block:
@@ -547,10 +552,16 @@ class Layer(models.Model):
         except IntegrityError:
             self.name = self.__original_name
             super(Layer, self).save(*args, **kwargs)
-        # flag drawing as refreshable
-        if not self.drawing.needs_refresh:
-            self.drawing.needs_refresh = True
-            super(Drawing, self.drawing).save()
+        # flag drawing as refreshable if something changed
+        if (
+            self.__original_name != self.name
+            or self.__original_color_field != self.color_field
+            or self.__original_linetype != self.linetype
+            or self.__original_geom != self.geom
+        ):
+            if not self.drawing.needs_refresh:
+                self.drawing.needs_refresh = True
+                super(Drawing, self.drawing).save()
         # if block geom changed, need to update instance geom
         if self.is_block and self.__original_geom != self.geom:
             # we will use a fake DXF to help us

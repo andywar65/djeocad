@@ -8,15 +8,15 @@ function map_init(map, options) {
 
   function setLineStyle(feature) {
     if (feature.properties.popupContent.linetype) {
-      return {"color": feature.properties.popupContent.color, "weight": 5 };
+      return {"color": feature.properties.popupContent.color, "weight": 3 };
     } else {
-      return {"color": feature.properties.popupContent.color, "weight": 5, dashArray: "20, 20" };
+      return {"color": feature.properties.popupContent.color, "weight": 3, dashArray: "10, 10" };
     }
   }
 
   const base_map = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
-      attribution: '',
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19,
     });
 
