@@ -5,23 +5,23 @@ default_language_version:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v4.4.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
   - repo: https://github.com/psf/black
-    rev: 22.10.0
+    rev: 22.12.0
     hooks:
       - id: black
   - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+    rev: v5.11.3
     hooks:
       - id: isort
         name: isort (python)
   - repo: https://github.com/pycqa/flake8
-    rev: 5.0.4
+    rev: 6.0.0
     hooks:
       - id: flake8
   - repo: https://github.com/thibaudcolas/curlylint
@@ -35,7 +35,7 @@ repos:
         args:
           - --tabwidth=2
   - repo: https://github.com/gitguardian/ggshield
-    rev: v1.13.6
+    rev: v1.14.2
     hooks:
       - id: ggshield
         language_version: python3
