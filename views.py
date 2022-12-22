@@ -319,15 +319,6 @@ class LayerCreateView(PermissionRequiredMixin, CreateView):
         context["drawing"] = self.drawing
         return context
 
-    def post(self, request, *args, **kwargs):
-        geometry = json.loads(request.POST["geom"])
-        if geometry["type"] != "GeometryCollection":
-            request.POST = request.POST.copy()
-            request.POST["geom"] = json.dumps(
-                {"type": "GeometryCollection", "geometries": [geometry]}
-            )
-        return super(LayerCreateView, self).post(request, *args, **kwargs)
-
     def form_valid(self, form):
         form.instance.drawing = self.drawing
         return super(LayerCreateView, self).form_valid(form)
@@ -354,15 +345,6 @@ class LayerUpdateView(PermissionRequiredMixin, UpdateView):
         ):
             raise PermissionDenied
         return self.object
-
-    def post(self, request, *args, **kwargs):
-        geometry = json.loads(request.POST["geom"])
-        if geometry["type"] != "GeometryCollection":
-            request.POST = request.POST.copy()
-            request.POST["geom"] = json.dumps(
-                {"type": "GeometryCollection", "geometries": [geometry]}
-            )
-        return super(LayerUpdateView, self).post(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse(
