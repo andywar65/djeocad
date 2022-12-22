@@ -47,7 +47,7 @@ class BaseListView(HxPageTemplateMixin, ListView):
     template_name = "djeocad/htmx/base_list.html"
 
     def get_queryset(self):
-        qs = Drawing.objects.filter(private=False)
+        qs = Drawing.objects.filter(private=False).prefetch_related("user")
         if self.request.user.is_authenticated:
             qs2 = Drawing.objects.filter(user_id=self.request.user.uuid, private=True)
             qs = qs | qs2
