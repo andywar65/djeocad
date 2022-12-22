@@ -264,8 +264,10 @@ encoding="UTF-16" standalone="no" ?>
 
     def extract_dxf(self):
         # limit the number of entities for non private drawings
-        # (will be transformed in setting in the future)
-        max_ent = 20
+        try:
+            max_ent = settings.DJEOCAD_MAX_ENTITIES
+        except AttributeError:
+            max_ent = 20
         # following conditional for test to work
         if isinstance(self.geom, str):
             self.geom = json.loads(self.geom)

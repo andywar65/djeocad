@@ -11,7 +11,8 @@ See `requirements.in` for required libraries. In your project root type `git clo
     "DEFAULT_ZOOM": 10,
     "RESET_VIEW": False,
 }`
-A satellite tile layer is expected, so you will need a [Mapbox](https://www.mapbox.com/) token to make it work. Add the token to `project/settings.py` (I use `environs` for secrets): `MAPBOX_TOKEN = env.str("MAPBOX_TOKEN")`
+A satellite tile layer is expected, so you will need a [Mapbox](https://www.mapbox.com/) token to make it work. Add the token to `project/settings.py` (I use `environs` for secrets): `MAPBOX_TOKEN = env.str("MAPBOX_TOKEN")`.
+Unauthenticated users can upload DXF files, but it's possible to limit the number of extracted entities by setting `DJEOCAD_MAX_ENTITIES = integer` (it is 20 by default).
 ## View drawings
 On the navigation bar look for `Projects/GeoCAD`. You will be presented with a `List of all drawings` and a `List by author`, where drawings are just markers on the map. Click on a marker and follow the link in the popup: you will land on the `Drawing Detail` page, with layers displayed on the map. Layers may be switched on and off.
 ## Create drawings
