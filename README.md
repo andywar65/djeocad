@@ -1,4 +1,4 @@
-# django-geocad 2.2.1
+# django-geocad 2.2.2
 Django app that imports CAD drawings in Leaflet maps
 ## Overview
 Show CAD drawings with no geo location in interactive web maps. Change / add layers to drawings, change / add elements to layers, change blocks and change / add it's instances, download changed DXF files with geo location.
@@ -33,6 +33,8 @@ Beware that if a download is performed, the original file will be replaced by th
 ## About Geodata
 Geodata can be stored in DXF, but `ezdxf` library can't deal with all kind of coordinate reference systems (CRS). If Geodata is not found in the file (or if the CRS is not compatible) `django-geocad` asks for user input: the location of the drawing origin of axis (WCS), and the rotation with respect to True North. The `pyproj` library hands over the best Universal Transverse Mercator CRS for the location (UTM is compatible with `ezdxf`). Thanks to UTM and to rotation input, Geodata can be built from scratch and incorporated into the file.
 
+## Changelog v2.2.2
+* Fixed recursion error on Layer delete
 ## Changelog v2.2.1
 * Correct explanation of Rotation field
 ## Changelog v2.2.0
