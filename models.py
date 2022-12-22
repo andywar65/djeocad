@@ -246,6 +246,22 @@ encoding="UTF-16" standalone="no" ?>
         }
         return xml
 
+    def prepare_transformers(self):
+        world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
+        utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)
+        utm_wcs = world2utm.transform(
+            self.geom["coordinates"][0], self.geom["coordinates"][1]
+        )
+        rot = radians(self.rotation)
+        return world2utm, utm2world, utm_wcs, rot
+
+    def fake_geodata(self, geodata, utm_wcs, rot):
+        geodata.coordinate_system_definition = self.get_epsg_xml()
+        geodata.dxf.design_point = (0, 0, 0)
+        geodata.dxf.reference_point = utm_wcs
+        geodata.dxf.north_direction = (sin(rot), cos(rot))
+        return geodata
+
     def extract_dxf(self):
         # limit the number of entities for non private drawings
         # (will be transformed in setting in the future)
@@ -254,12 +270,7 @@ encoding="UTF-16" standalone="no" ?>
         if isinstance(self.geom, str):
             self.geom = json.loads(self.geom)
         # prepare transformers
-        world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
-        utm2world = Transformer.from_crs(self.epsg, 4326, always_xy=True)
-        utm_wcs = world2utm.transform(
-            self.geom["coordinates"][0], self.geom["coordinates"][1]
-        )
-        rot = radians(self.rotation)
+        world2utm, utm2world, utm_wcs, rot = self.prepare_transformers()
         # get DXF
         doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
         msp = doc.modelspace()
@@ -267,10 +278,7 @@ encoding="UTF-16" standalone="no" ?>
         if not geodata:
             # faking geodata
             geodata = msp.new_geodata()
-            geodata.coordinate_system_definition = self.get_epsg_xml()
-            geodata.dxf.design_point = (0, 0, 0)
-            geodata.dxf.reference_point = utm_wcs
-            geodata.dxf.north_direction = (sin(rot), cos(rot))
+            geodata = self.fake_geodata(geodata, utm_wcs, rot)
         # get transform matrix from true or fake geodata
         m, epsg = geodata.get_crs_transformation(no_checks=True)  # noqa
         # prepare layer table
@@ -372,20 +380,13 @@ encoding="UTF-16" standalone="no" ?>
 
     def get_file_to_download(self):
         # prepare transformers
-        world2utm = Transformer.from_crs(4326, self.epsg, always_xy=True)
-        utm_wcs = world2utm.transform(
-            self.geom["coordinates"][0], self.geom["coordinates"][1]
-        )
-        rot = radians(self.rotation)
+        world2utm, utm2world, utm_wcs, rot = self.prepare_transformers()
         # start DXF
         doc = ezdxf.new()
         msp = doc.modelspace()
         # we fake geodata
         geodata = msp.new_geodata()
-        geodata.coordinate_system_definition = self.get_epsg_xml()
-        geodata.dxf.design_point = (0, 0, 0)
-        geodata.dxf.reference_point = utm_wcs
-        geodata.dxf.north_direction = (sin(rot), cos(rot))
+        geodata = self.fake_geodata(geodata, utm_wcs, rot)
         # get transform matrix from fake geodata
         m, epsg = geodata.get_crs_transformation(no_checks=True)  # noqa
         # create layers and add entities
@@ -566,21 +567,13 @@ class Layer(models.Model):
         if self.is_block and self.__original_geom != self.geom:
             # we will use a fake DXF to help us
             # prepare transformers
-            world2utm = Transformer.from_crs(4326, self.drawing.epsg, always_xy=True)
-            utm2world = Transformer.from_crs(self.drawing.epsg, 4326, always_xy=True)
-            utm_wcs = world2utm.transform(
-                self.drawing.geom["coordinates"][0], self.drawing.geom["coordinates"][1]
-            )
-            rot = radians(self.drawing.rotation)
+            world2utm, utm2world, utm_wcs, rot = self.drawing.prepare_transformers()
             # start fake DXF
             doc = ezdxf.new()
             msp = doc.modelspace()
             # we fake geodata
             geodata = msp.new_geodata()
-            geodata.coordinate_system_definition = self.drawing.get_epsg_xml()
-            geodata.dxf.design_point = (0, 0, 0)
-            geodata.dxf.reference_point = utm_wcs
-            geodata.dxf.north_direction = (sin(rot), cos(rot))
+            geodata = self.drawing.fake_geodata(geodata, utm_wcs, rot)
             # get transform matrix from fake geodata
             m, epsg = geodata.get_crs_transformation(no_checks=True)  # noqa
             # add block to fake DXF
@@ -712,21 +705,13 @@ class Insertion(models.Model):
             # we will use a fake DXF to help us
             # prepare transformers
             drawing = self.layer.drawing
-            world2utm = Transformer.from_crs(4326, drawing.epsg, always_xy=True)
-            utm2world = Transformer.from_crs(drawing.epsg, 4326, always_xy=True)
-            utm_wcs = world2utm.transform(
-                drawing.geom["coordinates"][0], drawing.geom["coordinates"][1]
-            )
-            rot = radians(drawing.rotation)
+            world2utm, utm2world, utm_wcs, rot = drawing.prepare_transformers()
             # start fake DXF
             doc = ezdxf.new()
             msp = doc.modelspace()
             # we fake geodata
             geodata = msp.new_geodata()
-            geodata.coordinate_system_definition = drawing.get_epsg_xml()
-            geodata.dxf.design_point = (0, 0, 0)
-            geodata.dxf.reference_point = utm_wcs
-            geodata.dxf.north_direction = (sin(rot), cos(rot))
+            geodata = drawing.fake_geodata(geodata, utm_wcs, rot)
             # get transform matrix from fake geodata
             m, epsg = geodata.get_crs_transformation(no_checks=True)  # noqa
             # add block to fake DXF
