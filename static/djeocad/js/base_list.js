@@ -49,7 +49,8 @@ function map_init(map, options) {
     layer_control.addBaseLayer(sat_map, "Satellite");
     // add other layers to map and layer control
     let collection = JSON.parse(document.getElementById("author_data").textContent);
-    for (author of collection) {
+    for (author_name of collection) {
+      let author = "Author - " + author_name
       window[author] = L.layerGroup().addTo(map);
       layer_control.addOverlay(window[author], author);
     }
@@ -64,7 +65,8 @@ function map_init(map, options) {
     // add objects to layers
     collection = JSON.parse(document.getElementById("marker_data").textContent);
     for (marker of collection.features) {
-      L.geoJson(marker, {onEachFeature: onEachFeature}).addTo(window[marker.properties.popupContent.layer]);
+      let author = "Author - " + marker.properties.popupContent.layer
+      L.geoJson(marker, {onEachFeature: onEachFeature}).addTo(window[author]);
     }
     map.fitBounds(L.geoJson(collection).getBounds(), {padding: [30,30]});
     collection = JSON.parse(document.getElementById("line_data").textContent);
@@ -74,8 +76,6 @@ function map_init(map, options) {
         L.geoJson(line, {style: setLineStyle, onEachFeature: onEachFeature}).addTo(window[name]);
       }
     }
-    // let lines = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
-    // lines.addTo(ln_layer);
     collection = JSON.parse(document.getElementById("block_data").textContent);
     if (collection !== null) {
       for (block of collection.features) {
@@ -83,8 +83,6 @@ function map_init(map, options) {
         L.geoJson(block, {style: setLineStyle, onEachFeature: onEachFeature}).addTo(window[name]);
       }
     }
-    // let blocks = L.geoJson(collection, {style: setLineStyle, onEachFeature: onEachFeature});
-    // blocks.addTo(ln_layer);
   }
 
   getCollections()
