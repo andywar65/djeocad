@@ -78,7 +78,9 @@ class AuthorListView(HxPageTemplateMixin, ListView):
         self.author = get_object_or_404(User, username=self.kwargs["username"])
 
     def get_queryset(self):
-        self.qs = Drawing.objects.filter(user_id=self.author.uuid, private=False)
+        self.qs = Drawing.objects.filter(
+            user_id=self.author.uuid, private=False
+        ).select_related("user")
         if self.request.user == self.author:
             qs2 = Drawing.objects.filter(user_id=self.author.uuid, private=True)
             self.qs = self.qs | qs2
@@ -118,9 +120,9 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["mapbox_token"] = settings.MAPBOX_TOKEN
         context["lines"] = self.object.related_layers.filter(is_block=False)
-        context["blocks"] = Insertion.objects.none()
+        context["insertions"] = Insertion.objects.none()
         for layer in context["lines"]:
-            context["blocks"] = context["blocks"] | layer.insertions.all()
+            context["insertions"] = context["insertions"] | layer.insertions.all()
         context["drawings"] = self.object
         context["author_list"] = [self.object.user.username]
         layer_list = context["lines"].values_list("name", flat=True)
