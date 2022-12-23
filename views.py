@@ -8,7 +8,6 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import (
     CreateView,
@@ -260,46 +259,6 @@ class DrawingDeleteView(PermissionRequiredMixin, RedirectView):
     def dispatch(self, request, *args, **kwargs):
         response = super(DrawingDeleteView, self).dispatch(request, *args, **kwargs)
         response["HX-Request"] = True
-        return response
-
-
-class LayerDetailView(HxPageTemplateMixin, DetailView):
-    model = Layer
-    template_name = "djeocad/htmx/layer_detail.html"
-
-    def get_object(self, queryset=None):
-        self.object = super(LayerDetailView, self).get_object(queryset=None)
-        user = get_object_or_404(User, username=self.kwargs["username"])
-        if user != self.object.drawing.user:
-            raise Http404(_("Layer does not belong to User"))
-        if (
-            self.object.drawing.private
-            and self.object.drawing.user != self.request.user
-        ):
-            raise PermissionDenied
-        return self.object
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["mapbox_token"] = settings.MAPBOX_TOKEN
-        context["drawings"] = self.object.drawing
-        if self.request.htmx:
-            self.m_crypto = get_random_string(7)
-            context["m_crypto"] = self.m_crypto
-            self.l_crypto = get_random_string(7)
-            context["l_crypto"] = self.l_crypto
-        else:
-            context["lines"] = self.object
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-        response = super(LayerDetailView, self).dispatch(request, *args, **kwargs)
-        if request.htmx:
-            dict = {
-                "getMarkerCollection": self.m_crypto,
-                "getLineCollection": self.l_crypto,
-            }
-            response["HX-Trigger-After-Swap"] = json.dumps(dict)
         return response
 
 
