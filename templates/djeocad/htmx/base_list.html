@@ -5,9 +5,9 @@
 </div>
 <div class="card-body">
   <h5>{% trans "Authors"%}: </h5>
-  {% if author_list %}
+  {% if authors %}
     <ul>
-      {% for author in author_list %}
+      {% for author in authors %}
         <li>
           <a class="link-primary"
             hx-get="{% url 'djeocad:author_list' username=author %}"

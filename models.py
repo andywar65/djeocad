@@ -132,12 +132,12 @@ class Drawing(models.Model):
         if not image:
             return {
                 "content": title_str + intro_str,
-                "layer": self.user.username,
+                "layer": _("Author - ") + self.user.username,
             }
         image_str = '<img src="%(image)s">' % {"image": image}
         return {
             "content": title_str + image_str + intro_str,
-            "layer": self.user.username,
+            "layer": _("Author - ") + self.user.username,
         }
 
     def get_thumbnail_path(self):
@@ -542,7 +542,7 @@ class Layer(models.Model):
             "content": title_str,
             "color": self.color_field,
             "linetype": self.linetype,
-            "layer": self.name,
+            "layer": _("Layer - ") + self.name,
         }
 
     def save(self, *args, **kwargs):
@@ -683,7 +683,7 @@ class Insertion(models.Model):
             "content": title_str,
             "color": self.layer.color_field,
             "linetype": self.layer.linetype,
-            "layer": self.layer.name,
+            "layer": _("Layer - ") + self.layer.name,
         }
 
     def explode_instance(self):

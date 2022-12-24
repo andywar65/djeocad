@@ -49,37 +49,35 @@ function map_init(map, options) {
     layer_control.addBaseLayer(sat_map, "Satellite");
     // add other layers to map and layer control
     let collection = JSON.parse(document.getElementById("author_data").textContent);
-    for (author_name of collection) {
-      let author = "Author - " + author_name
+    for (author of collection) {
       window[author] = L.layerGroup().addTo(map);
       layer_control.addOverlay(window[author], author);
     }
     collection = JSON.parse(document.getElementById("layer_data").textContent);
     if (collection !== null) {
       for (layer_name of collection) {
-        let name = "Layer - " + layer_name
-        window[name] = L.layerGroup().addTo(map);
-        layer_control.addOverlay(window[name], name);
+        window[layer_name] = L.layerGroup().addTo(map);
+        layer_control.addOverlay(window[layer_name], layer_name);
       }
     }
     // add objects to layers
     collection = JSON.parse(document.getElementById("marker_data").textContent);
     for (marker of collection.features) {
-      let author = "Author - " + marker.properties.popupContent.layer
+      let author = marker.properties.popupContent.layer
       L.geoJson(marker, {onEachFeature: onEachFeature}).addTo(window[author]);
     }
     map.fitBounds(L.geoJson(collection).getBounds(), {padding: [30,30]});
     collection = JSON.parse(document.getElementById("line_data").textContent);
     if (collection !== null) {
       for (line of collection.features) {
-        let name = "Layer - " + line.properties.popupContent.layer
+        let name = line.properties.popupContent.layer
         L.geoJson(line, {style: setLineStyle, onEachFeature: onEachFeature}).addTo(window[name]);
       }
     }
     collection = JSON.parse(document.getElementById("block_data").textContent);
     if (collection !== null) {
       for (block of collection.features) {
-        let name = "Layer - " + block.properties.popupContent.layer
+        let name = block.properties.popupContent.layer
         L.geoJson(block, {style: setLineStyle, onEachFeature: onEachFeature}).addTo(window[name]);
       }
     }
