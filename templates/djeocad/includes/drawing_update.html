@@ -43,22 +43,4 @@
       </div>
     </div>
   </form>
-  <div class="row" style="margin-top: 20px">
-    <div class="col col-xl-6 col-lg-6 col-12">
-      <h4>{% trans "Layers" %}</h4>
-      {% for layer in layers %}
-        {% include "djeocad/htmx/layer_inline.html" %}
-      {% endfor %}
-      <a class="btn btn-primary"
-        href="{% url 'djeocad:layer_create' username=object.user.username pk=object.id %}">
-        {% trans "Add layer" %}
-      </a>
-    </div>
-    <div class="col col-xl-6 col-lg-6 col-12">
-      <h4>{% trans "Blocks" %}</h4>
-      {% for layer in blocks %}
-        {% include "djeocad/htmx/layer_inline.html" %}
-      {% endfor %}
-    </div>
-  </div>
 {% endblock content %}
