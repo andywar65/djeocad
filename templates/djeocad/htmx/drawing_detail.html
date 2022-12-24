@@ -29,24 +29,51 @@
   </ul>
 </div>
 <div class="card-footer">
-  <a class="btn btn-success"
+  <a class="btn btn-success" style="margin-bottom: 15px;"
     href="{% url 'djeocad:drawing_download' pk=object.id %}">
     {% trans "Download drawing" %}
   </a>
   {% if request.user == object.user %}
-    <a class="btn btn-primary"
-      href="{% url 'djeocad:drawing_update' username=object.user.username pk=object.id %}"
-      title="{% trans "Modify" %}">
-      <i class="fa fa-pencil"></i>
-    </a>
-    <a class="btn btn-danger"
-      hx-get="{% url 'djeocad:drawing_delete' username=object.user.username pk=object.id %}"
-      hx-target="#nav-card"
-      hx-push-url="{% url 'djeocad:author_list' username=object.user.username %}"
-      hx-confirm="{% trans 'Are you sure you want to delete this drawing?' %}"
-      title="{% trans "Delete" %}">
-      <i class="fa fa-trash-o"></i>
-    </a>
+    <div class="dropdown">
+      <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+        {% trans "Modify" %}
+      </a>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <li>
+          <a class="dropdown-item" href="{% url 'djeocad:drawing_update' username=object.user.username pk=object.id %}">
+            {% trans "Modify drawing" %}
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+            hx-get="{% url 'djeocad:drawing_delete' username=object.user.username pk=object.id %}"
+            hx-target="#nav-card"
+            hx-push-url="{% url 'djeocad:author_list' username=object.user.username %}"
+            hx-confirm="{% trans 'Are you sure you want to delete this drawing?' %}">
+            {% trans "Delete drawing" %}
+          </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li style="margin-left: 15px;">{% trans "Modify layers" %}</li>
+        {% for layer in lines %}
+          <a class="dropdown-item" href="{% url 'djeocad:layer_update' username=object.user.username pk=layer.id %}">
+            {% trans "Layer" %} - {{ layer.name }}
+          </a>
+        {% endfor %}
+        <li><hr class="dropdown-divider"></li>
+        <li style="margin-left: 15px;">{% trans "Modify blocks" %}</li>
+        {% for blok in blocks %}
+          <a class="dropdown-item" href="{% url 'djeocad:layer_update' username=object.user.username pk=blok.id %}">
+            {% trans "Block" %} - {{ blok.name }}
+          </a>
+          {% for inst in blok.instances.all %}
+            <a class="dropdown-item" href="{% url 'djeocad:insert_update' username=object.user.username pk=inst.id %}">
+              - {% trans "Instance" %} - {{ inst.id }}
+            </a>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
   {% endif %}
 </div>
 {% include "djeocad/includes/map_data.html" %}
