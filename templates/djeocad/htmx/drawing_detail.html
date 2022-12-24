@@ -35,12 +35,18 @@
   </a>
   {% if request.user == object.user %}
     <div class="dropdown">
-      <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+      <a class="btn btn-primary dropdown-toggle"
+        href="#"
+        role="button"
+        id="dropdownMenuLink"
+        data-bs-toggle="dropdown"
+        aria-expanded="false">
         {% trans "Modify" %}
       </a>
       <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <li>
-          <a class="dropdown-item" href="{% url 'djeocad:drawing_update' username=object.user.username pk=object.id %}">
+          <a class="dropdown-item"
+            href="{% url 'djeocad:drawing_update' username=object.user.username pk=object.id %}">
             {% trans "Modify drawing" %}
           </a>
         </li>
@@ -56,20 +62,35 @@
         <li><hr class="dropdown-divider"></li>
         <li style="margin-left: 15px;">{% trans "Modify layers" %}</li>
         {% for layer in lines %}
-          <a class="dropdown-item" href="{% url 'djeocad:layer_update' username=object.user.username pk=layer.id %}">
-            {% trans "Layer" %} - {{ layer.name }}
-          </a>
+          <li>
+            <a class="dropdown-item"
+              href="{% url 'djeocad:layer_update' username=object.user.username pk=layer.id %}">
+              {% trans "Layer" %} - {{ layer.name }}
+            </a>
+          </li>
         {% endfor %}
+        <li>
+          <a class="dropdown-item"
+            href="{% url 'djeocad:layer_create' username=object.user.username pk=object.id %}">
+            {% trans "Add layer" %}
+          </a>
+        </li>
         <li><hr class="dropdown-divider"></li>
         <li style="margin-left: 15px;">{% trans "Modify blocks" %}</li>
         {% for blok in blocks %}
-          <a class="dropdown-item" href="{% url 'djeocad:layer_update' username=object.user.username pk=blok.id %}">
-            {% trans "Block" %} - {{ blok.name }}
-          </a>
-          {% for inst in blok.instances.all %}
-            <a class="dropdown-item" href="{% url 'djeocad:insert_update' username=object.user.username pk=inst.id %}">
-              - {% trans "Instance" %} - {{ inst.id }}
+          <li>
+            <a class="dropdown-item"
+              href="{% url 'djeocad:layer_update' username=object.user.username pk=blok.id %}">
+              {% trans "Block" %} - {{ blok.name }}
             </a>
+          </li>
+          {% for inst in blok.instances.all %}
+            <li>
+              <a class="dropdown-item"
+                href="{% url 'djeocad:insert_update' username=object.user.username pk=inst.id %}">
+                - {% trans "Instance" %} - {{ inst.id }}
+              </a>
+            </li>
           {% endfor %}
         {% endfor %}
       </ul>
