@@ -120,6 +120,7 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["mapbox_token"] = settings.MAPBOX_TOKEN
         context["lines"] = self.object.related_layers.filter(is_block=False)
+        context["blocks"] = self.object.related_layers.filter(is_block=True)
         context["insertions"] = Insertion.objects.none()
         for layer in context["lines"]:
             context["insertions"] = context["insertions"] | layer.insertions.all()
