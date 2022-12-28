@@ -28,13 +28,42 @@
             {% bootstrap_field form.private %}
           </div>
           <div class="card-footer">
-            <input class="btn btn-primary"
+            <input class="btn btn-primary" style="margin-bottom: 15px;"
               type="submit"
               value="{% trans 'Update' %}" />
-            <a class="btn btn-secondary"
-              href="{% url 'djeocad:drawing_detail' username=object.user.username pk=object.id %}">
-              {% trans "Discard" %}
-            </a>
+            <div class="dropdown">
+              <a class="btn btn-secondary dropdown-toggle"
+                href="#"
+                role="button"
+                id="dropdownMenuLink"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                {% trans "Other actions" %}
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li>
+                  <a class="dropdown-item"
+                    hx-get="{% url 'djeocad:drawing_delete' username=object.user.username pk=object.id %}"
+                    hx-target="#nav-card"
+                    hx-push-url="{% url 'djeocad:author_list' username=object.user.username %}"
+                    hx-confirm="{% trans 'Are you sure you want to delete this drawing?' %}">
+                    {% trans "Delete drawing" %}
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item"
+                    href="{% url 'djeocad:layer_create' username=object.user.username pk=object.id %}">
+                    {% trans "Add layer" %}
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <a class="dropdown-item"
+                  href="{% url 'djeocad:drawing_detail' username=object.user.username pk=object.id %}">
+                  {% trans "Discard" %}
+                </a>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -43,4 +72,18 @@
       </div>
     </div>
   </form>
+  <div class="row" style="margin-top: 20px">
+    <div class="col col-xl-6 col-lg-6 col-12">
+      <h4>{% trans "Layers" %}</h4>
+      {% for layer in layers %}
+        {% include "djeocad/htmx/layer_inline.html" %}
+      {% endfor %}
+    </div>
+    <div class="col col-xl-6 col-lg-6 col-12">
+      <h4>{% trans "Blocks" %}</h4>
+      {% for layer in blocks %}
+        {% include "djeocad/htmx/layer_inline.html" %}
+      {% endfor %}
+    </div>
+  </div>
 {% endblock content %}
