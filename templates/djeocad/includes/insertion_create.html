@@ -21,13 +21,34 @@
           </div>
           <div class="card-footer">
             <input class="btn btn-primary"
+              style="margin-bottom: 15px;"
               type="submit"
               value="{% trans 'Add' %}" />
-            <a class="btn btn-secondary"
-              href="{% url 'djeocad:layer_update' username=blok.drawing.user.username pk=blok.id %}"
-            >
-              {% trans "Discard" %}
-            </a>
+            <div class="dropdown">
+              <a class="btn btn-secondary dropdown-toggle"
+                href="#"
+                role="button"
+                id="dropdownMenuLink"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                {% trans "Other actions" %}
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li>
+                  <a class="dropdown-item"
+                    href="{% url 'djeocad:layer_update' username=blok.drawing.user.username pk=blok.id %}">
+                    {% trans "Modify block" %}
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item"
+                    href="{% url 'djeocad:drawing_detail' username=blok.drawing.user.username pk=blok.drawing.id %}">
+                    {% trans "Discard" %}
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
