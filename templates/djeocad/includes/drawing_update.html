@@ -43,16 +43,6 @@
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li>
                   <a class="dropdown-item"
-                    hx-get="{% url 'djeocad:drawing_delete' username=object.user.username pk=object.id %}"
-                    hx-target="#nav-card"
-                    hx-push-url="{% url 'djeocad:author_list' username=object.user.username %}"
-                    hx-confirm="{% trans 'Are you sure you want to delete this drawing?' %}">
-                    {% trans "Delete drawing" %}
-                  </a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                  <a class="dropdown-item"
                     href="{% url 'djeocad:layer_create' username=object.user.username pk=object.id %}">
                     {% trans "Add layer" %}
                   </a>
