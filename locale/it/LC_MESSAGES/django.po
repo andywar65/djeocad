@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-20 12:59+0100\n"
-"PO-Revision-Date: 2022-12-20 13:04+0100\n"
+"POT-Creation-Date: 2022-12-28 16:25+0100\n"
+"PO-Revision-Date: 2022-12-28 16:28+0100\n"
 "Last-Translator: andywar65 <andy.war1965@gmail.com>\n"
 "Language-Team: \n"
 "Language: it\n"
@@ -22,8 +22,8 @@ msgstr ""
 msgid "GeoCAD Manager"
 msgstr ""
 
-#: .\djeocad\apps.py:23 .\djeocad\apps.py:27 .\djeocad\views.py:186
-#: .\djeocad\views.py:198 .\djeocad\views.py:210
+#: .\djeocad\apps.py:23 .\djeocad\apps.py:27 .\djeocad\views.py:190
+#: .\djeocad\views.py:202 .\djeocad\views.py:214
 msgid "geocad_visitors"
 msgstr ""
 
@@ -51,11 +51,11 @@ msgstr "Immagine"
 msgid "DXF file"
 msgstr "File DXF"
 
-#: .\djeocad\models.py:70 .\djeocad\models.py:633
+#: .\djeocad\models.py:70 .\djeocad\models.py:639
 msgid "Location"
 msgstr "Posizione"
 
-#: .\djeocad\models.py:72 .\djeocad\models.py:635
+#: .\djeocad\models.py:72 .\djeocad\models.py:641
 msgid "Rotation"
 msgstr "Rotazione"
 
@@ -71,7 +71,7 @@ msgstr "Aggiorna il file DXF partendo dai livelli"
 msgid "CRS code"
 msgstr "Codice CRS"
 
-#: .\djeocad\models.py:108 .\djeocad\models.py:451
+#: .\djeocad\models.py:108 .\djeocad\models.py:454
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:5
 msgid "Drawing"
 msgstr "Disegno"
@@ -80,42 +80,48 @@ msgstr "Disegno"
 msgid "Drawings"
 msgstr "Disegni"
 
-#: .\djeocad\models.py:454
+#: .\djeocad\models.py:135 .\djeocad\models.py:140 .\djeocad\views.py:59
+#: .\djeocad\views.py:94 .\djeocad\views.py:128
+msgid "Author - "
+msgstr "Autore - "
+
+#: .\djeocad\models.py:457
 msgid "Layer / block name"
 msgstr "Nome del livello / blocco"
 
-#: .\djeocad\models.py:459
+#: .\djeocad\models.py:462
 msgid "Continuous linetype"
 msgstr "Linea continua"
 
-#: .\djeocad\models.py:462 .\djeocad\models.py:646
+#: .\djeocad\models.py:465 .\djeocad\models.py:652
 msgid "Entities"
 msgstr "Entità"
 
-#: .\djeocad\models.py:464
+#: .\djeocad\models.py:467
 msgid "Block definition"
 msgstr "Definizione del blocco"
 
-#: .\djeocad\models.py:473 .\djeocad\models.py:526 .\djeocad\models.py:631
-#: .\djeocad\models.py:671
+#: .\djeocad\models.py:478 .\djeocad\models.py:534 .\djeocad\models.py:637
+#: .\djeocad\models.py:677
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:68
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:10
-#: .\djeocad\templates\djeocad\htmx\layer_detail.html:4
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:12
 msgid "Layer"
 msgstr "Livello"
 
-#: .\djeocad\models.py:474
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:48
+#: .\djeocad\models.py:479
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:70
 msgid "Layers"
 msgstr "Livelli"
 
-#: .\djeocad\models.py:524 .\djeocad\models.py:625 .\djeocad\models.py:673
+#: .\djeocad\models.py:532 .\djeocad\models.py:631 .\djeocad\models.py:679
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:84
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:10
 #: .\djeocad\templates\djeocad\includes\insertion_update.html:13
 msgid "Block"
 msgstr "Blocco"
 
-#: .\djeocad\models.py:530 .\djeocad\models.py:669
+#: .\djeocad\models.py:538 .\djeocad\models.py:675
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:9
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:14
 #: .\djeocad\templates\djeocad\includes\layer_update.html:14
@@ -123,11 +129,15 @@ msgstr "Blocco"
 msgid "ID"
 msgstr ""
 
-#: .\djeocad\models.py:639
+#: .\djeocad\models.py:545 .\djeocad\models.py:686 .\djeocad\views.py:131
+msgid "Layer - "
+msgstr "Livello - "
+
+#: .\djeocad\models.py:645
 msgid "X scale"
 msgstr "Scala in X"
 
-#: .\djeocad\models.py:643
+#: .\djeocad\models.py:649
 msgid "Y scale"
 msgstr "Scala in Y"
 
@@ -163,8 +173,8 @@ msgstr "Ancora nessun autore"
 
 #: .\djeocad\templates\djeocad\htmx\drawing_create.html:18
 #: .\djeocad\templates\djeocad\htmx\drawing_simple_create.html:16
-#: .\djeocad\templates\djeocad\includes\insertion_create.html:25
-#: .\djeocad\templates\djeocad\includes\layer_create.html:24
+#: .\djeocad\templates\djeocad\includes\insertion_create.html:26
+#: .\djeocad\templates\djeocad\includes\layer_create.html:25
 msgid "Add"
 msgstr "Aggiungi"
 
@@ -176,23 +186,42 @@ msgstr "Torna all'autore"
 msgid "Download drawing"
 msgstr "Scarica disegno"
 
-#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:39
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:44
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:14
-#: .\djeocad\templates\djeocad\htmx\layer_detail.html:23
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:19
 msgid "Modify"
 msgstr "Modifica"
 
-#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:46
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:50
+#: .\djeocad\templates\djeocad\includes\layer_create.html:39
+#: .\djeocad\templates\djeocad\includes\layer_update.html:59
+msgid "Modify drawing"
+msgstr "Modifica disegno"
+
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:58
 msgid "Are you sure you want to delete this drawing?"
 msgstr "Sei sicuro di voler eliminare questo disegno?"
 
-#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:47
-#: .\djeocad\templates\djeocad\htmx\insertion_inline.html:31
-#: .\djeocad\templates\djeocad\htmx\layer_detail.html:30
-#: .\djeocad\templates\djeocad\htmx\layer_inline.html:28
-msgid "Delete"
-msgstr "Elimina"
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:59
+msgid "Delete drawing"
+msgstr "Elimina il disegno"
+
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:63
+msgid "Modify layers"
+msgstr "Modifica i livelli"
+
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:75
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:48
+msgid "Add layer"
+msgstr "Aggiungi livello"
+
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:79
+msgid "Modify blocks"
+msgstr "Modifica i blocchi"
+
+#: .\djeocad\templates\djeocad\htmx\drawing_detail.html:91
+msgid "Instance"
+msgstr "Istanza"
 
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:21
 msgid "Are you sure you want to explode this block instance?"
@@ -206,13 +235,10 @@ msgstr "Esplodi l'istanza del blocco sul livello di inserimento"
 msgid "Are you sure you want to delete this block instance?"
 msgstr "Sei sicuro di voler eliminare questa istanza di un blocco?"
 
-#: .\djeocad\templates\djeocad\htmx\layer_detail.html:9
-msgid "Back to drawing"
-msgstr "Torna al disegno"
-
-#: .\djeocad\templates\djeocad\htmx\layer_detail.html:28
-msgid "Are you sure you want to delete this layer?"
-msgstr "Sei sicuro di voler eliminare questo livello?"
+#: .\djeocad\templates\djeocad\htmx\insertion_inline.html:31
+#: .\djeocad\templates\djeocad\htmx\layer_inline.html:28
+msgid "Delete"
+msgstr "Elimina"
 
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:15
 msgid "Color"
@@ -252,31 +278,40 @@ msgstr ""
 msgid "Update drawing"
 msgstr "Aggiorna il disegno"
 
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:33
-#: .\djeocad\templates\djeocad\includes\insertion_update.html:25
-#: .\djeocad\templates\djeocad\includes\layer_update.html:28
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:34
+#: .\djeocad\templates\djeocad\includes\insertion_update.html:26
+#: .\djeocad\templates\djeocad\includes\layer_update.html:29
 msgid "Update"
 msgstr "Aggiorna"
 
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:36
-#: .\djeocad\templates\djeocad\includes\insertion_create.html:29
-#: .\djeocad\templates\djeocad\includes\insertion_update.html:29
-#: .\djeocad\templates\djeocad\includes\layer_create.html:28
-#: .\djeocad\templates\djeocad\includes\layer_update.html:32
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:42
+#: .\djeocad\templates\djeocad\includes\insertion_create.html:34
+#: .\djeocad\templates\djeocad\includes\insertion_update.html:34
+#: .\djeocad\templates\djeocad\includes\layer_create.html:33
+#: .\djeocad\templates\djeocad\includes\layer_update.html:37
+msgid "Other actions"
+msgstr "Altre azioni"
+
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:55
+#: .\djeocad\templates\djeocad\includes\insertion_create.html:47
+#: .\djeocad\templates\djeocad\includes\insertion_update.html:47
+#: .\djeocad\templates\djeocad\includes\layer_create.html:46
+#: .\djeocad\templates\djeocad\includes\layer_update.html:66
 msgid "Discard"
 msgstr "Annulla"
 
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:54
-msgid "Add layer"
-msgstr "Aggiungi livello"
-
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:58
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:76
 msgid "Blocks"
 msgstr "Blocchi"
 
 #: .\djeocad\templates\djeocad\includes\insertion_create.html:13
 msgid "Create instance of block"
 msgstr "Crea un'istanza del blocco"
+
+#: .\djeocad\templates\djeocad\includes\insertion_create.html:40
+#: .\djeocad\templates\djeocad\includes\insertion_update.html:40
+msgid "Modify block"
+msgstr "Modifica il blocco"
 
 #: .\djeocad\templates\djeocad\includes\insertion_update.html:13
 msgid "Update insertion"
@@ -295,112 +330,116 @@ msgid "Update layer"
 msgstr "Aggiorna livello"
 
 #: .\djeocad\templates\djeocad\includes\layer_update.html:44
-msgid "Instances"
-msgstr "Istanze"
-
-#: .\djeocad\templates\djeocad\includes\layer_update.html:50
-msgid "No instances yet"
-msgstr "Ancora nessuna istanza"
-
-#: .\djeocad\templates\djeocad\includes\layer_update.html:54
 msgid "Add instance"
 msgstr "Aggiungi istanza"
 
-#: .\djeocad\templates\djeocad\includes\layer_update.html:60
+#: .\djeocad\templates\djeocad\includes\layer_update.html:51
 msgid "Transform layer to block"
 msgstr "Trasforma livello in blocco"
 
-#: .\djeocad\urls.py:30
+#: .\djeocad\templates\djeocad\includes\layer_update.html:81
+msgid "Instances"
+msgstr "Istanze"
+
+#: .\djeocad\templates\djeocad\includes\layer_update.html:87
+msgid "No instances yet"
+msgstr "Ancora nessuna istanza"
+
+#: .\djeocad\urls.py:29
 msgid "drawing/add/"
 msgstr "disegno/aggiungi/"
 
-#: .\djeocad\urls.py:35
+#: .\djeocad\urls.py:34
 msgid "drawing/<pk>/geodata/"
 msgstr "disegno/<pk>/geodata/"
 
-#: .\djeocad\urls.py:41
+#: .\djeocad\urls.py:40
 msgid "<username>/drawing/add/"
 msgstr "<username>/disegno/aggiungi/"
 
-#: .\djeocad\urls.py:46
+#: .\djeocad\urls.py:45
 msgid "<username>/drawing/<pk>/"
 msgstr "<username>/disegno/<pk>/"
 
-#: .\djeocad\urls.py:51
+#: .\djeocad\urls.py:50
 msgid "<username>/drawing/<pk>/geodata/"
 msgstr "<username>/disegno/<pk>/geodata/"
 
-#: .\djeocad\urls.py:56
+#: .\djeocad\urls.py:55
 msgid "<username>/drawing/<pk>/update/"
 msgstr "<username>/disegno/<pk>/aggiorna/"
 
-#: .\djeocad\urls.py:61
+#: .\djeocad\urls.py:60
 msgid "<username>/drawing/<pk>/delete/"
 msgstr "<username>/disegno/<pk>/elimina/"
 
-#: .\djeocad\urls.py:66
+#: .\djeocad\urls.py:65
 msgid "<username>/drawing/<pk>/layer/add/"
 msgstr "<username>/disegno/<pk>/livello/aggiungi/"
 
-#: .\djeocad\urls.py:71
-msgid "<username>/layer/<pk>/"
-msgstr "<username>/livello/<pk>/"
-
-#: .\djeocad\urls.py:76
+#: .\djeocad\urls.py:70
 msgid "<username>/layer/<pk>/update/"
 msgstr "<username>/livello/<pk>/aggiorna/"
 
-#: .\djeocad\urls.py:81
+#: .\djeocad\urls.py:75
 msgid "<username>/layer/<pk>/to/block/"
 msgstr "<username>/livello/<pk>/in/blocco/"
 
-#: .\djeocad\urls.py:86
+#: .\djeocad\urls.py:80
 msgid "<username>/block/<pk>/instance/add/"
 msgstr "<username>/blocco/<pk>/aggiungi/istanza/"
 
-#: .\djeocad\urls.py:91
+#: .\djeocad\urls.py:85
 msgid "<username>/block-instance/<pk>/update/"
 msgstr "<username>/istanza/<pk>/aggiorna/"
 
-#: .\djeocad\urls.py:95
+#: .\djeocad\urls.py:89
 msgid "drawing/<pk>/download/"
 msgstr "disegno/<pk>/download/"
 
-#: .\djeocad\views.py:112
+#: .\djeocad\views.py:114
 msgid "Drawing does not belong to User"
 msgstr "Il disegno non appartiene all'utente"
 
-#: .\djeocad\views.py:246 .\djeocad\views.py:405 .\djeocad\views.py:491
-#: .\djeocad\views.py:507
+#: .\djeocad\views.py:250 .\djeocad\views.py:351 .\djeocad\views.py:437
+#: .\djeocad\views.py:453
 msgid "Request without HTMX headers"
 msgstr ""
 
-#: .\djeocad\views.py:272
-msgid "Layer does not belong to User"
-msgstr "Il livello non appartiene all'utente"
-
-#: .\djeocad\views.py:408
+#: .\djeocad\views.py:354
 msgid "Can't delete layer '0'"
 msgstr "Non si può cancellare il livello '0'"
 
-#: .\djeocad\views.py:413
+#: .\djeocad\views.py:359
 #, python-format
 msgid "Layer \"%s\" deleted"
 msgstr "Livello \"%s\" eliminato"
 
-#: .\djeocad\views.py:427
+#: .\djeocad\views.py:373
 msgid "Layer is not a block"
 msgstr "Il livello non è un blocco"
 
-#: .\djeocad\views.py:497
+#: .\djeocad\views.py:443
 #, python-format
 msgid "Insertion \"%d\" deleted"
 msgstr "Inserimento \"%d\" eliminato"
 
-#: .\djeocad\views.py:514
+#: .\djeocad\views.py:460
 #, python-format
 msgid "Insertion \"%d\" exploded"
 msgstr "Inserimento \"%d\" esploso"
+
+#~ msgid "Back to drawing"
+#~ msgstr "Torna al disegno"
+
+#~ msgid "Are you sure you want to delete this layer?"
+#~ msgstr "Sei sicuro di voler eliminare questo livello?"
+
+#~ msgid "<username>/layer/<pk>/"
+#~ msgstr "<username>/livello/<pk>/"
+
+#~ msgid "Layer does not belong to User"
+#~ msgstr "Il livello non appartiene all'utente"
 
 #~ msgid "Layers / Blocks"
 #~ msgstr "Livelli / Blocchi"
