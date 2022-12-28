@@ -48,10 +48,12 @@
                   </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
-                <a class="dropdown-item"
-                  href="{% url 'djeocad:drawing_detail' username=object.user.username pk=object.id %}">
-                  {% trans "Discard" %}
-                </a>
+                <li>
+                  <a class="dropdown-item"
+                    href="{% url 'djeocad:drawing_detail' username=object.user.username pk=object.id %}">
+                    {% trans "Discard" %}
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
