@@ -36,6 +36,15 @@
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li>
                   <a class="dropdown-item"
+                    hx-get="{% url 'djeocad:insert_delete' username=object.layer.drawing.user.username pk=object.id %}"
+                    hx-target="#content"
+                    hx-push-url="true">
+                    {% trans "Delete insertion" %}
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item"
                     href="{% url 'djeocad:layer_update' username=object.block.drawing.user.username pk=object.block.id %}">
                     {% trans "Modify block" %}
                   </a>

@@ -445,6 +445,27 @@ class InsertionUpdateView(PermissionRequiredMixin, UpdateView):
         )
 
 
+class InsertionDeleteView(PermissionRequiredMixin, DeleteView):
+    model = Insertion
+    permission_required = "djeocad.delete_insertion"
+
+    def get_object(self, queryset=None):
+        obj = super(InsertionDeleteView, self).get_object(queryset=None)
+        if not self.request.htmx and not self.request.POST:
+            raise Http404(_("Request without HTMX headers"))
+        get_object_or_404(User, username=self.kwargs["username"])
+        self.drawing = obj.layer.drawing
+        if self.request.user != self.drawing.user:
+            raise PermissionDenied
+        return obj
+
+    def get_success_url(self, *args, **kwargs):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={"username": self.kwargs["username"], "pk": self.drawing.id},
+        )
+
+
 class InsertionDeleteInlineView(PermissionRequiredMixin, TemplateView):
     permission_required = "djeocad.delete_insertion"
     template_name = "djeocad/htmx/item_delete.html"
