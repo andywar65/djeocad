@@ -259,11 +259,6 @@ class DrawingDeleteView(PermissionRequiredMixin, DeleteView):
             "djeocad:author_list", kwargs={"username": self.kwargs["username"]}
         )
 
-    def dispatch(self, request, *args, **kwargs):
-        response = super(DrawingDeleteView, self).dispatch(request, *args, **kwargs)
-        response["HX-Request"] = True
-        return response
-
 
 class LayerCreateView(PermissionRequiredMixin, CreateView):
     permission_required = "djeocad.add_layer"
