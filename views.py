@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import (
     CreateView,
+    DeleteView,
     DetailView,
     ListView,
     RedirectView,
@@ -121,13 +122,12 @@ class DrawingDetailView(HxPageTemplateMixin, DetailView):
         context["mapbox_token"] = settings.MAPBOX_TOKEN
         context["lines"] = self.object.related_layers.filter(is_block=False)
         context["blocks"] = self.object.related_layers.filter(is_block=True)
-        context["insertions"] = Insertion.objects.none()
-        for layer in context["lines"]:
-            context["insertions"] = context["insertions"] | layer.insertions.all()
+        id_list = context["lines"].values_list("id", flat=True)
+        context["insertions"] = Insertion.objects.filter(layer_id__in=id_list)
         context["drawings"] = self.object
         context["author_list"] = [_("Author - ") + self.object.user.username]
-        layer_list = context["lines"].values_list("name", flat=True)
-        context["layer_list"] = list(dict.fromkeys(layer_list))
+        name_list = context["lines"].values_list("name", flat=True)
+        context["layer_list"] = list(dict.fromkeys(name_list))
         context["layer_list"] = [_("Layer - ") + s for s in context["layer_list"]]
         return context
 
@@ -241,20 +241,20 @@ class DrawingUpdateView(PermissionRequiredMixin, UpdateView):
         )
 
 
-class DrawingDeleteView(PermissionRequiredMixin, RedirectView):
+class DrawingDeleteView(PermissionRequiredMixin, DeleteView):
+    model = Drawing
     permission_required = "djeocad.delete_drawing"
 
     def setup(self, request, *args, **kwargs):
         super(DrawingDeleteView, self).setup(request, *args, **kwargs)
-        if not self.request.htmx:
+        if not request.htmx and not request.POST:
             raise Http404(_("Request without HTMX headers"))
         get_object_or_404(User, username=self.kwargs["username"])
         drawing = get_object_or_404(Drawing, id=self.kwargs["pk"])
         if request.user != drawing.user:
             raise PermissionDenied
-        drawing.delete()
 
-    def get_redirect_url(self, *args, **kwargs):
+    def get_success_url(self, *args, **kwargs):
         return reverse(
             "djeocad:author_list", kwargs={"username": self.kwargs["username"]}
         )

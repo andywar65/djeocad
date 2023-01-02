@@ -54,8 +54,7 @@
           <a class="dropdown-item"
             hx-get="{% url 'djeocad:drawing_delete' username=object.user.username pk=object.id %}"
             hx-target="#nav-card"
-            hx-push-url="{% url 'djeocad:author_list' username=object.user.username %}"
-            hx-confirm="{% trans 'Are you sure you want to delete this drawing?' %}">
+            hx-push-url="true">
             {% trans "Delete drawing" %}
           </a>
         </li>

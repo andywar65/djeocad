@@ -1,0 +1,27 @@
+{% load bootstrap5 %}
+{% load i18n %}
+
+<div class="card-header">
+  <h4 class="card-title">
+    {% trans "Delete drawing"%}
+  </h4>
+</div>
+<form method="POST" action="">
+  {% csrf_token %}
+  <div class="card-body">
+    <p>
+      {% trans "Are you sure you want to delete drawing" %}
+      <strong>{{ object }}</strong>?
+    </p>
+    {% bootstrap_form form %}
+    <input class="btn btn-danger"
+      type="submit"
+      value="{% trans 'Delete' %}" />
+    <a class="btn btn-secondary"
+      hx-get="{% url 'djeocad:drawing_detail' username=object.user.username pk=object.id %}"
+      hx-target="#nav-card"
+      hx-push-url="true">
+      {% trans "Discard" %}
+    </a>
+  </div>
+</form>
