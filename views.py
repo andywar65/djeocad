@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -464,6 +464,14 @@ class InsertionDeleteView(PermissionRequiredMixin, DeleteView):
             "djeocad:drawing_detail",
             kwargs={"username": self.kwargs["username"], "pk": self.drawing.id},
         )
+
+
+class InsertionExplodeView(InsertionDeleteView):
+    def form_valid(self, form):
+        success_url = self.get_success_url()
+        self.object.explode_instance()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
 
 
 class InsertionDeleteInlineView(PermissionRequiredMixin, TemplateView):

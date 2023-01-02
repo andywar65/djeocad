@@ -36,6 +36,14 @@
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li>
                   <a class="dropdown-item"
+                    hx-get="{% url 'djeocad:insert_explode' username=object.layer.drawing.user.username pk=object.id %}"
+                    hx-target="#content"
+                    hx-push-url="true">
+                    {% trans "Explode insertion" %}
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item"
                     hx-get="{% url 'djeocad:insert_delete' username=object.layer.drawing.user.username pk=object.id %}"
                     hx-target="#content"
                     hx-push-url="true">

@@ -15,6 +15,7 @@ from .views import (
     InsertionDeleteInlineView,
     InsertionDeleteView,
     InsertionExplodeInlineView,
+    InsertionExplodeView,
     InsertionUpdateView,
     LayerCreateView,
     LayerDeleteInlineView,
@@ -97,6 +98,11 @@ urlpatterns = [
         _("<username>/block-instance/<pk>/delete/"),
         InsertionDeleteView.as_view(),
         name="insert_delete",
+    ),
+    path(
+        _("<username>/block-instance/<pk>/explode/"),
+        InsertionExplodeView.as_view(),
+        name="insert_explode",
     ),
     path(_("drawing/<pk>/download/"), drawing_download, name="drawing_download"),
     # Inlines
