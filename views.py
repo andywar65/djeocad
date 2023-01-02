@@ -336,6 +336,29 @@ class LayerToBlockView(PermissionRequiredMixin, RedirectView):
         )
 
 
+class LayerDeleteView(PermissionRequiredMixin, DeleteView):
+    model = Layer
+    permission_required = "djeocad.delete_layer"
+
+    def get_object(self, queryset=None):
+        obj = super(LayerDeleteView, self).get_object(queryset=None)
+        if obj.name == "0":
+            raise PermissionDenied
+        if not self.request.htmx and not self.request.POST:
+            raise Http404(_("Request without HTMX headers"))
+        get_object_or_404(User, username=self.kwargs["username"])
+        self.drawing = obj.drawing
+        if self.request.user != self.drawing.user:
+            raise PermissionDenied
+        return obj
+
+    def get_success_url(self, *args, **kwargs):
+        return reverse(
+            "djeocad:drawing_detail",
+            kwargs={"username": self.kwargs["username"], "pk": self.drawing.id},
+        )
+
+
 class LayerDeleteInlineView(PermissionRequiredMixin, TemplateView):
     permission_required = "djeocad.delete_layer"
     template_name = "djeocad/htmx/item_delete.html"

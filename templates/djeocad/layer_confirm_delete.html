@@ -1,0 +1,31 @@
+{% load bootstrap5 %}
+{% load i18n %}
+
+<div class="card mx-auto" style="width: 480px;">
+  <div class="card-header">
+    <h4 class="card-title">
+      {% if object.is_block %}
+        {% trans "Delete block"%}
+      {% else %}
+        {% trans "Delete layer"%}
+      {% endif %}
+    </h4>
+  </div>
+  <div class="card-body">
+    <p>
+      {% trans "Are you sure you want to delete layer / block" %}
+      <strong>{{ object }}</strong>?
+    </p>
+    <form method="POST" action="">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      <input class="btn btn-danger"
+        type="submit"
+        value="{% trans 'Delete' %}" />
+      <a class="btn btn-secondary"
+        href="{% url 'djeocad:layer_update' username=object.drawing.user.username pk=object.id %}">
+        {% trans "Discard" %}
+      </a>
+    </form>
+  </div>
+</div>

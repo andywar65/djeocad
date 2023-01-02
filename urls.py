@@ -17,6 +17,7 @@ from .views import (
     InsertionUpdateView,
     LayerCreateView,
     LayerDeleteInlineView,
+    LayerDeleteView,
     LayerToBlockView,
     LayerUpdateView,
     drawing_download,
@@ -75,6 +76,11 @@ urlpatterns = [
         _("<username>/layer/<pk>/to/block/"),
         LayerToBlockView.as_view(),
         name="layer_to_block",
+    ),
+    path(
+        _("<username>/layer/<pk>/delete/"),
+        LayerDeleteView.as_view(),
+        name="layer_delete",
     ),
     path(
         _("<username>/block/<pk>/instance/add/"),

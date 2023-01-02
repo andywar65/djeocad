@@ -52,6 +52,14 @@
                     </a>
                   </li>
                 {% endif %}
+                <li>
+                  <a class="dropdown-item"
+                    hx-get="{% url 'djeocad:layer_delete' username=object.drawing.user.username pk=object.id %}"
+                    hx-target="#content"
+                    hx-push-url="true">
+                    {% trans "Delete layer / block" %}
+                  </a>
+                </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <a class="dropdown-item"
