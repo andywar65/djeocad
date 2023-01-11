@@ -93,14 +93,20 @@ class DjeocadModelTest(TestCase):
         self.assertEquals(
             d.popupContent,
             {
-                "content": '<h5><a href="/it/geocad/autore/andy.war65/disegno/1/">'
-                + 'Foo</a></h5><img src="/media/"><small>None</small>'
+                "content": '<h5><a href="/it/geocad/andy.war65/disegno/1/">'
+                + 'Foo</a></h5><img src="/media/"><small>None</small>',
+                "layer": "Autore - andy.war65",
             },
         )
         print("\n-Tested drawing popupContent")
         y = Layer.objects.get(name="Layer")
         self.assertEquals(
             y.popupContent,
-            {"color": "#FFFFFF", "content": "<h6>Livello: Layer</h6>"},
+            {
+                "color": "#FFFFFF",
+                "content": "<h6>Livello: Layer, ID: 5</h6>",
+                "layer": "Livello - Layer",
+                "linetype": True,
+            },
         )
         print("\n-Tested layer popupContent")

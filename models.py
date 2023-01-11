@@ -184,6 +184,9 @@ class Drawing(models.Model):
                 # can't find geodata in DXF, need manual insertion
                 # check if user has inserted origin on map
                 if self.geom:
+                    # following conditional for test to work
+                    if isinstance(self.geom, str):
+                        self.geom = json.loads(self.geom)
                     # let's try to find proper UTM
                     utm_crs_list = query_utm_crs_info(
                         datum_name="WGS 84",
