@@ -652,7 +652,7 @@ class Insertion(models.Model):
         _("Y scale"),
         default=1,
     )
-    geom = GeometryCollectionField(_("Entities"), default={})
+    geom = GeometryCollectionField(_("Entities"), default=dict)
 
     __original_point = None
     __original_rotation = None
