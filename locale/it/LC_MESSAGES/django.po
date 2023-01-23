@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-02 20:13+0100\n"
-"PO-Revision-Date: 2023-01-02 23:13+0100\n"
+"POT-Creation-Date: 2023-01-23 18:59+0100\n"
+"PO-Revision-Date: 2023-01-23 19:07+0100\n"
 "Last-Translator: andywar65 <andy.war1965@gmail.com>\n"
 "Language-Team: \n"
 "Language: it\n"
@@ -51,77 +51,85 @@ msgstr "Immagine"
 msgid "DXF file"
 msgstr "File DXF"
 
-#: .\djeocad\models.py:70 .\djeocad\models.py:639
+#: .\djeocad\models.py:70 .\djeocad\models.py:658
 msgid "Location"
 msgstr "Posizione"
 
-#: .\djeocad\models.py:72 .\djeocad\models.py:641
+#: .\djeocad\models.py:72
+msgid "Design point X..."
+msgstr "Coordinata X..."
+
+#: .\djeocad\models.py:76
+msgid "...Y"
+msgstr "… ed Y"
+
+#: .\djeocad\models.py:80 .\djeocad\models.py:660
 msgid "Rotation"
 msgstr "Rotazione"
 
-#: .\djeocad\models.py:76
+#: .\djeocad\models.py:84
 msgid "Private drawing"
 msgstr "Disegno privato"
 
-#: .\djeocad\models.py:80
+#: .\djeocad\models.py:88
 msgid "Refresh DXF file from layers"
 msgstr "Aggiorna il file DXF partendo dai livelli"
 
-#: .\djeocad\models.py:85
+#: .\djeocad\models.py:93
 msgid "CRS code"
 msgstr "Codice CRS"
 
-#: .\djeocad\models.py:108 .\djeocad\models.py:454
+#: .\djeocad\models.py:118 .\djeocad\models.py:473
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:5
 msgid "Drawing"
 msgstr "Disegno"
 
-#: .\djeocad\models.py:109 .\djeocad\templates\djeocad\htmx\author_list.html:8
+#: .\djeocad\models.py:119 .\djeocad\templates\djeocad\htmx\author_list.html:8
 msgid "Drawings"
 msgstr "Disegni"
 
-#: .\djeocad\models.py:135 .\djeocad\models.py:140 .\djeocad\views.py:60
+#: .\djeocad\models.py:147 .\djeocad\models.py:152 .\djeocad\views.py:60
 #: .\djeocad\views.py:95 .\djeocad\views.py:128
 msgid "Author - "
 msgstr "Autore - "
 
-#: .\djeocad\models.py:457
+#: .\djeocad\models.py:476
 msgid "Layer / block name"
 msgstr "Nome del livello / blocco"
 
-#: .\djeocad\models.py:462
+#: .\djeocad\models.py:481
 msgid "Continuous linetype"
 msgstr "Linea continua"
 
-#: .\djeocad\models.py:465 .\djeocad\models.py:652
+#: .\djeocad\models.py:484 .\djeocad\models.py:671
 msgid "Entities"
 msgstr "Entità"
 
-#: .\djeocad\models.py:467
+#: .\djeocad\models.py:486
 msgid "Block definition"
 msgstr "Definizione del blocco"
 
-#: .\djeocad\models.py:478 .\djeocad\models.py:534 .\djeocad\models.py:637
-#: .\djeocad\models.py:677
+#: .\djeocad\models.py:497 .\djeocad\models.py:553 .\djeocad\models.py:656
+#: .\djeocad\models.py:696
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:67
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:10
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:12
 msgid "Layer"
 msgstr "Livello"
 
-#: .\djeocad\models.py:479
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:79
+#: .\djeocad\models.py:498
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:81
 msgid "Layers"
 msgstr "Livelli"
 
-#: .\djeocad\models.py:532 .\djeocad\models.py:631 .\djeocad\models.py:679
+#: .\djeocad\models.py:551 .\djeocad\models.py:650 .\djeocad\models.py:698
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:83
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:10
 #: .\djeocad\templates\djeocad\includes\insertion_update.html:13
 msgid "Block"
 msgstr "Blocco"
 
-#: .\djeocad\models.py:538 .\djeocad\models.py:675
+#: .\djeocad\models.py:557 .\djeocad\models.py:694
 #: .\djeocad\templates\djeocad\htmx\insertion_inline.html:9
 #: .\djeocad\templates\djeocad\htmx\layer_inline.html:14
 #: .\djeocad\templates\djeocad\includes\layer_update.html:14
@@ -129,21 +137,21 @@ msgstr "Blocco"
 msgid "ID"
 msgstr ""
 
-#: .\djeocad\models.py:545 .\djeocad\models.py:686 .\djeocad\views.py:131
+#: .\djeocad\models.py:564 .\djeocad\models.py:705 .\djeocad\views.py:131
 msgid "Layer - "
 msgstr "Livello - "
 
-#: .\djeocad\models.py:645
+#: .\djeocad\models.py:664
 msgid "X scale"
 msgstr "Scala in X"
 
-#: .\djeocad\models.py:649
+#: .\djeocad\models.py:668
 msgid "Y scale"
 msgstr "Scala in Y"
 
 #: .\djeocad\templates\djeocad\drawing_confirm_delete.html:7
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:58
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:50
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:52
 msgid "Delete drawing"
 msgstr "Elimina il disegno"
 
@@ -160,7 +168,7 @@ msgid "Delete"
 msgstr "Elimina"
 
 #: .\djeocad\templates\djeocad\drawing_confirm_delete.html:23
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:64
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:66
 #: .\djeocad\templates\djeocad\includes\insertion_create.html:47
 #: .\djeocad\templates\djeocad\includes\insertion_update.html:64
 #: .\djeocad\templates\djeocad\includes\layer_create.html:46
@@ -232,7 +240,7 @@ msgid "Modify layers"
 msgstr "Modifica i livelli"
 
 #: .\djeocad\templates\djeocad\htmx\drawing_detail.html:74
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:57
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:59
 msgid "Add layer"
 msgstr "Aggiungi livello"
 
@@ -265,7 +273,7 @@ msgid "Are you sure you want to delete this layer / block?"
 msgstr "Sei sicuro di voler eliminare questo livello / blocco?"
 
 #: .\djeocad\templates\djeocad\includes\drawing_geodata.html:13
-#: .\djeocad\templates\djeocad\includes\drawing_geodata.html:31
+#: .\djeocad\templates\djeocad\includes\drawing_geodata.html:34
 msgid "Add GeoData"
 msgstr "Aggiungi GeoData"
 
@@ -273,8 +281,10 @@ msgstr "Aggiungi GeoData"
 msgid ""
 "\n"
 "                No Geodata found in DXF, you must insert it manually.\n"
-"                On the map draw a marker corresponding to DXF axis origin "
-"(0,0,0).\n"
+"                On the map draw a marker corresponding to a geolocated DXF "
+"point.\n"
+"                In X and Y enter the coordinates of this point in DXF units "
+"(it defaults to WCS origin).\n"
 "                Rotation is the angle you need to rotate the drawing to "
 "orient it\n"
 "                correctly to True North (angle in degrees, counterclockwise "
@@ -283,8 +293,10 @@ msgid ""
 msgstr ""
 "\n"
 "          Non ci sono Geodata nel DXF, devi inserirli manualmente.\n"
-"          Sulla mappa inserisci un marker in corrispondenza dell'origine "
-"degli assi del DXF (0,0,0).\n"
+"          Sulla mappa inserisci un marker in corrispondenza di un punto "
+"geolocalizzato del DXF.\n"
+"In X ed Y inserisci le coordinate di detto punto in unità DXF (di default è "
+"l'origine degli assi).\n"
 "          La Rotazione è l'angolo necessario a ruotare il disegno in modo da "
 "orientarlo\n"
 "          correttamente verso il Nord geografico (angolo in gradi, il senso "
@@ -294,13 +306,13 @@ msgstr ""
 msgid "Update drawing"
 msgstr "Aggiorna il disegno"
 
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:34
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:36
 #: .\djeocad\templates\djeocad\includes\insertion_update.html:26
 #: .\djeocad\templates\djeocad\includes\layer_update.html:29
 msgid "Update"
 msgstr "Aggiorna"
 
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:42
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:44
 #: .\djeocad\templates\djeocad\includes\insertion_create.html:34
 #: .\djeocad\templates\djeocad\includes\insertion_update.html:34
 #: .\djeocad\templates\djeocad\includes\layer_create.html:33
@@ -308,7 +320,7 @@ msgstr "Aggiorna"
 msgid "Other actions"
 msgstr "Altre azioni"
 
-#: .\djeocad\templates\djeocad\includes\drawing_update.html:85
+#: .\djeocad\templates\djeocad\includes\drawing_update.html:87
 msgid "Blocks"
 msgstr "Blocchi"
 
