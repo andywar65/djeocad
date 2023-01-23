@@ -97,6 +97,8 @@ class Drawing(models.Model):
 
     __original_dxf = None
     __original_geom = None
+    __original_designx = None
+    __original_designy = None
     __original_rotation = None
     name_blacklist = ["*Model_Space", "DynamicInputDot"]
     entity_types = [
@@ -120,6 +122,8 @@ class Drawing(models.Model):
         super().__init__(*args, **kwargs)
         self.__original_dxf = self.dxf
         self.__original_geom = self.geom
+        self.__original_designx = self.designx
+        self.__original_designy = self.designy
         self.__original_rotation = self.rotation
 
     def __str__(self):
@@ -182,6 +186,8 @@ class Drawing(models.Model):
                     geodata.dxf.reference_point[0], geodata.dxf.reference_point[1]
                 )
                 self.geom = {"type": "Point", "coordinates": world_point}
+                self.designx = geodata.dxf.design_point[0]
+                self.designy = geodata.dxf.design_point[1]
                 self.rotation = degrees(
                     atan2(
                         geodata.dxf.north_direction[0], geodata.dxf.north_direction[1]
@@ -212,6 +218,8 @@ class Drawing(models.Model):
             if (
                 self.__original_dxf != self.dxf
                 or self.__original_geom != self.geom
+                or self.__original_designx != self.designx
+                or self.__original_designy != self.designy
                 or self.__original_rotation != self.rotation
             ):
                 self.related_layers.all().delete()
@@ -268,7 +276,7 @@ encoding="UTF-16" standalone="no" ?>
 
     def fake_geodata(self, geodata, utm_wcs, rot):
         geodata.coordinate_system_definition = self.get_epsg_xml()
-        geodata.dxf.design_point = (0, 0, 0)
+        geodata.dxf.design_point = (self.designx, self.designy, 0)
         geodata.dxf.reference_point = utm_wcs
         geodata.dxf.north_direction = (sin(rot), cos(rot))
         return geodata
