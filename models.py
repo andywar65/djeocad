@@ -68,6 +68,14 @@ class Drawing(models.Model):
         ],
     )
     geom = PointField(_("Location"), null=True)
+    designx = models.FloatField(
+        _("Design point X..."),
+        default=0,
+    )
+    designy = models.FloatField(
+        _("...Y"),
+        default=0,
+    )
     rotation = models.FloatField(
         _("Rotation"),
         default=0,
