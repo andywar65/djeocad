@@ -13,7 +13,7 @@ class DrawingCreateForm(ModelForm):
 class DrawingGeoDataForm(ModelForm):
     class Meta:
         model = Drawing
-        fields = ["geom", "rotation"]
+        fields = ["geom", "designx", "designy", "rotation"]
         widgets = {
             "geom": LeafletWidget(
                 attrs={
@@ -29,7 +29,17 @@ class DrawingGeoDataForm(ModelForm):
 class DrawingUpdateForm(ModelForm):
     class Meta:
         model = Drawing
-        fields = ["title", "intro", "dxf", "image", "geom", "rotation", "private"]
+        fields = [
+            "title",
+            "intro",
+            "dxf",
+            "image",
+            "geom",
+            "designx",
+            "designy",
+            "rotation",
+            "private",
+        ]
         widgets = {
             "geom": LeafletWidget(
                 attrs={

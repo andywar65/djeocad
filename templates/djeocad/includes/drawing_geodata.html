@@ -14,15 +14,18 @@
             </h4>
           </div>
           <div class="card-body">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
               {% blocktrans %}
                 No Geodata found in DXF, you must insert it manually.
-                On the map draw a marker corresponding to DXF axis origin (0,0,0).
+                On the map draw a marker corresponding to a geolocated DXF point.
+                In X and Y enter the coordinates of this point in DXF units (it defaults to WCS origin).
                 Rotation is the angle you need to rotate the drawing to orient it
                 correctly to True North (angle in degrees, counterclockwise is positive).
               {% endblocktrans %}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            {% bootstrap_field form.designx %}
+            {% bootstrap_field form.designy %}
             {% bootstrap_field form.rotation %}
           </div>
           <div class="card-footer">
