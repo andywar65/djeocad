@@ -779,3 +779,27 @@ class Insertion(models.Model):
                 drawing.needs_refresh = True
                 super(Drawing, drawing).save()
         super(Insertion, self).save(*args, **kwargs)
+
+
+class Dxf2Csv(models.Model):
+
+    dxf = models.FileField(
+        _("DXF file"),
+        max_length=200,
+        upload_to="uploads/djeocad/dxf/",
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=[
+                    "dxf",
+                ]
+            )
+        ],
+    )
+    intro = models.CharField(_("Notes"), null=True, max_length=200)
+
+    class Meta:
+        verbose_name = _("DXF 2 CSV")
+        verbose_name_plural = _("DXF 2 CSVs")
+
+    def __str__(self):
+        return _("DXF 2 CSV - ") + str(self.id)

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from leaflet.admin import LeafletGeoAdmin, LeafletGeoAdminMixin
 
-from .models import Drawing, Insertion, Layer
+from .models import Drawing, Dxf2Csv, Insertion, Layer
 
 
 class LayerInline(LeafletGeoAdminMixin, admin.TabularInline):
@@ -36,3 +36,11 @@ class LayerAdmin(LeafletGeoAdmin):
 
 
 admin.site.register(Layer, LayerAdmin)
+
+
+@admin.register(Dxf2Csv)
+class Dxf2CsvAdmin(admin.ModelAdmin):
+    list_display = (
+        "__str__",
+        "intro",
+    )
