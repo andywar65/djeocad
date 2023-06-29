@@ -11,6 +11,7 @@ from .views import (
     DrawingSimpleCreateView,
     DrawingSimpleGeoDataView,
     DrawingUpdateView,
+    Dxf2CsvCreateView,
     InsertionCreateView,
     InsertionDeleteInlineView,
     InsertionDeleteView,
@@ -120,5 +121,10 @@ urlpatterns = [
         "insertion/<pk>/delete/",
         InsertionDeleteInlineView.as_view(),
         name="insert_delete_inline",
+    ),
+    path(
+        _("dxf-to-csv/create/"),
+        Dxf2CsvCreateView.as_view(),
+        name="dxf2csv_create",
     ),
 ]

@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from leaflet.forms.widgets import LeafletWidget
 
-from .models import Drawing, Insertion, Layer
+from .models import Drawing, Dxf2Csv, Insertion, Layer
 
 
 class DrawingCreateForm(ModelForm):
@@ -99,3 +99,9 @@ class InsertionCreateForm(ModelForm):
 
     class Media:
         js = ("djeocad/js/locate_drawing.js",)
+
+
+class Dxf2CsvCreateForm(ModelForm):
+    class Meta:
+        model = Dxf2Csv
+        fields = ["dxf", "intro"]

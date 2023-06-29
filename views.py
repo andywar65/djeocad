@@ -24,10 +24,11 @@ from .forms import (
     DrawingGeoDataForm,
     DrawingSimpleCreateForm,
     DrawingUpdateForm,
+    Dxf2CsvCreateForm,
     InsertionCreateForm,
     LayerCreateForm,
 )
-from .models import Drawing, Insertion, Layer
+from .models import Drawing, Dxf2Csv, Insertion, Layer
 
 User = get_user_model()
 
@@ -518,3 +519,13 @@ def drawing_download(request, pk):
     response["Content-Disposition"] = "attachment; filename=%s.dxf" % drawing.title
 
     return response
+
+
+class Dxf2CsvCreateView(PermissionRequiredMixin, HxPageTemplateMixin, CreateView):
+    permission_required = "djeocad.add_dxf2csv"
+    model = Dxf2Csv
+    form_class = Dxf2CsvCreateForm
+    template_name = "djeocad/htmx/dxf2csv_create.html"
+
+    def get_success_url(self, *args, **kwargs):
+        return reverse("djeocad:dxf2csv_add")

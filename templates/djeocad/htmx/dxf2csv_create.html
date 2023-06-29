@@ -1,0 +1,20 @@
+{% load bootstrap5 %}
+{% load i18n %}
+
+<div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
+  <div class="card-header">
+    <h3>{% translate 'Convert DXF to CSV' %}</h3>
+  </div>
+  <form>
+    <div class="card-body">
+      {% bootstrap_form form %}
+      <button class="btn btn-success"
+        hx-post="{% url 'djeocad:dxf2csv_create' %}"
+        hx-encoding="multipart/form-data"
+        hx-swap="#content">
+        {% trans "Convert" %}
+        <span class="htmx-indicator spinner-border spinner-border-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>
