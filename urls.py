@@ -12,6 +12,7 @@ from .views import (
     DrawingSimpleGeoDataView,
     DrawingUpdateView,
     Dxf2CsvCreateView,
+    Dxf2CsvDetailView,
     InsertionCreateView,
     InsertionDeleteInlineView,
     InsertionDeleteView,
@@ -129,7 +130,12 @@ urlpatterns = [
         name="dxf2csv_create",
     ),
     path(
-        "dxf-to-csv/<pk>/",
+        _("dxf-to-csv/<pk>/"),
+        Dxf2CsvDetailView.as_view(),
+        name="dxf2csv_detail",
+    ),
+    path(
+        "dxf-to-csv/<pk>/download/",
         csv_download,
         name="dxf2csv_download",
     ),

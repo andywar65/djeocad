@@ -1,0 +1,14 @@
+{% load i18n %}
+
+<div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
+  <div class="card-header">
+    <h3>{% translate 'Download CSV' %}</h3>
+  </div>
+  <div class="card-body">
+    <p>{% trans "Drawing uploaded. Press button to download CSV"%}</p>
+    <a
+      href="{% url 'djeocad:dxf2csv_download' pk=object.id %}">
+      {% trans "Download" %}
+    </a>
+  </div>
+</div>

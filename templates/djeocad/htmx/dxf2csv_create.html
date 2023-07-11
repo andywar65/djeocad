@@ -11,7 +11,8 @@
       <button class="btn btn-success"
         hx-post="{% url 'djeocad:dxf2csv_create' %}"
         hx-encoding="multipart/form-data"
-        hx-swap="#content">
+        hx-target="#content"
+        hx-push-url="true">
         {% trans "Convert" %}
         <span class="htmx-indicator spinner-border spinner-border-sm"></span>
       </button>

@@ -530,34 +530,31 @@ class Dxf2CsvCreateView(PermissionRequiredMixin, HxPageTemplateMixin, CreateView
     template_name = "djeocad/htmx/dxf2csv_create.html"
 
     def get_success_url(self, *args, **kwargs):
-        return reverse("djeocad:dxf2csv_download", kwargs={"pk": self.object.id})
+        return reverse("djeocad:dxf2csv_detail", kwargs={"pk": self.object.id})
+
+
+class Dxf2CsvDetailView(PermissionRequiredMixin, HxPageTemplateMixin, DetailView):
+    permission_required = "djeocad.view_dxf2csv"
+    model = Dxf2Csv
+    template_name = "djeocad/htmx/dxf2csv_download.html"
 
 
 def csv_writer(writer, qs):
     writer.writerow(
         [
-            _("Number"),
-            _("Client"),
-            _("Active?"),
-            _("dd/mm/yy"),
-            _("Description"),
-            _("Taxable"),
-            _("Social security"),
-            _("VAT"),
-            _("Category"),
-            _("Paid?"),
+            qs.intro,
         ]
     )
     return writer
 
 
-@permission_required("djeocad.add_dxf2csv")
+@permission_required("djeocad.view_dxf2csv")
 def csv_download(request, pk):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = 'attachment; filename="drawing.csv"'
 
-    qs = Dxf2Csv.objects.filter(id=pk)  # get object or 404
+    qs = get_object_or_404(Dxf2Csv, id=pk)
 
     writer = csv.writer(response)
     writer = csv_writer(writer, qs)
