@@ -6,7 +6,8 @@
   </div>
   <div class="card-body">
     <p>{% trans "Drawing uploaded. Press button to download CSV"%}</p>
-    <a
+    <a class="btn btn-primary"
+      role="button"
       href="{% url 'djeocad:dxf2csv_download' pk=object.id %}">
       {% trans "Download" %}
     </a>
