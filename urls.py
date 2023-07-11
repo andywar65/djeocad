@@ -23,6 +23,7 @@ from .views import (
     LayerDeleteView,
     LayerToBlockView,
     LayerUpdateView,
+    csv_download,
     drawing_download,
 )
 
@@ -126,5 +127,10 @@ urlpatterns = [
         _("dxf-to-csv/create/"),
         Dxf2CsvCreateView.as_view(),
         name="dxf2csv_create",
+    ),
+    path(
+        "dxf-to-csv/<pk>/",
+        csv_download,
+        name="dxf2csv_download",
     ),
 ]
