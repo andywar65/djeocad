@@ -539,12 +539,12 @@ class Dxf2CsvDetailView(PermissionRequiredMixin, HxPageTemplateMixin, DetailView
     template_name = "djeocad/htmx/dxf2csv_download.html"
 
 
-def csv_writer(writer, qs):
-    writer.writerow(
-        [
-            qs.intro,
-        ]
-    )
+def csv_writer(writer, dxf):
+    writer.writerow([dxf.intro])
+    writer.writerow([_("Floor"), _("ID"), _("Function"), _("Surface")])
+    data = dxf.extract_data()
+    for d in data:
+        writer.writerow([d])
     return writer
 
 
@@ -554,11 +554,9 @@ def csv_download(request, pk):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = 'attachment; filename="drawing.csv"'
 
-    qs = get_object_or_404(Dxf2Csv, id=pk)
+    dxf = get_object_or_404(Dxf2Csv, id=pk)
 
     writer = csv.writer(response)
-    writer = csv_writer(writer, qs)
-
-    # add header to response to refresh upload page
+    writer = csv_writer(writer, dxf)
 
     return response

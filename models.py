@@ -804,6 +804,9 @@ class Dxf2Csv(models.Model):
     def __str__(self):
         return _("DXF 2 CSV - ") + str(self.id)
 
+    def extract_data(self):
+        return ["foo", "bar"]
+
     # from shapely.geometry import Point
     # from shapely.geometry.polygon import Polygon
 
