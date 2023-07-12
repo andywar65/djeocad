@@ -805,7 +805,19 @@ class Dxf2Csv(models.Model):
         return _("DXF 2 CSV - ") + str(self.id)
 
     def extract_data(self):
-        return ["foo", "bar"]
+        # get DXF
+        doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
+        msp = doc.modelspace()
+        # extract entities
+        entity_types = [
+            "LWPOLYLINE",
+            "POLYLINE",
+        ]
+        data = []
+        for e_type in entity_types:
+            for p in msp.query(e_type):
+                data.append({"layer": p.dxf.layer})
+        return data
 
     # from shapely.geometry import Point
     # from shapely.geometry.polygon import Polygon

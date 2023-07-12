@@ -544,7 +544,7 @@ def csv_writer(writer, dxf):
     writer.writerow([_("Floor"), _("ID"), _("Function"), _("Surface")])
     data = dxf.extract_data()
     for d in data:
-        writer.writerow([d])
+        writer.writerow(["foo", "bar", d["layer"], "0"])
     return writer
 
 
