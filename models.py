@@ -24,6 +24,9 @@ from shapely.geometry import shape
 
 from .utils import cad2hex, check_wide_image
 
+# from shapely.geometry.polygon import Polygon
+
+
 User = get_user_model()
 
 
@@ -816,7 +819,9 @@ class Dxf2Csv(models.Model):
         data = []
         for e_type in entity_types:
             for p in msp.query(e_type):
-                data.append({"layer": p.dxf.layer})
+                # cutoff surface
+                surface = ezdxf.math.area(p.vertices())
+                data.append({"layer": p.dxf.layer, "surface": surface})
         return data
 
     # from shapely.geometry import Point
