@@ -839,6 +839,7 @@ class Dxf2Csv(models.Model):
                         "id": id,
                         "layer": p.dxf.layer,
                         "surface": round(poly.area, 2),
+                        "height": p.dxf.thickness,
                     }
                 )
         return data

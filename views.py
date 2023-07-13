@@ -541,10 +541,10 @@ class Dxf2CsvDetailView(PermissionRequiredMixin, HxPageTemplateMixin, DetailView
 
 def csv_writer(writer, dxf):
     writer.writerow([dxf.intro])
-    writer.writerow([_("Floor"), _("ID"), _("Function"), _("Surface")])
+    writer.writerow([_("Floor"), _("ID"), _("Function"), _("Surface"), _("Height")])
     data = dxf.extract_data()
     for d in data:
-        writer.writerow([d["plan"], d["id"], d["layer"], d["surface"]])
+        writer.writerow([d["plan"], d["id"], d["layer"], d["surface"], d["height"]])
     return writer
 
 
