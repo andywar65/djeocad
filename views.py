@@ -550,11 +550,10 @@ def csv_writer(writer, dxf):
 
 @permission_required("djeocad.view_dxf2csv")
 def csv_download(request, pk):
+    dxf = get_object_or_404(Dxf2Csv, id=pk)
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = 'attachment; filename="drawing.csv"'
-
-    dxf = get_object_or_404(Dxf2Csv, id=pk)
+    response["Content-Disposition"] = f'attachment; filename="{dxf.__str__()}.csv"'
 
     writer = csv.writer(response)
     writer = csv_writer(writer, dxf)

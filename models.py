@@ -803,7 +803,8 @@ class Dxf2Csv(models.Model):
         verbose_name_plural = _("DXF 2 CSVs")
 
     def __str__(self):
-        return _("DXF 2 CSV - ") + str(self.id)
+        name = self.dxf.name.replace("uploads/djeocad/dxf/", "")
+        return name.replace(".dxf", "")
 
     def extract_data(self):
         # get DXF
