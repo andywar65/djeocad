@@ -21,11 +21,9 @@ from pyproj import Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
 from shapely.geometry import shape
+from shapely.geometry.polygon import Polygon
 
 from .utils import cad2hex, check_wide_image
-
-# from shapely.geometry.polygon import Polygon
-
 
 User = get_user_model()
 
@@ -819,9 +817,8 @@ class Dxf2Csv(models.Model):
         data = []
         for e_type in entity_types:
             for p in msp.query(e_type):
-                # cutoff surface
-                surface = ezdxf.math.area(p.vertices())
-                data.append({"layer": p.dxf.layer, "surface": surface})
+                poly = Polygon(p.vertices_in_wcs())
+                data.append({"layer": p.dxf.layer, "surface": round(poly.area, 2)})
         return data
 
     # from shapely.geometry import Point
