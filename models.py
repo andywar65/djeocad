@@ -816,7 +816,7 @@ class Dxf2Csv(models.Model):
         ]
         data = []
         for e_type in entity_types:
-            for p in msp.query(e_type):
+            for p in msp.query(f"{e_type}[layer!='0']"):
                 try:
                     poly = Polygon(p.vertices_in_wcs())
                 except ValueError:
