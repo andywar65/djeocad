@@ -20,7 +20,7 @@ from PIL import ImageColor
 from pyproj import Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
-from shapely.geometry import shape
+from shapely.geometry import Point, shape
 from shapely.geometry.polygon import Polygon
 
 from .utils import cad2hex, check_wide_image
@@ -817,13 +817,28 @@ class Dxf2Csv(models.Model):
         data = []
         for e_type in entity_types:
             for p in msp.query(e_type):
-                poly = Polygon(p.vertices_in_wcs())
-                data.append({"layer": p.dxf.layer, "surface": round(poly.area, 2)})
+                try:
+                    poly = Polygon(p.vertices_in_wcs())
+                except ValueError:
+                    continue
+                mtexts = msp.query(f"MTEXT[layer=='{p.dxf.layer}']")
+                plan = ""
+                id = ""
+                for mtext in mtexts:
+                    point = Point(mtext.dxf.insert)
+                    if poly.contains(point):
+                        text = mtext.text.split("/")
+                        plan = text[0]
+                        try:
+                            id = text[1]
+                        except IndexError:
+                            pass
+                data.append(
+                    {
+                        "plan": plan,
+                        "id": id,
+                        "layer": p.dxf.layer,
+                        "surface": round(poly.area, 2),
+                    }
+                )
         return data
-
-    # from shapely.geometry import Point
-    # from shapely.geometry.polygon import Polygon
-
-    # point = Point(0.5, 0.5)
-    # polygon = Polygon([(0, 0), (0, 1), (1, 1), (1, 0)])
-    # print(polygon.contains(point))
