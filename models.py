@@ -810,30 +810,45 @@ class Dxf2Csv(models.Model):
         # get DXF
         doc = ezdxf.readfile(Path(settings.MEDIA_ROOT).joinpath(str(self.dxf)))
         msp = doc.modelspace()
-        # extract entities
+        # entity types
         entity_types = [
             "LWPOLYLINE",
             "POLYLINE",
         ]
+        # text types (caution, TEXT overwrites MTEXT!)
+        text_types = [
+            "MTEXT",
+            "TEXT",
+        ]
         data = []
         for e_type in entity_types:
+            # extract entities
             for p in msp.query(f"{e_type}[layer!='0']"):
+                # check if it's a true polygon
                 try:
                     poly = Polygon(p.vertices_in_wcs())
                 except ValueError:
                     continue
-                mtexts = msp.query(f"MTEXT[layer=='{p.dxf.layer}']")
                 plan = ""
                 id = ""
-                for mtext in mtexts:
-                    point = Point(mtext.dxf.insert)
-                    if poly.contains(point):
-                        text = mtext.text.split("/")
-                        plan = text[0]
-                        try:
-                            id = text[1]
-                        except IndexError:
-                            pass
+                # look for texts in same layer
+                for t_type in text_types:
+                    txts = msp.query(f"{t_type}[layer=='{p.dxf.layer}']")
+                    for t in txts:
+                        point = Point(t.dxf.insert)
+                        # check if text is contained by polygon
+                        if poly.contains(point):
+                            # handle different type of texts
+                            if t_type == "TEXT":
+                                text = t.dxf.text.split("/")
+                            else:
+                                text = t.text.split("/")
+                            plan = text[0]
+                            # check if id info
+                            try:
+                                id = text[1]
+                            except IndexError:
+                                pass
                 data.append(
                     {
                         "plan": plan,
