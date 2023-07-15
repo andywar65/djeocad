@@ -11,5 +11,11 @@
       href="{% url 'djeocad:dxf2csv_download' pk=object.id %}">
       {% trans "Download" %}
     </a>
+    <a class="link-primary"
+      hx-get="{% url 'djeocad:dxf2csv_create' %}"
+      hx-target="#content"
+      hx-push-url="true">
+      {% trans "Add another" %}
+    </a>
   </div>
 </div>
