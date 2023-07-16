@@ -831,6 +831,7 @@ class Dxf2Csv(models.Model):
                     continue
                 plan = ""
                 id = ""
+                interv = ""
                 # look for texts in same layer
                 for t_type in text_types:
                     txts = msp.query(f"{t_type}[layer=='{p.dxf.layer}']")
@@ -844,18 +845,24 @@ class Dxf2Csv(models.Model):
                             else:
                                 text = t.text.split("/")
                             plan = text[0]
-                            # check if id info
+                            # check if id info and intervention
                             try:
                                 id = text[1]
+                            except IndexError:
+                                pass
+                            try:
+                                interv = text[2]
                             except IndexError:
                                 pass
                 data.append(
                     {
                         "plan": plan,
                         "id": id,
+                        "interv": interv,
                         "layer": p.dxf.layer,
                         "surface": round(poly.area, 2),
                         "height": p.dxf.thickness,
+                        "volume": round(poly.area * p.dxf.thickness, 2),
                     }
                 )
         return data
