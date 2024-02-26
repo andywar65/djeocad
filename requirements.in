@@ -1,9 +1,5 @@
-django>=4.1,<4.2
-django-bootstrap-v5
-django-grappelli
-django-filebrowser
+django>=5.0,<6.0
 django-htmx
-coverage
 django-geojson
 jsonfield
 django-leaflet
