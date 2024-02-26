@@ -13,13 +13,5 @@
   </style>
 {% endblock extra-head %}
 
-{% block menucont %}
-  {% include 'navbar.html' %}
-  <main class="flex-shrink-0">
-    <div id="content" class="container">
-      {% block content %}
-      {% endblock content %}
-    </div>
-  </main>
-  {% include 'footer.html' %}
-{% endblock menucont %}
+{% block content %}
+{% endblock content %}

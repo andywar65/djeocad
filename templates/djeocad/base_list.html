@@ -13,25 +13,19 @@
   </style>
 {% endblock extra-head %}
 
-{% block menucont %}
-  {% include 'navbar.html' %}
-  <main class="flex-shrink-0">
-    <div id="content" class="container">
-      <div class="row">
-        <div class="col" style="margin-bottom: 20px">
-          <div class="card" id="nav-card">
-            {% block nav-card %}
-              {% include "djeocad/htmx/base_list.html" %}
-            {% endblock nav-card %}
-          </div>
-        </div>
-        {{ mapbox_token|json_script:"mapbox_token"}}
-        <script src="{% static 'djeocad/js/base_list.js'%}"></script>
-        <div class="col col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
-          {% leaflet_map "mymap" callback="window.map_init" %}
-        </div>
+{% block content %}
+  <div class="row">
+    <div class="col" style="margin-bottom: 20px">
+      <div class="card" id="nav-card">
+        {% block nav-card %}
+          {% include "djeocad/htmx/base_list.html" %}
+        {% endblock nav-card %}
       </div>
     </div>
-  </main>
-  {% include 'footer.html' %}
-{% endblock menucont %}
+    {{ mapbox_token|json_script:"mapbox_token"}}
+    <script src="{% static 'djeocad/js/base_list.js'%}"></script>
+    <div class="col col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
+      {% leaflet_map "mymap" callback="window.map_init" %}
+    </div>
+  </div>
+{% endblock content %}
