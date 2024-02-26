@@ -1,4 +1,4 @@
-{% load bootstrap5 %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 
 <div class="card-header">
@@ -9,10 +9,10 @@
 <div class="card-body">
   <form method="POST" action="" enctype="multipart/form-data">
     {% csrf_token %}
-    {% bootstrap_form form %}
+    {{ form|crispy }}
     <input class="btn btn-primary"
-      style="margin-bottom: 15px;"
-      type="submit"
-      value="{% trans 'Add' %}" />
+           style="margin-bottom: 15px;"
+           type="submit"
+           value="{% trans 'Add' %}" />
   </form>
 </div>

@@ -1,28 +1,28 @@
 {% load i18n %}
-{% load fb_versions %}
+{% load thumbnail %}
 
 <div class="card-header">
   <h4 class="card-title">{% trans "Drawing"%}: {{ object.title }}</h4>
 </div>
 {% if object.fb_image %}
-  <img src="{% version object.fb_image 'medium' %}" class="card-img-top" alt="{{ object.intro }}">
+  <img src="{% thumbnail object.fb_image 240x240 crop %}" class="card-img-top" alt="{{ object.intro }}">
 {% endif %}
 <div class="card-body">
   <p class="card-text">{{ object.intro }}</p>
   <ul>
     <li>
       <a class="link-primary"
-        hx-get="{% url 'djeocad:author_list' username=object.user.username %}"
-        hx-target="#nav-card"
-        hx-push-url="true">
+         hx-get="{% url 'djeocad:author_list' username=object.user.username %}"
+         hx-target="#nav-card"
+         hx-push-url="true">
         {% trans "Back to author"%}
       </a>
     </li>
     <li>
       <a class="link-primary"
-        hx-get="{% url 'djeocad:base_list' %}"
-        hx-target="#nav-card"
-        hx-push-url="true">
+         hx-get="{% url 'djeocad:base_list' %}"
+         hx-target="#nav-card"
+         hx-push-url="true">
         {% trans "All authors"%}
       </a>
     </li>
@@ -30,31 +30,31 @@
 </div>
 <div class="card-footer">
   <a class="btn btn-success" style="margin-bottom: 15px;"
-    href="{% url 'djeocad:drawing_download' pk=object.id %}">
+     href="{% url 'djeocad:drawing_download' pk=object.id %}">
     {% trans "Download drawing" %}
   </a>
   {% if request.user == object.user %}
     <div class="dropdown">
       <a class="btn btn-primary dropdown-toggle"
-        href="#"
-        role="button"
-        id="dropdownMenuLink"
-        data-bs-toggle="dropdown"
-        aria-expanded="false">
+         href="#"
+         role="button"
+         id="dropdownMenuLink"
+         data-bs-toggle="dropdown"
+         aria-expanded="false">
         {% trans "Modify" %}
       </a>
       <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <li>
           <a class="dropdown-item"
-            href="{% url 'djeocad:drawing_update' username=object.user.username pk=object.id %}">
+             href="{% url 'djeocad:drawing_update' username=object.user.username pk=object.id %}">
             {% trans "Modify drawing" %}
           </a>
         </li>
         <li>
           <a class="dropdown-item"
-            hx-get="{% url 'djeocad:drawing_delete' username=object.user.username pk=object.id %}"
-            hx-target="#content"
-            hx-push-url="true">
+             hx-get="{% url 'djeocad:drawing_delete' username=object.user.username pk=object.id %}"
+             hx-target="#content"
+             hx-push-url="true">
             {% trans "Delete drawing" %}
           </a>
         </li>
@@ -63,14 +63,14 @@
         {% for layer in lines %}
           <li>
             <a class="dropdown-item"
-              href="{% url 'djeocad:layer_update' username=object.user.username pk=layer.id %}">
+               href="{% url 'djeocad:layer_update' username=object.user.username pk=layer.id %}">
               {% trans "Layer" %} - {{ layer.name }}
             </a>
           </li>
         {% endfor %}
         <li>
           <a class="dropdown-item"
-            href="{% url 'djeocad:layer_create' username=object.user.username pk=object.id %}">
+             href="{% url 'djeocad:layer_create' username=object.user.username pk=object.id %}">
             {% trans "Add layer" %}
           </a>
         </li>
@@ -79,14 +79,14 @@
         {% for blok in blocks %}
           <li>
             <a class="dropdown-item"
-              href="{% url 'djeocad:layer_update' username=object.user.username pk=blok.id %}">
+               href="{% url 'djeocad:layer_update' username=object.user.username pk=blok.id %}">
               {% trans "Block" %} - {{ blok.name }}
             </a>
           </li>
           {% for inst in blok.instances.all %}
             <li>
               <a class="dropdown-item"
-                href="{% url 'djeocad:insert_update' username=object.user.username pk=inst.id %}">
+                 href="{% url 'djeocad:insert_update' username=object.user.username pk=inst.id %}">
                 - {% trans "Instance" %} - {{ inst.id }}
               </a>
             </li>

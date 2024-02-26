@@ -1,4 +1,4 @@
-{% load bootstrap5 %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 
 <div class="card mx-auto" style="max-width: 480px; margin-top: 60px">
@@ -7,12 +7,12 @@
   </div>
   <form>
     <div class="card-body">
-      {% bootstrap_form form %}
+      {{ form|crispy }}
       <button class="btn btn-success"
-        hx-post="{% url 'djeocad:dxf2csv_create' %}"
-        hx-encoding="multipart/form-data"
-        hx-target="#content"
-        hx-push-url="true">
+              hx-post="{% url 'djeocad:dxf2csv_create' %}"
+              hx-encoding="multipart/form-data"
+              hx-target="#content"
+              hx-push-url="true">
         {% trans "Convert" %}
         <span class="htmx-indicator spinner-border spinner-border-sm"></span>
       </button>
