@@ -1,5 +1,5 @@
 {% extends "djeocad/base_form.html" %}
-{% load bootstrap5 %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 
 {% block content %}
@@ -14,36 +14,36 @@
             </h4>
           </div>
           <div class="card-body">
-            {% bootstrap_field form.layer %}
-            {% bootstrap_field form.rotation %}
-            {% bootstrap_field form.x_scale %}
-            {% bootstrap_field form.y_scale %}
+            {{ form.layer|as_crispy_field }}
+            {{ form.rotation|as_crispy_field }}
+            {{ form.x_scale|as_crispy_field }}
+            {{ form.y_scale|as_crispy_field }}
           </div>
           <div class="card-footer">
             <input class="btn btn-primary"
-              style="margin-bottom: 15px;"
-              type="submit"
-              value="{% trans 'Add' %}" />
+                   style="margin-bottom: 15px;"
+                   type="submit"
+                   value="{% trans 'Add' %}" />
             <div class="dropdown">
               <a class="btn btn-secondary dropdown-toggle"
-                href="#"
-                role="button"
-                id="dropdownMenuLink"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
+                 href="#"
+                 role="button"
+                 id="dropdownMenuLink"
+                 data-bs-toggle="dropdown"
+                 aria-expanded="false">
                 {% trans "Other actions" %}
               </a>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li>
                   <a class="dropdown-item"
-                    href="{% url 'djeocad:layer_update' username=blok.drawing.user.username pk=blok.id %}">
+                     href="{% url 'djeocad:layer_update' username=blok.drawing.user.username pk=blok.id %}">
                     {% trans "Modify block" %}
                   </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <a class="dropdown-item"
-                    href="{% url 'djeocad:drawing_detail' username=blok.drawing.user.username pk=blok.drawing.id %}">
+                     href="{% url 'djeocad:drawing_detail' username=blok.drawing.user.username pk=blok.drawing.id %}">
                     {% trans "Discard" %}
                   </a>
                 </li>
@@ -53,7 +53,7 @@
         </div>
       </div>
       <div class="col col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
-        {% bootstrap_field form.point %}
+        {{ form.point|as_crispy_field }}
       </div>
     </div>
   </form>

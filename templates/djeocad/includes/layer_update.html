@@ -1,5 +1,5 @@
 {% extends "djeocad/base_form.html" %}
-{% load bootstrap5 %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 
 {% block content %}
@@ -18,59 +18,59 @@
             </h4>
           </div>
           <div class="card-body">
-            {% bootstrap_field form.name %}
-            {% bootstrap_field form.color_field %}
-            {% bootstrap_field form.linetype %}
+            {{ form.name|as_crispy_field }}
+            {{ form.color_field|as_crispy_field }}
+            {{ form.linetype|as_crispy_field }}
           </div>
           <div class="card-footer">
             <input class="btn btn-primary"
-              style="margin-bottom: 15px;"
-              type="submit"
-              value="{% trans 'Update' %}" />
+                   style="margin-bottom: 15px;"
+                   type="submit"
+                   value="{% trans 'Update' %}" />
             <div class="dropdown">
               <a class="btn btn-secondary dropdown-toggle"
-                href="#"
-                role="button"
-                id="dropdownMenuLink"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
+                 href="#"
+                 role="button"
+                 id="dropdownMenuLink"
+                 data-bs-toggle="dropdown"
+                 aria-expanded="false">
                 {% trans "Other actions" %}
               </a>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 {% if object.is_block %}
                   <li>
                     <a class="dropdown-item"
-                      href="{% url 'djeocad:insert_create' username=object.drawing.user.username pk=object.id %}">
+                       href="{% url 'djeocad:insert_create' username=object.drawing.user.username pk=object.id %}">
                       {% trans "Add instance" %}
                     </a>
                   </li>
                 {% else %}
                   <li>
                     <a class="dropdown-item"
-                      href="{% url 'djeocad:layer_to_block' username=object.drawing.user.username pk=object.id %}">
+                       href="{% url 'djeocad:layer_to_block' username=object.drawing.user.username pk=object.id %}">
                       {% trans "Transform layer to block" %}
                     </a>
                   </li>
                 {% endif %}
                 <li>
                   <a class="dropdown-item"
-                    hx-get="{% url 'djeocad:layer_delete' username=object.drawing.user.username pk=object.id %}"
-                    hx-target="#content"
-                    hx-push-url="true">
+                     hx-get="{% url 'djeocad:layer_delete' username=object.drawing.user.username pk=object.id %}"
+                     hx-target="#content"
+                     hx-push-url="true">
                     {% trans "Delete layer / block" %}
                   </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <a class="dropdown-item"
-                    href="{% url 'djeocad:drawing_update' username=object.drawing.user.username pk=object.drawing.id %}">
+                     href="{% url 'djeocad:drawing_update' username=object.drawing.user.username pk=object.drawing.id %}">
                     {% trans "Modify drawing" %}
                   </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <a class="dropdown-item"
-                    href="{% url 'djeocad:drawing_detail' username=object.drawing.user.username pk=object.drawing.id %}">
+                     href="{% url 'djeocad:drawing_detail' username=object.drawing.user.username pk=object.drawing.id %}">
                     {% trans "Discard" %}
                   </a>
                 </li>
@@ -80,7 +80,7 @@
         </div>
       </div>
       <div class="col col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12">
-        {% bootstrap_field form.geom %}
+        {{ form.geom|as_crispy_field }}
       </div>
     </div>
   </form>

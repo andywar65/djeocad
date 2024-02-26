@@ -1,5 +1,5 @@
 {% extends "djeocad/base_form.html" %}
-{% load bootstrap5 %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 
 {% block content %}
@@ -24,19 +24,19 @@
               {% endblocktrans %}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            {% bootstrap_field form.designx %}
-            {% bootstrap_field form.designy %}
-            {% bootstrap_field form.rotation %}
+            {{ form.designx|as_crispy_field }}
+            {{ form.designy|as_crispy_field }}
+            {{ form.rotation|as_crispy_field }}
           </div>
           <div class="card-footer">
             <input class="btn btn-primary"
-              type="submit"
-              value="{% trans 'Add GeoData' %}" />
+                   type="submit"
+                   value="{% trans 'Add GeoData' %}" />
           </div>
         </div>
       </div>
       <div class="col col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
-        {% bootstrap_field form.geom %}
+        {{ form.geom|as_crispy_field }}
       </div>
     </div>
   </form>
