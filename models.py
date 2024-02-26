@@ -14,14 +14,14 @@ from djgeojson.fields import GeometryCollectionField, PointField
 from ezdxf.addons import geo
 from ezdxf.lldxf.const import InvalidGeoDataException
 from ezdxf.math import Vec3
-from filebrowser.base import FileObject
-from filebrowser.fields import FileBrowseField
 from PIL import ImageColor
 from pyproj import Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
 from shapely.geometry import Point, shape
 from shapely.geometry.polygon import Polygon
+from filer.fields.image import FilerImageField
+from easy_thumbnails.files import get_thumbnailer
 
 from .utils import cad2hex, check_wide_image
 
@@ -42,19 +42,12 @@ class Drawing(models.Model):
         max_length=50,
     )
     intro = models.CharField(_("Description"), null=True, max_length=200)
-    fb_image = FileBrowseField(
-        _("Image"),
-        max_length=200,
-        extensions=[".jpg", ".png", ".jpeg", ".gif", ".tif", ".tiff"],
-        directory="images/drawing/",
-        null=True,
+    fb_image = FilerImageField(
+        null=True, blank=True, related_name="drawing_image", on_delete=models.SET_NULL
     )
     image = models.ImageField(
-        _("Image"),
-        max_length=200,
         null=True,
         blank=True,
-        upload_to="uploads/images/drawing/",
     )
     dxf = models.FileField(
         _("DXF file"),
@@ -141,13 +134,15 @@ class Drawing(models.Model):
             "url": url,
         }
         intro_str = "<small>%(intro)s</small>" % {"intro": self.intro}
-        image = self.get_thumbnail_path()
+        image = self.fb_image
         if not image:
             return {
                 "content": title_str + intro_str,
                 "layer": _("Author - ") + self.user.username,
             }
-        image_str = '<img src="%(image)s">' % {"image": image}
+        thumbnailer = get_thumbnailer(image)
+        thumb = thumbnailer.get_thumbnail({"size": (256, 256), "crop": True})
+        image_str = '<img src="%(image)s">' % {"image": thumb.url}
         return {
             "content": title_str + image_str + intro_str,
             "layer": _("Author - ") + self.user.username,
@@ -162,12 +157,6 @@ class Drawing(models.Model):
     def save(self, *args, **kwargs):
         # save and eventually upload image file
         super(Drawing, self).save(*args, **kwargs)
-        if self.image:
-            # image is saved on the front end, passed to fb_image and deleted
-            self.fb_image = FileObject(str(self.image))
-            self.image = None
-            super(Drawing, self).save(*args, **kwargs)
-            check_wide_image(self.fb_image)
         # check if we have coordinate system
         if not self.epsg:
             # search for geodata in DXF
