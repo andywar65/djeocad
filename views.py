@@ -20,6 +20,7 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
+from filer.models import Image
 
 from .forms import (
     DrawingCreateForm,
@@ -150,6 +151,14 @@ class DrawingCreateView(PermissionRequiredMixin, HxPageTemplateMixin, CreateView
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        if form.cleaned_data["image"]:
+            img = Image.objects.create(
+                owner=self.request.user,
+                original_filename=form.cleaned_data["title"],
+                file=form.cleaned_data["image"],
+            )
+            form.instance.fb_image = img
+        form.instance.image = None
         return super(DrawingCreateView, self).form_valid(form)
 
     def get_success_url(self):
