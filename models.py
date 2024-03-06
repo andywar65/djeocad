@@ -11,19 +11,19 @@ from django.db import IntegrityError, models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from djgeojson.fields import GeometryCollectionField, PointField
+from easy_thumbnails.files import get_thumbnailer
 from ezdxf.addons import geo
 from ezdxf.lldxf.const import InvalidGeoDataException
 from ezdxf.math import Vec3
+from filer.fields.image import FilerImageField
 from PIL import ImageColor
 from pyproj import Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
 from shapely.geometry import Point, shape
 from shapely.geometry.polygon import Polygon
-from filer.fields.image import FilerImageField
-from easy_thumbnails.files import get_thumbnailer
 
-from .utils import cad2hex, check_wide_image
+from .utils import cad2hex  # , check_wide_image
 
 User = get_user_model()
 
@@ -307,6 +307,8 @@ encoding="UTF-16" standalone="no" ?>
         for e_type in self.entity_types:
             i = 0
             # extract entities
+            # TODO catch polygons and see if they include text
+            # TODO then add key/value with 'label'/text
             for e in msp.query(e_type):
                 i += 1
                 if not self.private and i >= max_ent:
@@ -376,6 +378,7 @@ encoding="UTF-16" standalone="no" ?>
                     if geo_proxy:
                         geometries.append(geo_proxy.__geo_interface__)
             # create Insertion
+            # TODO add an attribute dictionary
             Insertion.objects.create(
                 block=block,
                 layer=layer,
