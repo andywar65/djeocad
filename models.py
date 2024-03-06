@@ -309,6 +309,7 @@ encoding="UTF-16" standalone="no" ?>
             # extract entities
             # TODO catch polygons and see if they include text
             # TODO then add key/value with 'label'/text
+            # TODO add key/value with area, thickness (height), volume
             for e in msp.query(e_type):
                 i += 1
                 if not self.private and i >= max_ent:
