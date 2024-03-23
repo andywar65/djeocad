@@ -861,6 +861,7 @@ class Dxf2Csv(models.Model):
                         "interv": interv,
                         "layer": p.dxf.layer,
                         "surface": round(poly.area, 2),
+                        "perimeter": round(poly.length, 2),
                         "height": p.dxf.thickness,
                         "volume": round(poly.area * p.dxf.thickness, 2),
                     }

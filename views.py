@@ -548,6 +548,7 @@ def csv_writer(writer, dxf):
             _("Function"),
             _("Intervention"),
             _("Surface"),
+            _("Perimeter"),
             _("Height"),
             _("Volume"),
         ]
@@ -561,6 +562,7 @@ def csv_writer(writer, dxf):
                 d["layer"],
                 d["interv"],
                 d["surface"],
+                d["perimeter"],
                 d["height"],
                 d["volume"],
             ]
